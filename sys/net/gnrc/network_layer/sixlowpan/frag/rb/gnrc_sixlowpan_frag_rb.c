@@ -88,7 +88,7 @@ static int _rbuf_get(const void *src, size_t src_len,
 static gnrc_sixlowpan_frag_rb_t *_rbuf_get_by_tag(const gnrc_netif_hdr_t *netif_hdr,
                                                   uint16_t tag);
 /* internal add to repeat add when fragments overlapped */
-static int _rbuf_add(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
+int _rbuf_add(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
                      size_t offset, unsigned page);
 
 /* status codes for _rbuf_add() */
@@ -291,7 +291,7 @@ static gnrc_pktsnip_t *_mark_frag_hdr(gnrc_pktsnip_t *pkt)
     return NULL;
 }
 
-static int _rbuf_add(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
+int _rbuf_add(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
                      size_t offset, unsigned page)
 {
     union {
