@@ -5,7 +5,10 @@ HARNESS_FILE = _rbuf_add_harness
 # Litani dashboard. It can be human-readable and contain spaces if you wish.
 PROOF_UID = _rbuf_add
 # sys/include/net/gnrc/netif/hdr.h
-DEFINES += -DGNRC_NETTYPE_SIXLOWPAN=1
+DEFINES += -DGNRC_NETTYPE_SIXLOWPAN=1 -DMODULE_GNRC_SIXLOWPAN_FRAG=1 -DMODULE_GNRC_SIXLOWPAN_FRAG_SFR=1 \
+            -DMODULE_GNRC_SIXLOWPAN_FRAG_MINFWD=1 -DCONFIG_GNRC_SIXLOWPAN_FRAG_RBUF_SIZE=1 \
+            -DMODULE_GNRC_SIXLOWPAN_IPHC=1
+
 INCLUDES += -I$(SRCDIR) -I$(SRCDIR)/sys/include/  \
             -I$(SRCDIR)/core/lib/include/  \
             -I$(SRCDIR)/core/include/  \
@@ -14,7 +17,11 @@ INCLUDES += -I$(SRCDIR) -I$(SRCDIR)/sys/include/  \
             -I$(SRCDIR)/boards/native/include/  \
 
 REMOVE_FUNCTION_BODY +=
-UNWINDSET +=
+UNWINDSET += gnrc_sixlowpan_frag_rb_gc.2:2
+UNWINDSET += _rbuf_get.2:2
+UNWINDSET += _rbuf_int_get_free.2:2
+UNWINDSET += gnrc_pkt_delete.0:2
+UNWINDSET += _check_fragments.1:2
 
 PROOF_SOURCES += $(PROOFDIR)/$(HARNESS_FILE).c
 PROJECT_SOURCES += $(SRCDIR)/sys/net/gnrc/network_layer/sixlowpan/frag/rb/gnrc_sixlowpan_frag_rb.c

@@ -61,7 +61,7 @@
 
 static gnrc_sixlowpan_frag_rb_int_t rbuf_int[RBUF_INT_SIZE];
 
-static gnrc_sixlowpan_frag_rb_t rbuf[CONFIG_GNRC_SIXLOWPAN_FRAG_RBUF_SIZE];
+gnrc_sixlowpan_frag_rb_t rbuf[CONFIG_GNRC_SIXLOWPAN_FRAG_RBUF_SIZE];
 
 static char l2addr_str[3 * IEEE802154_LONG_ADDRESS_LEN];
 
@@ -80,7 +80,7 @@ static gnrc_sixlowpan_frag_rb_int_t *_rbuf_int_get_free(void);
 static bool _rbuf_update_ints(gnrc_sixlowpan_frag_rb_base_t *entry,
                               uint16_t offset, size_t frag_size);
 /* gets an entry identified by its tuple */
-static int _rbuf_get(const void *src, size_t src_len,
+int _rbuf_get(const void *src, size_t src_len,
                      const void *dst, size_t dst_len,
                      size_t size, uint16_t tag,
                      unsigned page);
@@ -235,6 +235,7 @@ static size_t _6lo_frag_size(gnrc_pktsnip_t *pkt, size_t offset, uint8_t *data)
 {
     size_t frag_size;
 
+    // This check should correspond with the check that frag is the 1st fragment.
     if (offset == 0) {
         if (pkt->size < sizeof(sixlowpan_frag_t)) {
             return 0;
@@ -308,7 +309,7 @@ int _rbuf_add(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
     uint16_t datagram_tag;
 
     /* check if provided offset is the same as in fragment */
-    assert(_valid_offset(pkt, offset));
+    __CPROVER_assume(_valid_offset(pkt, offset));
     if (IS_USED(MODULE_GNRC_SIXLOWPAN_FRAG) && sixlowpan_frag_is(pkt->data)) {
         data = _6lo_frag_payload(pkt);
         frag_size = _6lo_frag_size(pkt, offset, data);
@@ -326,6 +327,13 @@ int _rbuf_add(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
 
         data = _6lo_sfr_payload(pkt);
         frag_size = _6lo_sfr_frag_size(pkt);
+
+        // We need to add this check because whatever frag_size we read is used to copy from data.
+        if (frag_size > pkt->size - sizeof(sixlowpan_sfr_rfrag_t)) {
+            DEBUG("6lo rfrag: fragment size exceeds packet size\n");
+            gnrc_pktbuf_release(pkt);
+            return RBUF_ADD_ERROR;
+        }
         /* offset doubles as datagram size in RFRAG header when sequence number
          * is 0 */
         datagram_size = _6lo_sfr_datagram_size(pkt, offset);
@@ -437,6 +445,14 @@ int _rbuf_add(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
             else if (data[0] == SIXLOWPAN_UNCOMP) {
                 DEBUG("6lo rbuf: detected uncompressed datagram\n");
                 data++;
+                // Check if frag_size is greater than the remaining packet size
+                if (frag_size > pkt->size - (data - (uint8_t *)pkt->data)) {
+                    DEBUG("6lo rfrag: fragment size exceeds packet size\n");
+                    gnrc_pktbuf_release(entry.rbuf->pkt);
+                    gnrc_pktbuf_release(pkt);
+                    gnrc_sixlowpan_frag_rb_remove(entry.rbuf);
+                    return RBUF_ADD_ERROR;
+                }
                 if (IS_USED(MODULE_GNRC_SIXLOWPAN_FRAG_MINFWD) &&
                     /* only try minimal forwarding when fragment is the only
                      * fragment in reassembly buffer yet */
@@ -612,7 +628,7 @@ static inline void _set_rbuf_timeout(void)
                    &_gc_timer_msg, thread_getpid());
 }
 
-static int _rbuf_get(const void *src, size_t src_len,
+int _rbuf_get(const void *src, size_t src_len,
                      const void *dst, size_t dst_len,
                      size_t size, uint16_t tag,
                      unsigned page)
