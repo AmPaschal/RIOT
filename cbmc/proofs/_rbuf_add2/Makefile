@@ -5,7 +5,7 @@ ROOT = /home/pamusuo/research/cbmc-research/RIOT
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/sys/net/gnrc/network_layer/sixlowpan/frag/rb/gnrc_sixlowpan_frag_rb.c  $(ROOT)/sys/net/gnrc/pktbuf_static/gnrc_pktbuf_static.c
+LINK = $(ROOT)/sys/net/gnrc/network_layer/sixlowpan/frag/rb/gnrc_sixlowpan_frag_rb.c 
 
 # Harness to utilize, omit the extension!
 H_ENTRY = _rbuf_add
