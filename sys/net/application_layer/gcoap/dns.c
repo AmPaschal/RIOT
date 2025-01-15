@@ -99,8 +99,8 @@ typedef struct {
 } _cred_t;
 
 static mutex_t _client_mutex = MUTEX_INIT;
-static char _uri[CONFIG_GCOAP_DNS_SERVER_URI_LEN];
-static char _proxy[CONFIG_GCOAP_DNS_SERVER_URI_LEN];
+char _uri[CONFIG_GCOAP_DNS_SERVER_URI_LEN];
+char _proxy[CONFIG_GCOAP_DNS_SERVER_URI_LEN];
 static uri_parser_result_t _uri_comp;
 static sock_udp_ep_t _remote;
 #if IS_USED(MODULE_GCOAP_DTLS)
@@ -317,9 +317,13 @@ ssize_t gcoap_dns_server_proxy_get(char *proxy, size_t proxy_len)
     ssize_t res = 0;
     mutex_lock(&_client_mutex);
     if (_dns_server_uri_isset()) {
-        res = strscpy(proxy, _proxy, proxy_len);
-        if (res == -E2BIG) {
+        res = strlen(_uri); // VULN: typo, should be strlen(_proxy)
+        if (((size_t)res + 1) > proxy_len) {
+            /* account for trailing \0 */
             res = -ENOBUFS;
+        }
+        else {
+            strcpy(proxy, _proxy); // VULN: potential buffer overflow
         }
     }
     mutex_unlock(&_client_mutex);
