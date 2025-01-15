@@ -11,7 +11,7 @@ LINK = $(ROOT)/sys/net/application_layer/gcoap/dns.c $(ROOT)/sys/libc/string.c
 H_ENTRY = gcoap_dns_server_proxy_get
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1
+H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset strlen.0:64 --unwindset strcpy.0:64
 
 
 H_DEF = -DRIOT_VERSION=1 -DMODULE_SOCK_UDP=y -DSOCK_HAS_IPV6=y

@@ -22,10 +22,15 @@
  */
 
 #include <stdlib.h>
-#include <linux/string.h> 
+
+#define CONFIG_GCOAP_DNS_SERVER_URI_LEN     64U
 
 void harness(void)
 {
+
+    extern char _uri[CONFIG_GCOAP_DNS_SERVER_URI_LEN];
+    extern char _proxy[CONFIG_GCOAP_DNS_SERVER_URI_LEN];
+
     size_t str_len;
     __CPROVER_assume(str_len <= 20);
 
