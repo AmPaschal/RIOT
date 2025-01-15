@@ -25,14 +25,22 @@
 
 #define CONFIG_GCOAP_DNS_SERVER_URI_LEN     64U
 
+extern char _proxy[CONFIG_GCOAP_DNS_SERVER_URI_LEN];
+extern char _uri[CONFIG_GCOAP_DNS_SERVER_URI_LEN];
+
 void harness(void)
 {
 
-    extern char _uri[CONFIG_GCOAP_DNS_SERVER_URI_LEN];
-    extern char _proxy[CONFIG_GCOAP_DNS_SERVER_URI_LEN];
+    uint8_t src_null_byte;
+    __CPROVER_assume(src_null_byte < CONFIG_GCOAP_DNS_SERVER_URI_LEN);
+    _proxy[src_null_byte] = '\0';
+
+    uint8_t uri_null_byte;
+    __CPROVER_assume(uri_null_byte < CONFIG_GCOAP_DNS_SERVER_URI_LEN);
+    _uri[uri_null_byte] = '\0';
 
     size_t str_len;
-    __CPROVER_assume(str_len <= 20);
+    // __CPROVER_assume(str_len <= 20);
 
     char* str = malloc(str_len);
     __CPROVER_assume(str != NULL);
