@@ -22,15 +22,21 @@
  */
 
 #include <stdlib.h>
+#include <linux/string.h> 
 
 void harness(void)
 {
     size_t str_len;
     __CPROVER_assume(str_len <= 20);
 
-    char* str = malloc(sizeof(char) * str_len);
+    char* str = malloc(str_len);
     __CPROVER_assume(str != NULL);
-    __CPROVER_assume(str[str_len - 1] == '\0');
+
+    //Don't add a NULL byte to a string of length 0
+    if (str_len != 0) {
+        __CPROVER_assume(str[str_len - 1] == '\0');
+    }
+
 
     gcoap_dns_server_proxy_get(str, str_len);
   /* Insert argument declarations */
