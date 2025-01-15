@@ -351,7 +351,7 @@ static int _gcoap_forward_proxy_add_uri_path(coap_pkt_t *pkt,
     return 0;
 }
 
-static int _gcoap_forward_proxy_copy_options(coap_pkt_t *pkt,
+int _gcoap_forward_proxy_copy_options(coap_pkt_t *pkt,
                                              coap_pkt_t *client_pkt,
                                              client_ep_t *cep,
                                              uri_parser_result_t *urip)
