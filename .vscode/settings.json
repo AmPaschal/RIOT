@@ -18,7 +18,8 @@
         "functional": "c",
         "tuple": "c",
         "type_traits": "c",
-        "utility": "c"
+        "utility": "c",
+        "stdlib.h": "c"
     },
     "[shellscript][c][cpp]": {
         "editor.tabSize": 4,

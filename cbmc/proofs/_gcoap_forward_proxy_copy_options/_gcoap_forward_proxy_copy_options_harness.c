@@ -33,8 +33,8 @@ static coap_pkt_t* alloc_coap_pkt_t()
     __CPROVER_assume(pkt != NULL);
 
     //The target function requires a buffer of options in the packet, which based on _add_opt_pkt,
-    //are kept in between the header and the payload. I think each option is 3 bytes long,
-    //and you can have up to 16 of them
+    //are kept in between the header and the payload. I think each option is 1-5 bytes long,
+    //stores information about its own length and you can have up to 16 of them
     uint16_t opt_len;
     __CPROVER_assume(opt_len <= 16);
     pkt -> options_len = opt_len;
@@ -58,9 +58,9 @@ static coap_pkt_t* alloc_coap_pkt_t()
     
     //The length stored in each option is used to try and read values, I'm going to set the delta to 1 and the length to 0 for everything
     //Because the actual values for each option don't matter for this function (I think)
-    for(int i = 0; i < opt_len; i++) {
-        *(uint8_t*)(hdr + sizeof(coap_hdr_t) + i) == 0x10;
-    }
+    // for(int i = 0; i < opt_len; i++) {
+    //     *(uint8_t*)(hdr + sizeof(coap_hdr_t) + i) == 0x10;
+    // }
 
     pkt -> hdr = hdr;
 
