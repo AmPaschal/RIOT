@@ -23,8 +23,10 @@
 
 #include <stdlib.h>
 #include "net/nanocoap.h"
+#include "net/gcoap.h"
+#include "thread_flags.h"
 
-extern char* _result_buf
+extern char* _result_buf;
 extern size_t _result_buf_len;
 
 static coap_pkt_t* alloc_coap_pkt() {
@@ -41,6 +43,12 @@ static coap_pkt_t* alloc_coap_pkt() {
     __CPROVER_assume(payload_offset >= sizeof(coap_hdr_t) && payload_offset <= pkt_size);
     pkt->payload = hdr + payload_offset;
     pkt->payload_len = pkt_size - payload_offset;
+
+    //Max number of options is 16
+    uint16_t opt_len;
+    __CPROVER_assume(opt_len <= 16);
+    pkt -> options_len = opt_len;
+
     return pkt;
 }
 
@@ -49,7 +57,8 @@ void harness(void)
 {
     
     __CPROVER_assume(_result_buf_len <= 100);
-    _result_buf = (char*) malloc(_result_buf_len);
+    _result_buf = malloc(_result_buf_len);
+    __CPROVER_assume(_result_buf != NULL);
     
     gcoap_request_memo_t memo;
 
@@ -57,5 +66,5 @@ void harness(void)
 
     sock_udp_ep_t remote;
 
-    _on_rd_init(memo, pdu, &remote)
+    _on_rd_init(&memo, pdu, &remote);
 }

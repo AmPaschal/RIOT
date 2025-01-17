@@ -11,7 +11,7 @@ LINK = $(ROOT)/sys/net/application_layer/cord/lc/cord_lc.c $(ROOT)/sys/net/appli
 H_ENTRY = _on_rd_init
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1
+H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset coap_find_option.0:17
 
 
 H_DEF = -DRIOT_VERSION=1 -DMODULE_SOCK_UDP=y -DSOCK_HAS_IPV6=y
@@ -24,6 +24,7 @@ H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
             -I$(ROOT)/boards/native/include/  \
             -I$(ROOT)/sys/net/gnrc/sock/include/ \
             -I$(ROOT)/sys/net/application_layer/gcoap/include/ \
+            -I$(ROOT)/sys/clif/include/ \
 
 # Include our special build file
 include ../Makefile.include

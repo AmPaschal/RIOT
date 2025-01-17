@@ -62,7 +62,7 @@ static int _sync(void);
 static void _on_lookup(const gcoap_request_memo_t *memo, coap_pkt_t *pdu,
                        const sock_udp_ep_t *remote);
 /* callback for _send_rd_init_req() */
-static void _on_rd_init(const gcoap_request_memo_t *memo, coap_pkt_t *pdu,
+void _on_rd_init(const gcoap_request_memo_t *memo, coap_pkt_t *pdu,
                         const sock_udp_ep_t *remote);
 static ssize_t _add_filters_to_lookup(coap_pkt_t *pkt, cord_lc_filter_t *filters);
 static int _send_rd_init_req(coap_pkt_t *pkt, const sock_udp_ep_t *remote,
