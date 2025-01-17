@@ -33,9 +33,15 @@ void harness(void)
 
     size_t len;
 
+    // Constrain size to be something reasonable:
+
+    __CPROVER_assume(len <= 500);
+
     // Allocate data of length
 
-    uint8_t data = (uint8_t*)malloc(sizeof(uint8_t) * len);
+    uint8_t* data = (uint8_t*)malloc(sizeof(uint8_t) * len);
+
+    __CPROVER_assume(data != NULL);
 
     _parse_advertise(data, len);
 }
