@@ -1,0 +1,41 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: MIT-0
+
+/**
+ * @file _parse_advertise.c
+ * @brief Implements the proof harness for _parse_advertise function.
+ */
+
+#include <stdint.h>
+#include <stdlib.h>
+
+uint32_t random_uint32_range(uint32_t a, uint32_t b) {
+
+    // Create unconstrained int
+
+    uint32_t val;
+
+    // Ensure int falls within range
+
+    __CPROVER_assume(a <= val);
+    __CPROVER_assume(val < b);
+
+    return val;
+}
+
+/**
+ * @brief Starting point for formal analysis
+ * 
+ */
+void harness(void)
+{
+    // Define unconstrained array length
+
+    size_t len;
+
+    // Allocate data of length
+
+    uint8_t data = (uint8_t*)malloc(sizeof(uint8_t) * len);
+
+    _parse_advertise(data, len);
+}
