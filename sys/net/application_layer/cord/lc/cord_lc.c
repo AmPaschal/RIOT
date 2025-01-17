@@ -72,8 +72,8 @@ static ssize_t _lookup_raw(const cord_lc_rd_t *rd, unsigned content_format,
                            unsigned lookup_type, cord_lc_filter_t *filters,
                            void *result, size_t maxlen);
 
-static char *_result_buf;
-static size_t _result_buf_len;
+char *_result_buf;
+size_t _result_buf_len;
 static uint8_t reqbuf[CONFIG_GCOAP_PDU_BUF_SIZE] = {0};
 
 static mutex_t _mutex = MUTEX_INIT;
@@ -199,7 +199,7 @@ static ssize_t _lookup_raw(const cord_lc_rd_t *rd, unsigned content_format,
     return (retval == CORD_LC_OK) ? (int)_result_buf_len : retval;
 }
 
-static void _on_rd_init(const gcoap_request_memo_t *memo, coap_pkt_t *pdu,
+void _on_rd_init(const gcoap_request_memo_t *memo, coap_pkt_t *pdu,
                        const sock_udp_ep_t *remote)
 {
     (void)remote;

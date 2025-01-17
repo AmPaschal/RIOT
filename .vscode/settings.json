@@ -8,7 +8,8 @@
     "files.associations": {
         "Makefile.*": "makefile",
         "*.mk": "makefile",
-        "*.sketch": "cpp"
+        "*.sketch": "cpp",
+        "stdlib.h": "c"
     },
     "[shellscript][c][cpp]": {
         "editor.tabSize": 4,
@@ -18,4 +19,5 @@
         "editor.tabSize": 2,
         "editor.insertSpaces": true,
     },
+    "cmake.sourceDirectory": "/home/tlelievr/RIOT/pkg/wamr",
 }
