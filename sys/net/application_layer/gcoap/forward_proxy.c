@@ -364,6 +364,13 @@ int _gcoap_forward_proxy_copy_options(coap_pkt_t *pkt,
 
     for (uint16_t i = 0; i < client_pkt->options_len; i++) {
         ssize_t optlen = coap_opt_get_next(client_pkt, &opt, &value, !i);
+
+        // Potential vulnerability fix
+        // Added this condition as coap_opt_get_next doesn't validate values decoded from the packet. This leads to an OOB read in _cep_set_req_etag
+        if (value + optlen > client_pkt->payload + client_pkt->payload_len) {
+            return -1;
+        }
+
         /* wrt to ETag option slack: we always have at least the Proxy-URI option in the client_pkt,
          * so we should hit at least once (and it's opt_num is also >= COAP_OPT_ETAG) */
         if (optlen >= 0) {

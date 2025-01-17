@@ -27,6 +27,15 @@
 #include "sys/include/uri_parser.h"
 #include "forward_proxy_internal.h"
 
+
+/*
+    Some comments
+    - You really don't know the size of each option at this point, so it's hard to know where the payload should start from
+    - When creating packets, do you assume each option only has 1 byte? You allocate single bytes for the different options.
+    - You have a source and destination packet. I can imagine the constraints on both packets will be 
+            -   different. Hence, I dont think they should be fully allocated with the same function. Maybe a base allocation function and additional constraints as needed.
+    */
+
 static coap_pkt_t* alloc_coap_pkt_t()
 {
     coap_pkt_t *pkt = malloc(sizeof(coap_pkt_t));
@@ -72,12 +81,70 @@ static coap_pkt_t* alloc_coap_pkt_t()
     return pkt;
 }
 
+static coap_pkt_t* alloc_coap_pkt() {
+
+    coap_pkt_t* pkt = malloc(sizeof(coap_pkt_t));
+    __CPROVER_assume(pkt != NULL);
+
+    uint8_t pkt_size;
+
+    __CPROVER_assume(pkt_size > sizeof(coap_hdr_t));
+
+    uint8_t *hdr = malloc(pkt_size);
+    __CPROVER_assume(hdr != NULL);
+    pkt->hdr = hdr;
+
+    uint8_t payload_offset;
+
+    __CPROVER_assume(payload_offset >= sizeof(coap_hdr_t) && payload_offset <= pkt_size);
+
+    pkt->payload = hdr + payload_offset;
+
+    pkt->payload_len = pkt_size - payload_offset;
+
+
+
+    return pkt;
+
+}
+
+static coap_pkt_t* alloc_coap_client_pkt() {
+
+    coap_pkt_t* pkt = malloc(sizeof(coap_pkt_t));
+    __CPROVER_assume(pkt != NULL);
+
+    uint8_t pkt_size;
+
+    __CPROVER_assume(pkt_size > sizeof(coap_hdr_t) + 2);
+
+    uint8_t *hdr = malloc(pkt_size);
+    __CPROVER_assume(hdr != NULL);
+    pkt->hdr = hdr;
+
+    uint8_t payload_offset;
+
+    __CPROVER_assume(payload_offset >= sizeof(coap_hdr_t) && payload_offset <= pkt_size);
+
+    pkt->payload = hdr + payload_offset;
+
+    pkt->payload_len = pkt_size - payload_offset;
+
+
+
+    return pkt;
+
+}
+
 void harness(void)
 {
 
-    coap_pkt_t *pkt = alloc_coap_pkt_t();
+    
+    coap_pkt_t *pkt = alloc_coap_pkt();
 
-    coap_pkt_t *client_pkt = alloc_coap_pkt_t();
+    coap_pkt_t *client_pkt = alloc_coap_client_pkt();
+
+    // Added this clause as client_pkt->payload is copied into pkt->payload without len checks.
+    __CPROVER_assume(client_pkt->payload_len <= pkt->payload_len - 1);
 
     client_ep_t cep; //No pointers in this so I'm not going to alloc it
 
