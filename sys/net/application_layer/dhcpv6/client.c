@@ -602,7 +602,10 @@ static bool _check_cid_opt(dhcpv6_opt_duid_t *cid)
         }
     }
 
-    return ((byteorder_ntohs(cid->len) == duid_len) &&
+    // return ((byteorder_ntohs(cid->len) == duid_len) &&
+    //         (memcmp(cid->duid, duid, duid_len) == 0));
+
+    return ((byteorder_ntohs(cid->len) == duid_len) && duid_len <= DHCPV6_CLIENT_DUID_LEN &&
             (memcmp(cid->duid, duid, duid_len) == 0));
 }
 
@@ -632,7 +635,7 @@ static void _flush_stale_replies(sock_udp_t *sock)
     }
 }
 
-static int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf)
+int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf)
 {
     dhcpv6_opt_duid_t *cid = NULL, *sid = NULL;
     dhcpv6_opt_pref_t *pref = NULL;
@@ -693,6 +696,14 @@ static int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf)
         pref_val = pref->value;
     }
     if ((server.duid_len == 0) || (pref_val > server.pref)) {
+
+        // Check to see if destination size is large enough:
+
+        if (DHCPV6_CLIENT_BUFLEN < orig_len) {
+            // Requested copy size is too big
+
+            return -1;
+        }
         memcpy(best_adv, recv_buf, orig_len);
         if (buf != NULL) {
             *buf = best_adv;
@@ -784,7 +795,7 @@ static void _update_prefix_lease(const dhcpv6_opt_iapfx_t *iapfx, pfx_lease_t *l
     }
 }
 
-static void _parse_advertise(uint8_t *adv, size_t len)
+void _parse_advertise(uint8_t *adv, size_t len)
 {
     dhcpv6_opt_smr_t *smr = NULL;
 
