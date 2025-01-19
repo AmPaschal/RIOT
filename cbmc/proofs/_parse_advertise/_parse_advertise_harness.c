@@ -23,11 +23,17 @@ uint32_t random_uint32_range(uint32_t a, uint32_t b) {
     return val;
 }
 
+// int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf) {
+//     int val;
+
+//     return val;
+// }
+
 /**
  * @brief Starting point for formal analysis
  * 
  */
-void harness(void)
+    void harness(void)
 {
     // Define unconstrained array length
 
