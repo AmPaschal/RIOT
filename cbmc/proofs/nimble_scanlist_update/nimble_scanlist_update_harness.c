@@ -7,7 +7,8 @@
 #include <stdlib.h>
 
 #include "net/ble.h"
-#include "clist.h"
+#include "list.h"
+#include "ztimer.h"
 
 static clist_node_t _pool;
 static clist_node_t _list;
@@ -51,6 +52,35 @@ typedef struct {
     uint8_t phy_pri;             /**< primary PHY used */
     uint8_t phy_sec;             /**< secondary PHY advertised */
 } nimble_scanlist_entry_t;
+
+ztimer_now_t ztimer_now(ztimer_clock_t *clock) {
+
+    // Just return unconstrained value:
+
+    ztimer_now_t val;
+
+    return val;
+}
+
+nimble_scanlist_entry_t *_find(const ble_addr_t *addr)
+{
+    bool val;
+
+    if (val) {
+        // Create unconstrained scanlist entry:
+
+        nimble_scanlist_entry_t *ent = (nimble_scanlist_entry_t *)malloc(sizeof(nimble_scanlist_entry_t));
+
+        return ent;
+    }
+
+    return NULL;
+}
+
+clist_node_t *clist_lpop(clist_node_t *list)
+{
+    return (clist_node_t*)_find(NULL);
+}
 
 void nimble_scanlist_update(uint8_t type, const ble_addr_t *addr,
                             const nimble_scanner_info_t *info,
@@ -110,5 +140,5 @@ void harness(void)
 
     // Call the function with inputs:
 
-    nimble_scanlist_update(type, &addr, &info, *ad, len);
+    nimble_scanlist_update(type, &addr, &info, ad, len);
 }
