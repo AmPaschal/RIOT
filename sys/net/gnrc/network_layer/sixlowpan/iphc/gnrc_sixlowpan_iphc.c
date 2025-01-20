@@ -1073,7 +1073,7 @@ static inline bool _compressible_nh(uint8_t nh)
     }
 }
 
-static size_t _iphc_ipv6_encode(gnrc_pktsnip_t *pkt,
+size_t _iphc_ipv6_encode(gnrc_pktsnip_t *pkt,
                                 const gnrc_netif_hdr_t *netif_hdr,
                                 gnrc_netif_t *iface,
                                 uint8_t *iphc_hdr)
