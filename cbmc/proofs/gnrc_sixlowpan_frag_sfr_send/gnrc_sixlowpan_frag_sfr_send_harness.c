@@ -30,6 +30,7 @@ void harness(void)
 {
     gnrc_pktsnip_t* pkt = malloc(sizeof(gnrc_pktsnip_t));
     __CPROVER_assume(pkt != NULL);
+    pkt -> next = NULL;
 
     size_t size;
     __CPROVER_assume(size <= 100);
@@ -39,11 +40,12 @@ void harness(void)
     pkt -> data = data;
     pkt -> size = size;
 
-    gnrc_sixlowpan_frag_fb_t ctx;
-    ctx.pkt = pkt;
+    gnrc_sixlowpan_frag_fb_t* ctx = malloc(sizeof(gnrc_sixlowpan_frag_fb_t));
+    __CPROVER_assume(ctx != NULL);
+    ctx -> pkt = pkt;
 
-    unsigned page;
+    uint8_t page;
 
-    gnrc_sixlowpan_frag_sfr_send(pkt, &ctx, page);
+    gnrc_sixlowpan_frag_sfr_send(pkt, ctx, page);
 
 }

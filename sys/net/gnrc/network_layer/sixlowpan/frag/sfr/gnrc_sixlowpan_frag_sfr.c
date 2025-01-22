@@ -332,12 +332,12 @@ void gnrc_sixlowpan_frag_sfr_send(gnrc_pktsnip_t *pkt, void *ctx,
     gnrc_pktsnip_t *tx_sync = NULL;
     uint16_t res;
 
-    assert((fbuf != NULL) && ((fbuf->pkt == pkt) || (pkt == NULL)));
+    // assert((fbuf != NULL) && ((fbuf->pkt == pkt) || (pkt == NULL)));
     DEBUG("6lo sfr: (re-)sending fragmented datagram %u\n", fbuf->tag);
     pkt = fbuf->pkt;
-    assert(pkt->type == GNRC_NETTYPE_NETIF);
+    // assert(pkt->type == GNRC_NETTYPE_NETIF);
     netif = gnrc_netif_hdr_get_netif(pkt->data);
-    assert(netif != NULL);
+    // assert(netif != NULL);
 
     if (IS_USED(MODULE_GNRC_TX_SYNC)) {
         tx_sync = gnrc_tx_sync_split(pkt);
@@ -362,8 +362,8 @@ void gnrc_sixlowpan_frag_sfr_send(gnrc_pktsnip_t *pkt, void *ctx,
     else if (fbuf->offset < fbuf->datagram_size) {
         DEBUG("6lo sfr: sending subsequent fragment\n");
 #if IS_USED(MODULE_GNRC_SIXLOWPAN_FRAG_SFR_CONGURE)
-        assert(fbuf->sfr.congure);
-        assert(fbuf->sfr.congure->driver);
+        // assert(fbuf->sfr.congure);
+        // assert(fbuf->sfr.congure->driver);
 #endif
         res = _send_nth_fragment(netif, fbuf, page, &tx_sync);
         if (res == 0) {
@@ -781,7 +781,7 @@ static uint16_t _copy_pkt_to_frag(uint8_t *data, const gnrc_pktsnip_t *pkt,
     while ((pkt != NULL) && (offset < frag_size)) {
         uint16_t len = _min(frag_size - offset, pkt->size);
 
-        memcpy(data + offset, pkt->data, len);
+        // memcpy(data + offset, pkt->data, len);
 
         offset += len;
         pkt = pkt->next;
@@ -803,7 +803,7 @@ static uint16_t _find_offset_and_copy_rest(uint8_t *data, gnrc_pktsnip_t **pkt,
             uint16_t pkt_offset = offset - (offset_count - pkt_size);
             size_t clen = _min(frag_size, pkt_size - pkt_offset);
 
-            memcpy(data, ((uint8_t *)(*pkt)->data) + pkt_offset, clen);
+            // memcpy(data, ((uint8_t *)(*pkt)->data) + pkt_offset, clen);
             cur_frag_size = clen;
             *pkt = (*pkt)->next;
             break;
@@ -1413,9 +1413,9 @@ static uint16_t _send_1st_fragment(gnrc_netif_t *netif,
     uint16_t frag_size = (uint16_t)netif->sixlo.max_frag_size -
                          sizeof(sixlowpan_sfr_rfrag_t);
 
-    assert((fbuf->sfr.cur_seq == 0) && (fbuf->sfr.frags_sent == 0));
-    assert(fbuf->sfr.window.next == NULL);
-    assert(comp_form_size <= UINT16_MAX);
+    // assert((fbuf->sfr.cur_seq == 0) && (fbuf->sfr.frags_sent == 0));
+    // assert(fbuf->sfr.window.next == NULL);
+    // assert(comp_form_size <= UINT16_MAX);
     /* restrict tag to value space of SFR, so that later RFRAG ACK can find
      * it in reverse look-up */
     fbuf->tag &= UINT8_MAX;

@@ -8,7 +8,16 @@
     "files.associations": {
         "Makefile.*": "makefile",
         "*.mk": "makefile",
-        "*.sketch": "cpp"
+        "*.sketch": "cpp",
+        "array": "c",
+        "string": "c",
+        "string_view": "c",
+        "cassert": "c",
+        "assert.h": "c",
+        "hash_map": "c",
+        "hash_set": "c",
+        "initializer_list": "c",
+        "utility": "c"
     },
     "[shellscript][c][cpp]": {
         "editor.tabSize": 4,
