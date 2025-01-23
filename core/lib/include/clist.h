@@ -129,7 +129,7 @@ static inline bool clist_is_empty(const clist_node_t *list)
  * @param[in,out]   new_node    Node which gets inserted.
  *                              Must not be NULL.
  */
-static inline void clist_rpush(clist_node_t *list, clist_node_t *new_node)
+inline void clist_rpush(clist_node_t *list, clist_node_t *new_node)
 {
     if (list->next) {
         new_node->next = list->next->next;
@@ -170,7 +170,7 @@ static inline void clist_lpush(clist_node_t *list, clist_node_t *new_node)
  * @param[in,out]   list        Pointer to the *list* to remove first element
  *                              from.
  */
-static inline clist_node_t *clist_lpop(clist_node_t *list)
+inline clist_node_t *clist_lpop(clist_node_t *list)
 {
     if (list->next) {
         clist_node_t *first = list->next->next;

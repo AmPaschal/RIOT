@@ -84,7 +84,7 @@ static char addr_str[IPV6_ADDR_MAX_STR_LEN];
 static char addr_str[GNRC_NETIF_HDR_L2ADDR_PRINT_LEN];
 #endif  /* MODULE_GNRC_IPV6_NIB */
 
-static evtimer_msg_t _arq_timer;
+evtimer_msg_t _arq_timer;
 static xtimer_t _if_gap_timer = { 0 };
 static msg_t _if_gap_msg = { .type = GNRC_SIXLOWPAN_FRAG_SFR_INTER_FRAG_GAP_MSG };
 static uint32_t _last_frame_sent = 0U;
@@ -181,7 +181,7 @@ uint16_t _send_nth_fragment(gnrc_netif_t *netif,
  * @return  true, if abort pseudo fragment was sent.
  * @return  false, if abort pseudo fragment was unable to be sent.
  */
-static bool _send_abort_frag(gnrc_pktsnip_t *pkt,
+bool _send_abort_frag(gnrc_pktsnip_t *pkt,
                              gnrc_sixlowpan_frag_fb_t *fbuf,
                              bool req_ack, unsigned page);
 
@@ -332,12 +332,16 @@ void gnrc_sixlowpan_frag_sfr_send(gnrc_pktsnip_t *pkt, void *ctx,
     gnrc_pktsnip_t *tx_sync = NULL;
     uint16_t res;
 
-    // assert((fbuf != NULL) && ((fbuf->pkt == pkt) || (pkt == NULL)));
+    assert((fbuf != NULL) && ((fbuf->pkt == pkt) || (pkt == NULL)));
     DEBUG("6lo sfr: (re-)sending fragmented datagram %u\n", fbuf->tag);
     pkt = fbuf->pkt;
-    // assert(pkt->type == GNRC_NETTYPE_NETIF);
+    assert(pkt->type == GNRC_NETTYPE_NETIF);
+
+    //******* POTENTIAL VULNERABILITY **********/
+    //This might have an OOB read is pkt->data is smaller than gnrc_netif_hdr_t
+    //Unsure where this might be checked
     netif = gnrc_netif_hdr_get_netif(pkt->data);
-    // assert(netif != NULL);
+    assert(netif != NULL);
 
     if (IS_USED(MODULE_GNRC_TX_SYNC)) {
         tx_sync = gnrc_tx_sync_split(pkt);
@@ -362,8 +366,8 @@ void gnrc_sixlowpan_frag_sfr_send(gnrc_pktsnip_t *pkt, void *ctx,
     else if (fbuf->offset < fbuf->datagram_size) {
         DEBUG("6lo sfr: sending subsequent fragment\n");
 #if IS_USED(MODULE_GNRC_SIXLOWPAN_FRAG_SFR_CONGURE)
-        // assert(fbuf->sfr.congure);
-        // assert(fbuf->sfr.congure->driver);
+        assert(fbuf->sfr.congure);
+        assert(fbuf->sfr.congure->driver);
 #endif
         res = _send_nth_fragment(netif, fbuf, page, &tx_sync);
         if (res == 0) {
@@ -394,13 +398,23 @@ void gnrc_sixlowpan_frag_sfr_send(gnrc_pktsnip_t *pkt, void *ctx,
         goto error;
     }
     /* check if last fragment sent requested an ACK */
+
     _frag_desc_t *frag_desc = (_frag_desc_t *)clist_rpeek(&fbuf->sfr.window);
     DEBUG("6lo sfr: last sent fragment (tag: %u, X: %i, seq: %u, "
           "frag_size: %u, offset: %u)\n",
           (uint8_t)fbuf->tag, _frag_ack_req(frag_desc),
           _frag_seq(frag_desc), _frag_size(frag_desc),
           frag_desc->offset);
-    if (_frag_ack_req(frag_desc)) {
+
+    //*******POTENTIAL VULNERABILITY ********/
+    // If this frag_desc is NULL, then _frag_ack_req errors
+    // I'm unsure if this is a vulnerability as there are some assert statements in
+    // _send_nth_fragment that I think can prevent this, but we stubbed that function out
+    // and putting the assertions back into the stub doesn't do anything
+    // It might also just not be realistic for frag_desc to be NULL
+    // Added a check for the sake of getting rid of the errors
+
+    if (frag_desc != NULL && _frag_ack_req(frag_desc)) {
         _sched_arq_timeout(fbuf, fbuf->sfr.arq_timeout);
     }
 
@@ -1413,9 +1427,9 @@ uint16_t _send_1st_fragment(gnrc_netif_t *netif,
     uint16_t frag_size = (uint16_t)netif->sixlo.max_frag_size -
                          sizeof(sixlowpan_sfr_rfrag_t);
 
-    // assert((fbuf->sfr.cur_seq == 0) && (fbuf->sfr.frags_sent == 0));
-    // assert(fbuf->sfr.window.next == NULL);
-    // assert(comp_form_size <= UINT16_MAX);
+    assert((fbuf->sfr.cur_seq == 0) && (fbuf->sfr.frags_sent == 0));
+    assert(fbuf->sfr.window.next == NULL);
+    assert(comp_form_size <= UINT16_MAX);
     /* restrict tag to value space of SFR, so that later RFRAG ACK can find
      * it in reverse look-up */
     fbuf->tag &= UINT8_MAX;
@@ -1511,7 +1525,7 @@ uint16_t _send_nth_fragment(gnrc_netif_t *netif,
     return local_offset;
 }
 
-static bool _send_abort_frag(gnrc_pktsnip_t *pkt,
+bool _send_abort_frag(gnrc_pktsnip_t *pkt,
                              gnrc_sixlowpan_frag_fb_t *fbuf,
                              bool req_ack, unsigned page)
 {

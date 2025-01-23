@@ -11,10 +11,10 @@ LINK = $(ROOT)/sys/net/gnrc/network_layer/sixlowpan/frag/sfr/gnrc_sixlowpan_frag
 H_ENTRY = gnrc_sixlowpan_frag_sfr_send
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1
+H_CBMCFLAGS = --nondet-static --unwind 1s
 
 
-H_DEF = -DRIOT_VERSION=1 -DMODULE_SOCK_UDP=y -DSOCK_HAS_IPV6=y -DMODULE_GNRC_SIXLOWPAN_FRAG_SFR=1 -DMODULE_GNRC_NETTYPE_SIXLOWPAN=1 -DMODULE_GNRC_NETIF_6LO=1
+H_DEF = -DRIOT_VERSION=1 -DMODULE_SOCK_UDP=y -DSOCK_HAS_IPV6=y -DMODULE_GNRC_SIXLOWPAN_FRAG_SFR=1 -DMODULE_GNRC_NETTYPE_SIXLOWPAN=1 -DMODULE_GNRC_NETIF_6LO=1 -DMODULE_GNRC_TX_SYNC=1
 
 H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
             -I$(ROOT)/core/lib/include/  \
@@ -22,6 +22,7 @@ H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
             -I$(ROOT)/cpu/native/include/  \
             -I$(ROOT)/drivers/include/  \
             -I$(ROOT)/boards/native/include/  \
+            -I$(ROOT)/sys/net/gnrc/netif
             
 # Include our special build file
 include ../Makefile.include
