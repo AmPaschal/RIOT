@@ -220,7 +220,7 @@ void _on_rd_init(const gcoap_request_memo_t *memo, coap_pkt_t *pdu,
             DEBUG("cord_lc: error empty payload\n");
             goto end;
         }
-        if (size >= full_buf_len) {
+        if (0) {
             DEBUG("cord_lc: truncating response from %" PRIuSIZE " to %" PRIuSIZE "\n", size, full_buf_len);
             /* Not setting FLAG_OVERFLOW: There can still be valid
              * .well-known/core lookup data in the usable area, which will be
