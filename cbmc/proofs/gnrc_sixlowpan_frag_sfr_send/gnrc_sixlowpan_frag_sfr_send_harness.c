@@ -22,11 +22,49 @@
  */
 
 #include <stdlib.h>
+
+#include "irq.h"
+#include "kernel_defines.h"
+#ifdef MODULE_GNRC_IPV6_NIB
+#include "net/ipv6/addr.h"
+#endif
+#ifdef MODULE_GNRC_IPV6
+#include "net/ipv6/hdr.h"
+#endif
+#include "net/gnrc/neterr.h"
+#include "net/gnrc/netif/internal.h"
+#include "net/gnrc/netif/pktq.h"
 #include "net/gnrc/pkt.h"
+#include "net/gnrc/sixlowpan.h"
+#include "net/gnrc/sixlowpan/config.h"
 #include "net/gnrc/sixlowpan/frag/fb.h"
+#include "net/gnrc/sixlowpan/frag/rb.h"
+#include "net/gnrc/sixlowpan/frag/vrb.h"
+#include "net/gnrc/tx_sync.h"
+#include "net/sixlowpan/sfr.h"
+#include "thread.h"
+#include "unaligned.h"
+#include "xtimer.h"
 
+#include "net/gnrc/sixlowpan/frag/sfr.h"
+#include "net/gnrc/sixlowpan/frag/sfr/congure.h"
 
-void harness(void)
+uint16_t _send_1st_fragment(gnrc_netif_t *netif,
+                                   gnrc_sixlowpan_frag_fb_t *fbuf,
+                                   unsigned page, gnrc_pktsnip_t **tx_sync) {
+    uint16_t res;
+    return res;   
+}
+
+uint16_t _send_nth_fragment(gnrc_netif_t *netif,
+                                   gnrc_sixlowpan_frag_fb_t *fbuf,
+                                   unsigned page,
+                                   gnrc_pktsnip_t **tx_sync) {
+    uint16_t res;
+    return res;   
+}
+
+void harness(void) 
 {
     gnrc_pktsnip_t* pkt = malloc(sizeof(gnrc_pktsnip_t));
     __CPROVER_assume(pkt != NULL);

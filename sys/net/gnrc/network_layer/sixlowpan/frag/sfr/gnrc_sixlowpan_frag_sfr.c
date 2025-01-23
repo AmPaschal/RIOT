@@ -149,7 +149,7 @@ static void _clean_up_fbuf(gnrc_sixlowpan_frag_fb_t *fbuf, int error);
  *
  * @return  Size of the fragment
  */
-static uint16_t _send_1st_fragment(gnrc_netif_t *netif,
+uint16_t _send_1st_fragment(gnrc_netif_t *netif,
                                    gnrc_sixlowpan_frag_fb_t *fbuf,
                                    unsigned page,
                                    gnrc_pktsnip_t **tx_sync);
@@ -165,7 +165,7 @@ static uint16_t _send_1st_fragment(gnrc_netif_t *netif,
  *
  * @return  Size of the fragment
  */
-static uint16_t _send_nth_fragment(gnrc_netif_t *netif,
+uint16_t _send_nth_fragment(gnrc_netif_t *netif,
                                    gnrc_sixlowpan_frag_fb_t *fbuf,
                                    unsigned page,
                                    gnrc_pktsnip_t **tx_sync);
@@ -1402,7 +1402,7 @@ static void _clean_up_fbuf(gnrc_sixlowpan_frag_fb_t *fbuf, int error)
     fbuf->pkt = NULL;
 }
 
-static uint16_t _send_1st_fragment(gnrc_netif_t *netif,
+uint16_t _send_1st_fragment(gnrc_netif_t *netif,
                                    gnrc_sixlowpan_frag_fb_t *fbuf,
                                    unsigned page, gnrc_pktsnip_t **tx_sync)
 {
@@ -1462,7 +1462,7 @@ static uint16_t _send_1st_fragment(gnrc_netif_t *netif,
     return frag_size;
 }
 
-static uint16_t _send_nth_fragment(gnrc_netif_t *netif,
+uint16_t _send_nth_fragment(gnrc_netif_t *netif,
                                    gnrc_sixlowpan_frag_fb_t *fbuf,
                                    unsigned page,
                                    gnrc_pktsnip_t **tx_sync)
