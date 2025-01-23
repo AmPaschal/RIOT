@@ -309,7 +309,7 @@ static inline int mutex_trylock(mutex_t *mutex)
  *
  * @post    The mutex @p is locked and held by the calling thread.
  */
-static inline void mutex_lock(mutex_t *mutex)
+inline void mutex_lock(mutex_t *mutex)
 {
 #if (MAXTHREADS > 1)
     mutex_lock_internal(mutex, true);

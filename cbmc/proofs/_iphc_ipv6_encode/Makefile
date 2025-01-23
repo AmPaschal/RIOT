@@ -11,7 +11,7 @@ LINK = $(ROOT)/sys/net/gnrc/network_layer/sixlowpan/iphc/gnrc_sixlowpan_iphc.c $
 H_ENTRY = _iphc_ipv6_encode
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset memcmp.0:20 --unwindset bitarithm_clzb.0:10 --unwindset gnrc_sixlowpan_ctx_lookup_addr.0:17 --unwindset ipv6_addr_match_prefix.0:17
+H_CBMCFLAGS = --nondet-static --malloc-may-fail --unwind 1 --unwindset memcmp.0:20 --unwindset bitarithm_clzb.0:10 --unwindset gnrc_sixlowpan_ctx_lookup_addr.0:17 --unwindset ipv6_addr_match_prefix.0:17
 
 
 H_DEF = -DMODULE_GNRC_IPV6=1 -DGNRC_NETTYPE_IPV6=1 -DGNRC_NETTYPE_SIXLOWPAN=1

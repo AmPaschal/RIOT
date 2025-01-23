@@ -5,6 +5,9 @@
 
 #include "net/gnrc.h"
 
+// Do nothing when locking a mutex
+inline void mutex_lock(mutex_t *mutex) {}
+
 /**
  * @brief Starting point for formal analysis
  * 
@@ -18,6 +21,24 @@ void harness(void)
     gnrc_netif_hdr_t netif_hdr;
     gnrc_netif_t iface;
 
+    // Create a next value for the packetsnip:
+
+    pkt.next = (gnrc_pktsnip_t *)malloc(sizeof(gnrc_pktsnip_t));
+
+    // Determine if next is NULL:
+
+    if (pkt.next != NULL) {
+        // Allocate a IPv6 header in the data:
+
+        pkt.next->data = malloc(sizeof(ipv6_hdr_t));
+
+        // Allocated data will NOT be null:
+
+        __CPROVER_assume(pkt.next->data != NULL);
+
+        pkt.next->size = sizeof(ipv6_hdr_t);
+    }
+
     // Allocate some data
     // (Not sure what size to use yet)
 
@@ -26,6 +47,10 @@ void harness(void)
     __CPROVER_assume(len >= 100);
 
     uint8_t *data = (uint8_t*)malloc(sizeof(uint8_t) * len);
+
+    // Data will NOT be NULL:
+
+    __CPROVER_assume(data != NULL);
 
     size_t size = _iphc_ipv6_encode(&pkt, &netif_hdr, &iface, data);
 }
