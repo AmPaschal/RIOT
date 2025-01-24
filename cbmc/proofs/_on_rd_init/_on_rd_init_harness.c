@@ -62,7 +62,7 @@ void harness(void)
 
     sock_udp_ep_t remote;
 
-    __CPROVER_assume(_result_buf_len <= 100 && _result_buf_len >= pdu->payload_len);
+    __CPROVER_assume(_result_buf_len <= 100);
     _result_buf = malloc(_result_buf_len);
     __CPROVER_assume(_result_buf != NULL);
 
