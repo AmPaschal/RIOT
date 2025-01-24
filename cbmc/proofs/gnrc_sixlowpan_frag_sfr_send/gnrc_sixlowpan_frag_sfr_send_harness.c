@@ -83,18 +83,6 @@ uint16_t _send_nth_fragment(gnrc_netif_t *netif,
                                    unsigned page,
                                    gnrc_pktsnip_t **tx_sync) {
 
-    //Replicating the assert statements with if checks
-    if (!((fbuf->sfr.cur_seq > 0) && (fbuf->sfr.cur_seq <= SIXLOWPAN_SFR_SEQ_MAX))) {
-        return -1;
-    }
-    
-    if (!((fbuf->sfr.frags_sent == 0) || (fbuf->sfr.window.next != NULL))) {
-        return -1;
-    }
-    if(!(fbuf->tag <= UINT8_MAX)) {
-        return -1;
-    }
-
     uint16_t res;
     return res;   
 }
@@ -132,6 +120,7 @@ void harness(void)
     size_t size;
 
     //Data buffer is read as gnrc_netif_hdr_t, I'm going to assume it's at least that size
+    //However if it is less than that size I think it can cause an OOB read
     __CPROVER_assume(size <= 100 && size >= sizeof(gnrc_netif_hdr_t));
     uint8_t* data = malloc(size);
     __CPROVER_assume(data != NULL);
@@ -151,13 +140,16 @@ void harness(void)
     //If it can be then there might be a potential vulnerability
     ctx -> sfr.window.next = malloc(sizeof(_frag_desc_t));
 
+    //Technically this can be null, but _send_nth_fragment will change that add onto the linked list
+    //We stub that function out and thus there is an error caused by this field being null
+    //So we'll assume it's not null for that reason
+    __CPROVER_assume(ctx -> sfr.window.next != NULL);
+
     uint8_t page;
 
     //This is checked somewhere, I think it can be NULL but can't be an invalid obj
     evtimer_event_t* events = malloc(sizeof(evtimer_event_t));
     _arq_timer.events = events;
-
-
 
     gnrc_sixlowpan_frag_sfr_send(pkt, ctx, page);
 

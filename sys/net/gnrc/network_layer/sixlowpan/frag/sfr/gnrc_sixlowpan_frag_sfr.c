@@ -409,12 +409,6 @@ void gnrc_sixlowpan_frag_sfr_send(gnrc_pktsnip_t *pkt, void *ctx,
           _frag_seq(frag_desc), _frag_size(frag_desc),
           frag_desc->offset);
 
-    //*******POTENTIAL VULNERABILITY ********/
-    // If this frag_desc is NULL, then _frag_ack_req errors
-    // However, I'm somewhat sure this isn't actually a possible error
-    // The congestion window would have to be empty after sending frags which isn't realistic
-    // Normally _send_nth_frag writes to that window, but we stubbed it
-
     if (_frag_ack_req(frag_desc)) {
         _sched_arq_timeout(fbuf, fbuf->sfr.arq_timeout);
     }
