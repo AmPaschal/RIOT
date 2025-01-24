@@ -14,7 +14,7 @@ H_ENTRY = _iphc_ipv6_encode
 H_CBMCFLAGS = --nondet-static --malloc-may-fail --unwind 1 --unwindset memcmp.0:20 --unwindset bitarithm_clzb.0:10 --unwindset gnrc_sixlowpan_ctx_lookup_addr.0:17 --unwindset ipv6_addr_match_prefix.0:17
 
 
-H_DEF = -DMODULE_GNRC_IPV6=1 -DGNRC_NETTYPE_IPV6=1 -DGNRC_NETTYPE_SIXLOWPAN=1
+H_DEF = -DMODULE_GNRC_IPV6=1 -DGNRC_NETTYPE_IPV6=1 -DGNRC_NETTYPE_SIXLOWPAN=1 -DMODULE_GNRC_NETIF_IPV6=1
 
 H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
             -I$(ROOT)/core/lib/include/  \
