@@ -83,6 +83,18 @@ uint16_t _send_nth_fragment(gnrc_netif_t *netif,
                                    unsigned page,
                                    gnrc_pktsnip_t **tx_sync) {
 
+    //Replicating the assert statements with if checks
+    if (!((fbuf->sfr.cur_seq > 0) && (fbuf->sfr.cur_seq <= SIXLOWPAN_SFR_SEQ_MAX))) {
+        return -1;
+    }
+    
+    if (!((fbuf->sfr.frags_sent == 0) || (fbuf->sfr.window.next != NULL))) {
+        return -1;
+    }
+    if(!(fbuf->tag <= UINT8_MAX)) {
+        return -1;
+    }
+
     uint16_t res;
     return res;   
 }

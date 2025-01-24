@@ -377,6 +377,9 @@ void gnrc_sixlowpan_frag_sfr_send(gnrc_pktsnip_t *pkt, void *ctx,
             error_no = ENOMEM;
             goto error;
         }
+        else if (res == -1) { //This is for the replicated assert statements
+            return;
+        }
     }
     else {
         /* offset is greater or equal to datagram size
@@ -408,13 +411,11 @@ void gnrc_sixlowpan_frag_sfr_send(gnrc_pktsnip_t *pkt, void *ctx,
 
     //*******POTENTIAL VULNERABILITY ********/
     // If this frag_desc is NULL, then _frag_ack_req errors
-    // I'm unsure if this is a vulnerability as there are some assert statements in
-    // _send_nth_fragment that I think can prevent this, but we stubbed that function out
-    // and putting the assertions back into the stub doesn't do anything
-    // It might also just not be realistic for frag_desc to be NULL
-    // Added a check for the sake of getting rid of the errors
+    // However, I'm somewhat sure this isn't actually a possible error
+    // The congestion window would have to be empty after sending frags which isn't realistic
+    // Normally _send_nth_frag writes to that window, but we stubbed it
 
-    if (frag_desc != NULL && _frag_ack_req(frag_desc)) {
+    if (_frag_ack_req(frag_desc)) {
         _sched_arq_timeout(fbuf, fbuf->sfr.arq_timeout);
     }
 
