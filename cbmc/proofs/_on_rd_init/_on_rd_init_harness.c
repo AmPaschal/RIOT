@@ -56,15 +56,15 @@ static coap_pkt_t* alloc_coap_pkt() {
 void harness(void)
 {
     
-    __CPROVER_assume(_result_buf_len <= 100);
-    _result_buf = malloc(_result_buf_len);
-    __CPROVER_assume(_result_buf != NULL);
-    
     gcoap_request_memo_t memo;
 
     coap_pkt_t *pdu = alloc_coap_pkt();
 
     sock_udp_ep_t remote;
+
+    __CPROVER_assume(_result_buf_len <= 100 && _result_buf_len >= pdu->payload_len);
+    _result_buf = malloc(_result_buf_len);
+    __CPROVER_assume(_result_buf != NULL);
 
     _on_rd_init(&memo, pdu, &remote);
 }
