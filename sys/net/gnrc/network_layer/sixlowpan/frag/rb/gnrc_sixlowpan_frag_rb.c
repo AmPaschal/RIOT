@@ -235,7 +235,7 @@ static size_t _6lo_frag_size(gnrc_pktsnip_t *pkt, size_t offset, uint8_t *data)
 {
     size_t frag_size;
 
-    if (offset == 0) {
+    if (sixlowpan_frag_1_is(pkt->data)) {
         if (pkt->size < sizeof(sixlowpan_frag_t)) {
             return 0;
         }
@@ -385,7 +385,7 @@ static int _rbuf_add(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
 #if IS_USED(MODULE_GNRC_SIXLOWPAN_FRAG_SFR)
     offset += entry.rbuf->offset_diff;
 #endif  /* IS_USED(MODULE_GNRC_SIXLOWPAN_FRAG_SFR) */
-    if ((offset + frag_size) > entry.super->datagram_size) {
+    if (offset > entry.super->datagram_size || (offset + frag_size) > entry.super->datagram_size) {
         DEBUG("6lo rfrag: fragment too big for resulting datagram, discarding datagram\n");
         gnrc_pktbuf_release(entry.rbuf->pkt);
         gnrc_pktbuf_release(pkt);
