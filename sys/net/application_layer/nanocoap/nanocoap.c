@@ -322,6 +322,11 @@ static unsigned _get_content_format(coap_pkt_t *pkt, unsigned int opt_num)
         int option_len = 0;
         uint8_t *pkt_pos = _parse_option(pkt, opt_pos, &delta, &option_len);
 
+        if (pkt_pos == NULL || pkt_pos + option_len >= pkt->payload) {
+            /* An error occurred. pkt_pos or option_len is invalid. Return an error */
+            return -EINVAL;
+        }
+
         if (option_len == 0) {
             content_type = 0;
         } else if (option_len == 1) {
