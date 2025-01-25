@@ -366,6 +366,12 @@ static int _gcoap_forward_proxy_copy_options(coap_pkt_t *pkt,
         ssize_t optlen = coap_opt_get_next(client_pkt, &opt, &value, !i);
         /* wrt to ETag option slack: we always have at least the Proxy-URI option in the client_pkt,
          * so we should hit at least once (and it's opt_num is also >= COAP_OPT_ETAG) */
+
+        /* Validation that the computed value pointer and optlen are within valid memory */
+        if (value + optlen > client_pkt->payload + client_pkt->payload_len) {
+            return -EINVAL;
+        }
+
         if (optlen >= 0) {
             if (IS_USED(MODULE_NANOCOAP_CACHE) && !etag_added && (opt.opt_num >= COAP_OPT_ETAG)) {
                 static const uint8_t tmp[COAP_ETAG_LENGTH_MAX] = { 0 };
@@ -406,6 +412,11 @@ static int _gcoap_forward_proxy_copy_options(coap_pkt_t *pkt,
                                   (client_pkt->payload_len ?
                                    COAP_OPT_FINISH_PAYLOAD :
                                    COAP_OPT_FINISH_NONE));
+
+    /* Valdiation that the pkt->payload has enough buffer for the incoming data */
+    if (client_pkt->payload_len > pkt->payload_len) {
+        return -EINVAL;
+    }
 
     /* copy payload from client_pkt to pkt */
     memcpy(pkt->payload, client_pkt->payload, client_pkt->payload_len);
