@@ -11,4 +11,20 @@
  */
 void harness(void)
 {
+
+    // Unconstrained struts:
+
+    ipv6_hdr_t ipv6;
+
+    // Allocate two RPL SRH structs:
+
+    gnrc_rpl_srh_t *rh = (gnrc_rpl_srh_t *)malloc(2 * sizeof(gnrc_rpl_srh_t));
+
+    // Ensure we can't be NULL:
+
+    __CPROVER_assume(rh != NULL);
+
+    char *point;
+
+    int res = gnrc_rpl_srh_process(&ipv6, rh, &point);
 }

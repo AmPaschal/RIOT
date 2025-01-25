@@ -11,8 +11,7 @@ LINK = $(ROOT)/sys/net/gnrc/routing/rpl/srh/gnrc_rpl_srh.c
 H_ENTRY = gnrc_rpl_srh_process
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1 
-
+H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset _contains_multiple_of_my_addr.1:50
 
 H_DEF = 
 
