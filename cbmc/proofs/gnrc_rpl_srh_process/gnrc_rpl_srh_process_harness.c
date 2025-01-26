@@ -25,8 +25,7 @@ void harness(void)
     ipv6_hdr_t ipv6;
 
     // Allocate input headers
-    // First is gnrc_rpl_srh_t header (7)
-    // NExt is address to utilize (16)
+    // The function can read a LOT of data, so we allocate a good amount
 
     gnrc_rpl_srh_t *rh = (gnrc_rpl_srh_t *)malloc(sizeof(gnrc_rpl_srh_t) + 1000);
 
