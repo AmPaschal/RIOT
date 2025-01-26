@@ -4,6 +4,14 @@
  */
 
 #include "net/gnrc/rpl/srh.h"
+#include "net/gnrc/netif.h"
+
+gnrc_netif_t *gnrc_netif_get_by_ipv6_addr(const ipv6_addr_t *addr)
+{
+    gnrc_netif_t *netif = (gnrc_netif_t *)malloc(sizeof(gnrc_netif_t));
+
+    return netif;
+}
 
 /**
  * @brief Starting point for formal analysis
@@ -16,9 +24,11 @@ void harness(void)
 
     ipv6_hdr_t ipv6;
 
-    // Allocate two RPL SRH structs:
+    // Allocate input headers
+    // First is gnrc_rpl_srh_t header (7)
+    // NExt is address to utilize (16)
 
-    gnrc_rpl_srh_t *rh = (gnrc_rpl_srh_t *)malloc(2 * sizeof(gnrc_rpl_srh_t));
+    gnrc_rpl_srh_t *rh = (gnrc_rpl_srh_t *)malloc(sizeof(gnrc_rpl_srh_t) + 1000);
 
     // Ensure we can't be NULL:
 

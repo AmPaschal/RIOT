@@ -13,7 +13,7 @@ H_ENTRY = gnrc_rpl_srh_process
 # Extra CBMC flags to be passed during CBMC analysis
 H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset _contains_multiple_of_my_addr.1:50
 
-H_DEF = 
+H_DEF = -DMODULE_GNRC_NETIF_IPV6=1 -DMODULE_GNRC_NETTYPE_IPV6=1
 
 H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
             -I$(ROOT)/core/lib/include/  \
