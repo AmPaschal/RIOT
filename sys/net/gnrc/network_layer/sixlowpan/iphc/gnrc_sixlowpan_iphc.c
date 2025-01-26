@@ -154,7 +154,7 @@ static inline bool _context_overlaps_iid(gnrc_sixlowpan_ctx_t *ctx,
              (iid->uint8[(ctx->prefix_len / 8) - 8] & byte_mask[ctx->prefix_len % 8])));
 }
 
-static gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
+gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
                                     const gnrc_netif_hdr_t *netif_hdr,
                                     gnrc_netif_t *netif);
 
@@ -1614,7 +1614,7 @@ static inline bool _compressible(gnrc_pktsnip_t *hdr)
     }
 }
 
-static gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
+gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
                                     const gnrc_netif_hdr_t *netif_hdr,
                                     gnrc_netif_t *iface)
 {
