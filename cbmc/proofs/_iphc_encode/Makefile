@@ -5,7 +5,7 @@ ROOT = ../../..
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/sys/net/gnrc/network_layer/sixlowpan/iphc/gnrc_sixlowpan_iphc.c $(ROOT)/sys/net/gnrc/pktbuf_malloc/gnrc_pktbuf_malloc.c $(ROOT)/sys/net/gnrc/pktbuf/gnrc_pktbuf.c $(ROOT)/sys/net/network_layer/ipv6/addr/ipv6_addr.c $(ROOT)/sys/net/gnrc/network_layer/sixlowpan/ctx/gnrc_sixlowpan_ctx.c
+LINK = $(ROOT)/sys/net/gnrc/network_layer/sixlowpan/iphc/gnrc_sixlowpan_iphc.c $(ROOT)/sys/net/gnrc/pktbuf_malloc/gnrc_pktbuf_malloc.c $(ROOT)/sys/net/gnrc/pktbuf/gnrc_pktbuf.c $(ROOT)/sys/net/gnrc/network_layer/sixlowpan/ctx/gnrc_sixlowpan_ctx.c
 
 # Harness to utilize, omit the extension!
 H_ENTRY = _iphc_encode

@@ -89,8 +89,6 @@ void harness(void)
 
             __CPROVER_assume(npkt->next != NULL);
 
-            size_t nsize = npkt->next->size;
-
             // Model some input data:
 
             __CPROVER_assume(npkt->next->size <= 50);

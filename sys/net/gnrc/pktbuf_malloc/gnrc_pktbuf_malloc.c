@@ -227,9 +227,6 @@ gnrc_pktsnip_t *gnrc_pktbuf_start_write(gnrc_pktsnip_t *pkt)
     if (pkt->users > 1) {
         gnrc_pktsnip_t *new;
 
-        uint8_t *data = pkt->data;
-        size_t size = pkt->size;
-
         new = _create_snip(pkt->next, pkt->data, pkt->size, pkt->type);
         if (new != NULL) {
             pkt->users--;
