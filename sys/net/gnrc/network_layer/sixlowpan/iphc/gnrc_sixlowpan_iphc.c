@@ -1055,7 +1055,7 @@ static int _forward_frag(gnrc_pktsnip_t *pkt, gnrc_pktsnip_t *frag_hdr,
 }
 #endif  /* MODULE_GNRC_SIXLOWPAN_FRAG_VRB */
 
-static inline bool _compressible_nh(uint8_t nh)
+bool _compressible_nh(uint8_t nh)
 {
     switch (nh) {
 #ifdef MODULE_GNRC_SIXLOWPAN_IPHC_NHC
@@ -1651,10 +1651,28 @@ gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
     /* there should be at least one compressible header in `pkt`, otherwise this
      * function should not be called */
     assert(dispatch_size > 0);
+
+    // NEW VULNERABILITY
+    // Dispatch may overflow due to huge sizes,
+    // or it may just not be given a very large value
+
+    if (dispatch_size < sizeof(ipv6_hdr_t)) {
+        DEBUG("6lo iphc: decoded dispatch size too small\n");
+        return NULL;
+    }
+
     dispatch = gnrc_pktbuf_add(NULL, NULL, dispatch_size + 1,
                                GNRC_NETTYPE_SIXLOWPAN);
 
     if (dispatch == NULL) {
+        DEBUG("6lo iphc: error allocating dispatch space\n");
+        return NULL;
+    }
+
+    // NEW VULNERABILITY
+    // dispatch data may be NULL, does not check properly:
+
+    if (dispatch->data == NULL) {
         DEBUG("6lo iphc: error allocating dispatch space\n");
         return NULL;
     }
