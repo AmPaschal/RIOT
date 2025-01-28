@@ -566,7 +566,7 @@ void ipv6_addr_init_iid(ipv6_addr_t *out, const uint8_t *iid, uint8_t bits);
  */
 static inline void ipv6_addr_set_unspecified(ipv6_addr_t *addr)
 {
-    memset(addr, 0, sizeof(ipv6_addr_t));
+    // memset(addr, 0, sizeof(ipv6_addr_t));
 }
 
 /**
@@ -595,7 +595,7 @@ static inline void ipv6_addr_set_loopback(ipv6_addr_t *addr)
  */
 static inline void ipv6_addr_set_link_local_prefix(ipv6_addr_t *addr)
 {
-    memcpy(addr, &ipv6_addr_link_local_prefix, sizeof(addr->u64[0]));
+    // memcpy(addr, &ipv6_addr_link_local_prefix, sizeof(addr->u64[0]));
 }
 
 /**

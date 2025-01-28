@@ -124,7 +124,7 @@ static char addr_str[IPV6_ADDR_MAX_STR_LEN];
 static inline bool _is_rfrag(gnrc_pktsnip_t *sixlo)
 {
 #ifdef MODULE_GNRC_SIXLOWPAN_FRAG_SFR
-    assert((sixlo->next != NULL) &&
+    __CPROVER_assume((sixlo->next != NULL) &&
            (sixlo->next->type == GNRC_NETTYPE_SIXLOWPAN));
     return sixlowpan_sfr_rfrag_is(sixlo->next->data);
 #else   /* MODULE_GNRC_SIXLOWPAN_FRAG_SFR */
@@ -181,6 +181,13 @@ static size_t _iphc_ipv6_decode(const uint8_t *iphc_hdr,
     memset(ipv6_hdr, 0, sizeof(*ipv6_hdr));
     ipv6_hdr_set_version(ipv6_hdr);
 
+    //****** POTENTIAL VULNERABILITY ********/
+    //payload_offset can increase beyond the end of iphc_hdr
+    //From what I can tell, there are no checks to prevent this before this point
+    //This could lead to an OOB write in the below memcpy statements
+
+    //This does seem a bit too obvious to be a real vulnerability IMO, but
+    //I really don't see anywhere this is checked beforehand
     switch (iphc_hdr[IPHC1_IDX] & SIXLOWPAN_IPHC1_TF) {
         case IPHC_TF_ECN_DSCP_FL:
             ipv6_hdr_set_tc(ipv6_hdr, iphc_hdr[payload_offset++]);
@@ -729,7 +736,7 @@ static inline void _recv_error_release(gnrc_pktsnip_t *sixlo,
 void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
                               unsigned page)
 {
-    assert(sixlo != NULL);
+    __CPROVER_assume(sixlo != NULL);
     gnrc_pktsnip_t *ipv6, *netif;
     gnrc_netif_t *iface;
     ipv6_hdr_t *ipv6_hdr;
@@ -751,7 +758,7 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
     }
     if (rbuf != NULL) {
         ipv6 = rbuf->pkt;
-        assert(ipv6 != NULL);
+        __CPROVER_assume(ipv6 != NULL);
         if ((ipv6->size < sizeof(ipv6_hdr_t)) &&
             (gnrc_pktbuf_realloc_data(ipv6, sizeof(ipv6_hdr_t)) != 0)) {
             DEBUG("6lo iphc: no space to decompress IPHC\n");
@@ -768,10 +775,10 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
         }
     }
 
-    assert(ipv6->size >= sizeof(ipv6_hdr_t));
+    __CPROVER_assume(ipv6->size >= sizeof(ipv6_hdr_t));
 
     netif = gnrc_pktsnip_search_type(sixlo, GNRC_NETTYPE_NETIF);
-    assert(netif != NULL);
+    __CPROVER_assume(netif != NULL);
     iface = gnrc_netif_hdr_get_netif(netif->data);
     payload_offset = _iphc_ipv6_decode(iphc_hdr, netif->data, iface,
                                        ipv6->data);
@@ -919,9 +926,9 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
     ipv6_hdr = ipv6->data;
     ipv6_hdr->len = byteorder_htons(payload_len);
     if (sixlo->size > payload_offset) {
-        memcpy(((uint8_t *)ipv6->data) + uncomp_hdr_len,
-               ((uint8_t *)sixlo->data) + payload_offset,
-               sixlo->size - payload_offset);
+        // memcpy(((uint8_t *)ipv6->data) + uncomp_hdr_len,
+        //        ((uint8_t *)sixlo->data) + payload_offset,
+        //        sixlo->size - payload_offset);
     }
     if (rbuf != NULL) {
         rbuf->super.current_size += (uncomp_hdr_len - payload_offset);

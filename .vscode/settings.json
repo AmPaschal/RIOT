@@ -20,7 +20,10 @@
         "utility": "c",
         "stdlib.h": "c",
         "rb.h": "c",
-        "hdr.h": "c"
+        "hdr.h": "c",
+        "minfwd.h": "c",
+        "ipv6.h": "c",
+        "pkt.h": "c"
     },
     "[shellscript][c][cpp]": {
         "editor.tabSize": 4,
@@ -30,4 +33,5 @@
         "editor.tabSize": 2,
         "editor.insertSpaces": true,
     },
+    "cmake.sourceDirectory": "/home/tlelievr/RIOT/pkg/wamr",
 }

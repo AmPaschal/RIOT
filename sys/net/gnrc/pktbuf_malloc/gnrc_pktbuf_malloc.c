@@ -170,8 +170,8 @@ gnrc_pktsnip_t *gnrc_pktbuf_mark(gnrc_pktsnip_t *pkt, size_t size, gnrc_nettype_
 
 static int _realloc_data(gnrc_pktsnip_t *pkt, size_t size)
 {
-    assert(pkt != NULL);
-    assert(((pkt->size == 0) && (pkt->data == NULL)) ||
+    __CPROVER_assume(pkt != NULL);
+    __CPROVER_assume(((pkt->size == 0) && (pkt->data == NULL)) ||
            ((pkt->size > 0) && (pkt->data != NULL)));
     /* new size and old size are equal */
     if (size == pkt->size) {

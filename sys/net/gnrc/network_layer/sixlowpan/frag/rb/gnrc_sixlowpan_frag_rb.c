@@ -464,7 +464,7 @@ int _rbuf_add(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
                         .size = frag_size,
                         .users = 1,
                     };
-
+                    
                     if (_check_hdr(&tmp, page) &&
                         (vrbe = gnrc_sixlowpan_frag_vrb_from_route(
                                     entry.super,
@@ -509,7 +509,7 @@ int _rbuf_add(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
 
         //****** Potential vulnerability *******/
         //This can have an OOB write to the dest
-        //I can't tell from the traces whether it is caused by offset or frag_size being too large
+        //(We already know about these)
         memcpy(((uint8_t *)entry.rbuf->pkt->data) + offset, data,
                frag_size);
     }
@@ -643,9 +643,9 @@ int _rbuf_get(const void *src, size_t src_len,
     for (unsigned int i = 0; i < CONFIG_GNRC_SIXLOWPAN_FRAG_RBUF_SIZE; i++) {
         /* check first if entry already available */
 
-        //****** Potential vulnerability *******/
+        //****** POTENTIAL VULNERABILITY *******/
         //Src_len and dest_len can be larger than rbuf[i].super.src, causing an OOB read
-        //This might just be a result of how I modelled these functions
+        //Can be fixed by constraining src_len and dst_len to <= 8 in the harness
         if ((rbuf[i].pkt != NULL) && (rbuf[i].super.tag == tag) &&
             ((IS_USED(MODULE_GNRC_SIXLOWPAN_FRAG_SFR) &&
               /* not all SFR fragments carry the datagram size, so make 0 a
@@ -895,6 +895,11 @@ static bool _check_hdr(gnrc_pktsnip_t *hdr, unsigned page)
     switch (page) {
 #if IS_USED(MODULE_GNRC_NETTYPE_IPV6)
         case 0: {
+
+            //********* POTENTIAL VULNERABILITY ********/
+            //In this context, hdr->data points to the space in the pkt -> data buffer
+            //After it's own header. It's possible for this to be smaller than ipv6_hdr_t
+            //causing an OOB read
             ipv6_hdr_t *ipv6_hdr = hdr->data;
 
             if (ipv6_hdr->hl <= 1) {

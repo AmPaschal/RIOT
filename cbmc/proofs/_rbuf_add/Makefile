@@ -5,17 +5,18 @@ ROOT = /home/tlelievr/RIOT
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/sys/net/gnrc/network_layer/sixlowpan/frag/rb/gnrc_sixlowpan_frag_rb.c $(ROOT)/sys/net/gnrc/pktbuf_malloc/gnrc_pktbuf_malloc.c
+LINK = $(ROOT)/sys/net/gnrc/network_layer/sixlowpan/frag/rb/gnrc_sixlowpan_frag_rb.c \
+        $(ROOT)/sys/net/gnrc/pktbuf_malloc/gnrc_pktbuf_malloc.c \
+        $(ROOT)/sys/net/gnrc/network_layer/sixlowpan/iphc/gnrc_sixlowpan_iphc.c
 
 # Harness to utilize, omit the extension!
 H_ENTRY = _rbuf_add
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset gnrc_sixlowpan_frag_rb_gc.2:2 --unwindset _check_fragments.1:2 --unwindset _rbuf_int_get_free.0:2 --unwindset gnrc_pkt_delete.0:2
+H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset gnrc_sixlowpan_frag_rb_gc.2:2 --unwindset _check_fragments.1:2 -unwindset memcmp.0:9 --unwindset gnrc_pkt_delete.0:2
 
 
-H_DEF = -DRIOT_VERSION=1 -DMODULE_SOCK_UDP=y -DSOCK_HAS_IPV6=y -DMODULE_GNRC_NETTYPE_SIXLOWPAN=1  \
-        -DMODULE_GNRC_SIXLOWPAN_FRAG_SFR=1 -DMODULE_GNRC_SIXLOWPAN_FRAG=1 -DMODULE_GNRC_SIXLOWPAN_FRAG_MINFWD=1 -DMODULE_GNRC_SIXLOWPAN_IPHC=1 -DCONFIG_GNRC_SIXLOWPAN_FRAG_RBUF_SIZE=1
+H_DEF = -DMODULE_GNRC_NETTYPE_SIXLOWPAN=1 -DMODULE_GNRC_SIXLOWPAN_FRAG_SFR=1 -DMODULE_GNRC_SIXLOWPAN_FRAG=1 -DMODULE_GNRC_SIXLOWPAN_FRAG_MINFWD=1 -DMODULE_GNRC_SIXLOWPAN_IPHC=1 -DCONFIG_GNRC_SIXLOWPAN_FRAG_RBUF_SIZE=1 -DMODULE_GNRC_IPV6=1 -DMODULE_GNRC_NETTYPE_IPV6=1
 
 H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
             -I$(ROOT)/core/lib/include/  \
@@ -24,6 +25,8 @@ H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
             -I$(ROOT)/drivers/include/  \
             -I$(ROOT)/boards/native/include/  \
             -I$(ROOT)/sys/include/net/gnrc/ \
+            -I$(ROOT)/sys/include/net/ipv6/ \
+            -I$(ROOT)/sys/include/net/gnrc/netif \
             -I$(ROOT)/sys/include/net/gnrc/sixlowpan \
             -I$(ROOT)/sys/include/net/gnrc/sixlowpan/frag \
             -I$(ROOT)/sys/net/gnrc/pktbuf/include/  \

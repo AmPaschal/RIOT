@@ -98,3 +98,4 @@ keys/
 # Environments
 .venv
 venv/
+.vscode/settings.json
