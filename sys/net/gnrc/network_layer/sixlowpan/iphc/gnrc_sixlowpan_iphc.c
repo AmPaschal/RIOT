@@ -1669,10 +1669,16 @@ gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
         return NULL;
     }
 
-    // NEW VULNERABILITY
-    // dispatch data may be NULL, does not check properly:
+    // Reported sizes may be very small
 
-    if (dispatch->data == NULL) {
+    if (pkt->next->size < sizeof(ipv6_hdr_t) || dispatch->size < sizeof(ipv6_hdr_t)) {
+        return NULL;
+    }
+
+    // NEW VULNERABILITY
+    // dispatch data or packet data may be NULL, does not check properly:
+
+    if (dispatch->data == NULL || pkt->next->data == NULL) {
         DEBUG("6lo iphc: error allocating dispatch space\n");
         return NULL;
     }

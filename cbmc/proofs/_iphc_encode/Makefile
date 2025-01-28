@@ -15,6 +15,7 @@ H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset _iphc_encode.1:12 --unwinds
 
 
 H_DEF = -DMODULE_GNRC_IPV6=1 -DMODULE_GNRC_NETTYPE_IPV6=1 -DMODULE_GNRC_NETTYPE_SIXLOWPAN=1
+#-DMODULE_GNRC_NETIF_IPV6=1
 
 H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
             -I$(ROOT)/core/lib/include/  \

@@ -49,6 +49,10 @@ void harness(void)
     gnrc_netif_hdr_t netif_hdr;
     gnrc_netif_t *iface;
 
+    // Set next pointer to be NULL:
+
+    pkt.next = NULL;
+
     // Determine if we are adding IPv6 header:
 
     bool add;
@@ -63,10 +67,14 @@ void harness(void)
 
         // Allocate IPV6 header data:
 
-        pkt.next->size = sizeof(ipv6_hdr_t);
-        pkt.next->data = (ipv6_hdr_t *)malloc(sizeof(ipv6_hdr_t));
+        // __CPROVER_assume(pkt.next->size <= sizeof(ipv6_hdr_t));  // COULD be less than target
 
-        __CPROVER_assume(pkt.next->data != NULL);
+        // pkt.next->size = sizeof(ipv6_hdr_t);
+        // pkt.next->data = (ipv6_hdr_t *)malloc(sizeof(ipv6_hdr_t));  // COULD fail
+
+        pkt.next->data = (ipv6_hdr_t *)malloc(pkt.next->size); // COULD fail
+
+        // __CPROVER_assume(pkt.next->data != NULL);
 
         // Determine how many packet snips to model:
         // For now we will only model 11, there will be one modeled for the header: 
@@ -105,12 +113,6 @@ void harness(void)
         // Finally, make next pointer NULL:
 
         npkt->next = NULL;
-    }
-
-    else {
-        // Just make next pointer NULL:
-
-        pkt.next = NULL;
     }
 
     gnrc_pktsnip_t *res = _iphc_encode(&pkt, &netif_hdr, &iface);
