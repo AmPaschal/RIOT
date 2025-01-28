@@ -506,6 +506,10 @@ int _rbuf_add(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
                 return res;
             }
         }
+
+        //****** Potential vulnerability *******/
+        //This can have an OOB write to the dest
+        //I can't tell from the traces whether it is caused by offset or frag_size being too large
         memcpy(((uint8_t *)entry.rbuf->pkt->data) + offset, data,
                frag_size);
     }
@@ -638,6 +642,10 @@ int _rbuf_get(const void *src, size_t src_len,
 
     for (unsigned int i = 0; i < CONFIG_GNRC_SIXLOWPAN_FRAG_RBUF_SIZE; i++) {
         /* check first if entry already available */
+
+        //****** Potential vulnerability *******/
+        //Src_len and dest_len can be larger than rbuf[i].super.src, causing an OOB read
+        //This might just be a result of how I modelled these functions
         if ((rbuf[i].pkt != NULL) && (rbuf[i].super.tag == tag) &&
             ((IS_USED(MODULE_GNRC_SIXLOWPAN_FRAG_SFR) &&
               /* not all SFR fragments carry the datagram size, so make 0 a

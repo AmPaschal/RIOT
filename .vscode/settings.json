@@ -17,7 +17,10 @@
         "hash_map": "c",
         "hash_set": "c",
         "initializer_list": "c",
-        "utility": "c"
+        "utility": "c",
+        "stdlib.h": "c",
+        "rb.h": "c",
+        "hdr.h": "c"
     },
     "[shellscript][c][cpp]": {
         "editor.tabSize": 4,
