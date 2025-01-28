@@ -5,13 +5,13 @@ ROOT = ../../..
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/sys/net/gnrc/network_layer/sixlowpan/iphc/gnrc_sixlowpan_iphc.c $(ROOT)/sys/net/network_layer/ipv6/addr/ipv6_addr.c $(ROOT)/sys/net/gnrc/network_layer/sixlowpan/ctx/gnrc_sixlowpan_ctx.c $(ROOT)/sys/net/gnrc/netif/gnrc_netif.c
-
+LINK = $(ROOT)/sys/net/gnrc/network_layer/sixlowpan/iphc/gnrc_sixlowpan_iphc.c $(ROOT)/sys/net/gnrc/network_layer/sixlowpan/ctx/gnrc_sixlowpan_ctx.c $(ROOT)/sys/net/gnrc/netif/gnrc_netif.c $(ROOT)/sys/net/gnrc/netif/gnrc_netif_device_type.c
+#$(ROOT)/sys/net/network_layer/ipv6/addr/ipv6_addr.c
 # Harness to utilize, omit the extension!
 H_ENTRY = _iphc_ipv6_encode
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --malloc-may-fail --unwind 1 --unwindset memcmp.0:20 --unwindset bitarithm_clzb.0:10 --unwindset gnrc_sixlowpan_ctx_lookup_addr.0:17 --unwindset ipv6_addr_match_prefix.0:17
+H_CBMCFLAGS = --nondet-static --malloc-may-fail --unwind 1 --unwindset memcmp.0:20 --unwindset gnrc_sixlowpan_ctx_lookup_addr.0:17
 
 
 H_DEF = -DMODULE_GNRC_IPV6=1 -DGNRC_NETTYPE_IPV6=1 -DGNRC_NETTYPE_SIXLOWPAN=1 -DMODULE_GNRC_NETIF_IPV6=1
