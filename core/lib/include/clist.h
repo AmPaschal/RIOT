@@ -129,17 +129,7 @@ static inline bool clist_is_empty(const clist_node_t *list)
  * @param[in,out]   new_node    Node which gets inserted.
  *                              Must not be NULL.
  */
-static inline void clist_rpush(clist_node_t *list, clist_node_t *new_node)
-{
-    if (list->next) {
-        new_node->next = list->next->next;
-        list->next->next = new_node;
-    }
-    else {
-        new_node->next = new_node;
-    }
-    list->next = new_node;
-}
+void clist_rpush(clist_node_t *list, clist_node_t *new_node);
 
 /**
  * @brief Inserts *new_node* at the beginning of *list

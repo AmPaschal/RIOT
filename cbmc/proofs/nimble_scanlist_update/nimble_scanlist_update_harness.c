@@ -82,6 +82,12 @@ clist_node_t *clist_lpop(clist_node_t *list)
     return (clist_node_t*)_find(NULL);
 }
 
+void clist_rpush(clist_node_t *list, clist_node_t *new_node) {}
+
+void _assert_panic(void) {
+    __CPROVER_assume(false);  // If we hit this, then continue and do nothing
+}
+
 void nimble_scanlist_update(uint8_t type, const ble_addr_t *addr,
                             const nimble_scanner_info_t *info,
                             const uint8_t *ad, size_t len)
