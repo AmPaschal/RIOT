@@ -143,6 +143,17 @@ static inline bool _context_overlaps_iid(gnrc_sixlowpan_ctx_t *ctx,
         return false;
     }
 
+    size_t amount = sizeof(network_uint64_t) - ((ctx->prefix_len / 8) - 7);
+
+    // New vulnerability
+    // If the size is very big, then we can get an underflow:
+
+    if (sizeof(network_uint64_t) < ((ctx->prefix_len / 8) - 7)) {
+
+        // Not sure how to deal with failure...
+        return false;
+    }
+
     return ((ctx->prefix_len == 128) || /* Full-length prefix overlaps IID in any case */
             ((ctx->prefix_len > 64) &&  /* otherwise, if bigger than 64-bit */
              /* compare bytes until prefix length with IID */

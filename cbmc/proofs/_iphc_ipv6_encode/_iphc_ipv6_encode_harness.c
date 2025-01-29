@@ -8,10 +8,31 @@
 // Do nothing when locking a mutex
 inline void mutex_lock(mutex_t *mutex) {}
 
+void rmutex_lock(rmutex_t *rmutex) {}
+
+void rmutex_unlock(rmutex_t *rmutex) {}
+
+uint32_t _xtimer_now(void) {}
+
+void _assert_panic(void) {
+    __CPROVER_assume(false);
+}
+
 uint8_t ipv6_addr_match_prefix(const ipv6_addr_t *a, const ipv6_addr_t *b) {
     uint8_t prefix_len;
 
     return prefix_len;
+}
+
+int gnrc_netif_ipv6_get_iid(gnrc_netif_t *netif, eui64_t *iid) {
+
+    // Create iid:
+
+    iid = (eui64_t*)malloc(sizeof(eui64_t));
+
+    int res;
+
+    return res;
 }
 
 /**
