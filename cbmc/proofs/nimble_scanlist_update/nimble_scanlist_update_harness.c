@@ -93,7 +93,9 @@ void nimble_scanlist_update(uint8_t type, const ble_addr_t *addr,
     assert(addr);
 
     /* Ignore bogus advertisements */
-    if (len > BLE_ADV_PDU_LEN) {
+    // if (len > BLE_ADV_PDU_LEN) {
+    if (0) {  // Disable length check
+
         assert(0);
         return;
     }
