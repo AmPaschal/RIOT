@@ -99,16 +99,25 @@ gnrc_sixlowpan_frag_vrb_t *gnrc_sixlowpan_frag_vrb_get(const uint8_t *src, size_
 // }
 
 gnrc_pktsnip_t *gnrc_pktbuf_mark(gnrc_pktsnip_t *pkt, size_t size, gnrc_nettype_t type) {
-    gnrc_pktsnip_t *pkt = malloc(sizeof(gnrc_pktsnip_t));
-    __CPROVER_assume(pkt != NULL);
+    //Original function can change pkt data and size
+
+    // This exposes CVE-2023-24825 but makes the run time far longer so I'm leaving it commented
+    // __CPROVER_havoc_object(pkt);
+
+    gnrc_pktsnip_t *new_pkt = malloc(sizeof(gnrc_pktsnip_t));
+    //Based on the original function this can return null
+    if(new_pkt == NULL) {
+        return new_pkt;
+    }
+
     uint8_t size;
     uint8_t *data = malloc(size);
     __CPROVER_assume(data != NULL);
-    pkt->data = data;
-    pkt->size = size;
-    pkt->next = NULL;
+    new_pkt->data = data;
+    new_pkt->size = size;
+    new_pkt->next = NULL;
 
-    return pkt;
+    return new_pkt;
 }
 
 gnrc_sixlowpan_ctx_t *gnrc_sixlowpan_ctx_lookup_id(uint8_t id) {
@@ -171,7 +180,7 @@ void harness(void)
     //This part of the buffer can be read as quite a few different things
     //sixlowpan_sfr_rfrag_t I think is the biggest of the possible options
 
-    __CPROVER_assume(size <= 100);
+    // __CPROVER_assume(size <= 100);
 
     //There is a function up the call stack that would crash if the header isn't long enough
     //So I'll assume this is large enough to fit the largest header format
@@ -179,12 +188,19 @@ void harness(void)
     //Adding ipv6_hdr_t to the minimum size fixes two potential vulns
     //One OOB read/write in _iphc_ipv6_decode, where payload_len increments past the end of the buffer
     //One OOB read in _check_hdr
+
     __CPROVER_assume(size >= sizeof(sixlowpan_sfr_rfrag_t) + sizeof(ipv6_hdr_t));
+    //Remove the above check to expose vuln CVE-2023-24821
     uint8_t* data = malloc(size);
     __CPROVER_assume(data != NULL);
     
     pkt -> data = data;
-    pkt -> size = size;
+
+    //Doing this to specifically expose CVE-2023-24821 without raising false positives 
+    //Caused by the actual buffer being less than 4 bytes
+    size_t fake_size;
+    __CPROVER_assume(fake_size < 4);
+    pkt -> size = fake_size;
     pkt -> next = NULL;
 
     size_t offset;
