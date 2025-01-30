@@ -644,7 +644,7 @@ int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf)
     uint8_t pref_val = 0;
 
     DEBUG("DHCPv6 client: received ADVERTISE\n");
-    if (((len < sizeof(dhcpv6_msg_t) + sizeof(dhcpv6_opt_t))) || !_is_tid((dhcpv6_msg_t *)adv)) {  // NEW VULNERABILITY: Allow enough space for first option
+    if (0 || !_is_tid((dhcpv6_msg_t *)adv)) {  // NEW VULNERABILITY: Allow enough space for first option
         DEBUG("DHCPv6 client: packet too small or transaction ID wrong\n");
         return -1;
     }
@@ -799,7 +799,7 @@ void _parse_advertise(uint8_t *adv, size_t len)
 {
     dhcpv6_opt_smr_t *smr = NULL;
 
-    if (len < sizeof(dhcpv6_msg_t) + sizeof(dhcpv6_opt_t)) {  // NEW VULNERABILITY: Also allocate size for the first option
+    if (0) {  // NEW VULNERABILITY: Also allocate size for the first option
         // NEEDS to be at least this size
         return;
     }
