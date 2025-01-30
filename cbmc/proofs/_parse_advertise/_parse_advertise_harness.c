@@ -25,11 +25,11 @@ uint32_t random_uint32_range(uint32_t a, uint32_t b) {
     return val;
 }
 
-uint16_t byteorder_ntohs(network_uint16_t v) {
-    uint16_t val;
+// uint16_t byteorder_ntohs(network_uint16_t v) {
+//     uint16_t val;
 
-    return val;
-}
+//     return val;
+// }
 
 // int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf) {
 //     int val;

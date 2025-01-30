@@ -644,13 +644,13 @@ int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf)
     uint8_t pref_val = 0;
 
     DEBUG("DHCPv6 client: received ADVERTISE\n");
-    if ((len < sizeof(dhcpv6_msg_t)) || !_is_tid((dhcpv6_msg_t *)adv)) {
+    if (((len < sizeof(dhcpv6_msg_t) + sizeof(dhcpv6_opt_t))) || !_is_tid((dhcpv6_msg_t *)adv)) {  // NEW VULNERABILITY: Allow enough space for first option
         DEBUG("DHCPv6 client: packet too small or transaction ID wrong\n");
         return -1;
     }
     len -= sizeof(dhcpv6_msg_t);
     for (dhcpv6_opt_t *opt = (dhcpv6_opt_t *)(&adv[sizeof(dhcpv6_msg_t)]);
-         len > 0; len -= _opt_len(opt), opt = _opt_next(opt)) {
+         len > 0 && len >= sizeof(dhcpv6_opt_t); len -= _opt_len(opt), opt = _opt_next(opt)) {  // NEW VULNERABILITY: Ensure we have enough size for cast
         if (len > orig_len) {
             DEBUG("DHCPv6 client: ADVERTISE options overflow packet boundaries\n");
             return -1;
@@ -799,6 +799,11 @@ void _parse_advertise(uint8_t *adv, size_t len)
 {
     dhcpv6_opt_smr_t *smr = NULL;
 
+    if (len < sizeof(dhcpv6_msg_t) + sizeof(dhcpv6_opt_t)) {  // NEW VULNERABILITY: Also allocate size for the first option
+        // NEEDS to be at least this size
+        return;
+    }
+
     /* might not have been executed when not received in first retransmission
      * window => redo even if already done */
     if (_preparse_advertise(adv, len, NULL) < 0) {
@@ -810,7 +815,7 @@ void _parse_advertise(uint8_t *adv, size_t len)
     DEBUG("DHCPv6 client: scheduling REQUEST\n");
     event_post(event_queue, &request);
     for (dhcpv6_opt_t *opt = (dhcpv6_opt_t *)(&adv[sizeof(dhcpv6_msg_t)]);
-         len > 0; len -= _opt_len(opt), opt = _opt_next(opt)) {
+         len > 0 && len >= sizeof(dhcpv6_opt_t); len -= _opt_len(opt), opt = _opt_next(opt)) {  // NEW VULNERABILITY: Ensure enough space for cast
         switch (byteorder_ntohs(opt->type)) {
             case DHCPV6_OPT_IA_PD:
                 if (_opt_len(opt) < sizeof(dhcpv6_opt_ia_pd_t)) {
