@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "byteorder.h"
+
 uint32_t random_uint32_range(uint32_t a, uint32_t b) {
 
     // Create unconstrained int
@@ -19,6 +21,12 @@ uint32_t random_uint32_range(uint32_t a, uint32_t b) {
 
     __CPROVER_assume(a <= val);
     __CPROVER_assume(val < b);
+
+    return val;
+}
+
+uint16_t byteorder_ntohs(network_uint16_t v) {
+    uint16_t val;
 
     return val;
 }
