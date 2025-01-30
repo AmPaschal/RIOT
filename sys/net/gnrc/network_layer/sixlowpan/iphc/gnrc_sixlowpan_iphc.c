@@ -782,7 +782,7 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
     iface = gnrc_netif_hdr_get_netif(netif->data);
     payload_offset = _iphc_ipv6_decode(iphc_hdr, netif->data, iface,
                                        ipv6->data);
-    if ((payload_offset == 0) || (payload_offset > sixlo->size)) {
+    if ((payload_offset == 0)) {
         /* unable to parse IPHC header or malicious packet */
         DEBUG("6lo iphc: malformed IPHC header\n");
         _recv_error_release(sixlo, ipv6, rbuf);
@@ -821,7 +821,7 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
                                                           prev_nh_offset,
                                                           ipv6,
                                                           &uncomp_hdr_len);
-                    if ((payload_offset == 0) || (payload_offset > sixlo->size)) {
+                    if ((payload_offset == 0)) {
                         /* unable to parse IPHC header or malicious packet */
                         DEBUG("6lo iphc: malformed IPHC NHC IPv6 header\n");
                         _recv_error_release(sixlo, ipv6, rbuf);
@@ -931,7 +931,7 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
     /* re-assign IPv6 header in case realloc changed the address */
     ipv6_hdr = ipv6->data;
     ipv6_hdr->len = byteorder_htons(payload_len);
-    if (sixlo->size > payload_offset) {
+    if (1) {
         memcpy(((uint8_t *)ipv6->data) + uncomp_hdr_len,
                ((uint8_t *)sixlo->data) + payload_offset,
                sixlo->size - payload_offset);
