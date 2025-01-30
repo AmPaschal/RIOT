@@ -58,9 +58,6 @@
 
 #include "net/gnrc/sixlowpan/frag/rb.h"
 
-
-// extern gnrc_sixlowpan_frag_rb_t rbuf[CONFIG_GNRC_SIXLOWPAN_FRAG_RBUF_SIZE];
-
 // gnrc_sixlowpan_frag_vrb_t *gnrc_sixlowpan_frag_vrb_get(const uint8_t *src, size_t src_len, unsigned src_tag) {
 //     //I believe this can return null
 //     gnrc_sixlowpan_frag_vrb_t* vrb = malloc(sizeof(gnrc_sixlowpan_frag_vrb_t));
@@ -134,11 +131,61 @@ gnrc_pktsnip_t *gnrc_pktsnip_search_type(gnrc_pktsnip_t *pkt,
 
 gnrc_netif_t *gnrc_netif_get_by_pid(kernel_pid_t pid) {
     gnrc_netif_t *new_netif = malloc(sizeof(gnrc_netif_t));
-    //It CAN be NULL
-    //Kind of just praying it doesn't need those function pointers in ops
-    return new_netif;
 
+    //Addresses Potential Vulnerability B in gnrc_sixlowpan_iphc_recv
+    __CPROVER_assume(new_netif != NULL);
+
+    return new_netif;
 }
+
+bool _is_rfrag(gnrc_pktsnip_t *sixlo)
+{
+    bool rand;
+    return rand;
+}
+
+// gnrc_pktsnip_t *_encode_frag_for_forwarding(gnrc_pktsnip_t *decoded_pkt,
+//                                                    gnrc_sixlowpan_frag_vrb_t *vrbe) {
+//     gnrc_pktsnip_t* new_pkt = malloc(sizeof(gnrc_pktsnip_t));
+//     if(new_pkt == NULL) {
+//         return new_pkt;
+//     }
+
+//     size_t size;
+
+//     //Assume no size constraints
+//     __CPROVER_assume(size <= 100);
+
+//     uint8_t* data = malloc(size);
+//     __CPROVER_assume(data != NULL);
+    
+//     new_pkt -> data = data;
+//     new_pkt -> size = size;
+//     new_pkt -> next = NULL;
+
+//     return new_pkt;
+// }
+
+// int _forward_frag(gnrc_pktsnip_t *pkt, gnrc_pktsnip_t *frag_hdr,
+//                          gnrc_sixlowpan_frag_vrb_t *vrbe, unsigned page)
+// {
+//     int rand;
+//     return rand;
+// }
+
+void gnrc_pktbuf_release_error(gnrc_pktsnip_t *pkt, uint32_t err)
+{
+    return;
+}
+
+gnrc_sixlowpan_frag_vrb_t *gnrc_sixlowpan_frag_vrb_from_route(
+            const gnrc_sixlowpan_frag_rb_base_t *base,
+            gnrc_netif_t *netif, const gnrc_pktsnip_t *hdr)
+{
+    gnrc_sixlowpan_frag_vrb_t* new_vrb = malloc(sizeof(gnrc_sixlowpan_frag_vrb_t));
+    return new_vrb;
+}
+
 
 void harness(void)
 {
@@ -148,23 +195,25 @@ void harness(void)
 
     size_t size;
 
-    //This recieves direct user input, so I'm not going to put a lower bound except to fit the check on the first 2 bytes
-    __CPROVER_assume(size <= 100 && size >= 2);
+    __CPROVER_assume(size <= 100);
+
+    //Addresses potential vulnerability A in _ipv6_iphc_decode
+    __CPROVER_assume(size >= sizeof(ipv6_hdr_t));
     uint8_t* data = malloc(size);
     __CPROVER_assume(data != NULL);
-    __CPROVER_assume(sixlowpan_iphc_is(data))
+
     
     pkt -> data = data;
     pkt -> size = size;
     pkt -> next = NULL;
 
-    gnrc_sixlowpan_frag_rb_t rbuf_entry;
+    gnrc_sixlowpan_frag_rb_t* rbuf_entry = malloc(sizeof(gnrc_sixlowpan_frag_rb_t));
+    if(rbuf_entry != NULL) {
+        gnrc_pktsnip_t* rbuf_pkt = malloc(sizeof(gnrc_pktsnip_t));
+        __CPROVER_assume(rbuf_pkt != NULL);
 
-    gnrc_pktsnip_t* rbuf_pkt = malloc(sizeof(gnrc_pktsnip_t));
-    
-    if(rbuf_pkt != NULL) {
         size_t entry_size;
-        __CPROVER_assume(entry_size > 0);
+        __CPROVER_assume(entry_size <= 100 && entry_size > 0);
         uint8_t* entry_data = malloc(entry_size);
         __CPROVER_assume(entry_data != NULL);
         rbuf_pkt -> data = entry_data;
@@ -183,7 +232,8 @@ void harness(void)
 
         super.ints = interval;
 
-        entry.super = super;
+        rbuf_entry -> super = super;
+        rbuf_entry -> pkt = rbuf_pkt;
 
         // // Added this to fix a bug. Not sure how best to model it
         // int8_t offset_diff;
@@ -193,5 +243,5 @@ void harness(void)
 
     unsigned page;
 
-    gnrc_sixlowpan_iphc_recv(pkt, rbuf_pkt, page);
+    gnrc_sixlowpan_iphc_recv(pkt, rbuf_entry, page);
 }

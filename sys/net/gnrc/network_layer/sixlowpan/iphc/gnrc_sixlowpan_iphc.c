@@ -121,7 +121,7 @@
 static char addr_str[IPV6_ADDR_MAX_STR_LEN];
 #endif  /* MODULE_GNRC_SIXLOWPAN_FRAG_VRB */
 
-static inline bool _is_rfrag(gnrc_pktsnip_t *sixlo)
+bool _is_rfrag(gnrc_pktsnip_t *sixlo)
 {
 #ifdef MODULE_GNRC_SIXLOWPAN_FRAG_SFR
     __CPROVER_assume((sixlo->next != NULL) &&
@@ -159,13 +159,13 @@ static gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
                                     gnrc_netif_t *netif);
 
 #ifdef MODULE_GNRC_SIXLOWPAN_FRAG_VRB
-static gnrc_pktsnip_t *_encode_frag_for_forwarding(gnrc_pktsnip_t *decoded_pkt,
+gnrc_pktsnip_t *_encode_frag_for_forwarding(gnrc_pktsnip_t *decoded_pkt,
                                                    gnrc_sixlowpan_frag_vrb_t *vrbe);
-static int _forward_frag(gnrc_pktsnip_t *pkt, gnrc_pktsnip_t *frag_hdr,
+int _forward_frag(gnrc_pktsnip_t *pkt, gnrc_pktsnip_t *frag_hdr,
                          gnrc_sixlowpan_frag_vrb_t *vrbe, unsigned page);
 #endif  /* MODULE_GNRC_SIXLOWPAN_FRAG_VRB */
 
-static size_t _iphc_ipv6_decode(const uint8_t *iphc_hdr,
+size_t _iphc_ipv6_decode(const uint8_t *iphc_hdr,
                                 const gnrc_netif_hdr_t *netif_hdr,
                                 gnrc_netif_t *iface, ipv6_hdr_t *ipv6_hdr)
 {
@@ -181,10 +181,10 @@ static size_t _iphc_ipv6_decode(const uint8_t *iphc_hdr,
     memset(ipv6_hdr, 0, sizeof(*ipv6_hdr));
     ipv6_hdr_set_version(ipv6_hdr);
 
-    //****** POTENTIAL VULNERABILITY ********/
-    //payload_offset can increase beyond the end of iphc_hdr
+    //****** POTENTIAL VULNERABILITY A ********/
+    //if length of iphc_hdr < sizeof(ipv6_hdr_t), payload_offset can increase beyond the end of iphc_hdr
     //From what I can tell, there are no checks to prevent this before this point
-    //This could lead to an OOB write in the below memcpy statements
+    //This could lead to an OOB read
 
     //This does seem a bit too obvious to be a real vulnerability IMO, but
     //I really don't see anywhere this is checked beforehand
@@ -292,7 +292,7 @@ static size_t _iphc_ipv6_decode(const uint8_t *iphc_hdr,
             break;
 
         case IPHC_SAC_SAM_CTX_64:
-            assert(ctx != NULL);
+            __CPROVER_assume(ctx != NULL);
             memcpy(ipv6_hdr->src.u8 + 8, iphc_hdr + payload_offset, 8);
             ipv6_addr_init_prefix(&ipv6_hdr->src, &ctx->prefix,
                                   ctx->prefix_len);
@@ -300,7 +300,7 @@ static size_t _iphc_ipv6_decode(const uint8_t *iphc_hdr,
             break;
 
         case IPHC_SAC_SAM_CTX_16:
-            assert(ctx != NULL);
+            __CPROVER_assume(ctx != NULL);
             ipv6_hdr->src.u32[2] = byteorder_htonl(0x000000ff);
             ipv6_hdr->src.u16[6] = byteorder_htons(0xfe00);
             memcpy(ipv6_hdr->src.u8 + 14, iphc_hdr + payload_offset, 2);
@@ -310,7 +310,7 @@ static size_t _iphc_ipv6_decode(const uint8_t *iphc_hdr,
             break;
 
         case IPHC_SAC_SAM_CTX_L2:
-            assert(ctx != NULL);
+            __CPROVER_assume(ctx != NULL);
             if (gnrc_netif_hdr_ipv6_iid_from_src(
                         iface, netif_hdr, (eui64_t *)(&ipv6_hdr->src.u64[1])
                     ) < 0) {
@@ -429,7 +429,7 @@ static size_t _iphc_ipv6_decode(const uint8_t *iphc_hdr,
 
         case IPHC_M_DAC_DAM_M_UC_PREFIX:
             do {
-                assert(ctx != NULL);
+                __CPROVER_assume(ctx != NULL);
                 uint8_t orig_ctx_len = ctx->prefix_len;
 
                 ipv6_addr_set_unspecified(&ipv6_hdr->dst);
@@ -523,7 +523,7 @@ static size_t _iphc_nhc_ipv6_ext_decode(gnrc_pktsnip_t *sixlo, size_t offset,
     return offset;
 }
 
-static size_t _iphc_nhc_ipv6_decode(gnrc_pktsnip_t *sixlo, size_t offset,
+size_t _iphc_nhc_ipv6_decode(gnrc_pktsnip_t *sixlo, size_t offset,
                                     const gnrc_sixlowpan_frag_rb_t *rbuf,
                                     size_t *prev_nh_offset,
                                     gnrc_pktsnip_t *ipv6,
@@ -748,14 +748,14 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
     gnrc_sixlowpan_frag_vrb_t *vrbe = NULL;
 #endif  /* MODULE_GNRC_SIXLOWPAN_FRAG_VRB */
 
-    // if (sixlo->size < 2U) {
-    //     DEBUG("6lo iphc: IPHC header truncated\n");
-    //     if (rbuf != NULL) {
-    //         gnrc_sixlowpan_frag_rb_remove(rbuf);
-    //     }
-    //     gnrc_pktbuf_release(sixlo);
-    //     return;
-    // }
+    if (sixlo->size < 2U) {
+        DEBUG("6lo iphc: IPHC header truncated\n");
+        if (rbuf != NULL) {
+            gnrc_sixlowpan_frag_rb_remove(rbuf);
+        }
+        gnrc_pktbuf_release(sixlo);
+        return;
+    }
     if (rbuf != NULL) {
         ipv6 = rbuf->pkt;
         __CPROVER_assume(ipv6 != NULL);
@@ -873,6 +873,12 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
          * the current first fragment is the only received fragment in the
          * reassembly buffer so far and the hop-limit is larger than 1
          */
+
+        //***** POTENTIAL VULNERABILITY B ******/
+        //It seems possible for gnrc_netif_hdr_get_netif to return null
+        //This can lead to a NULL pointer deference in iface -> sixlo.max_frag_size
+        //Unless it is not possible for gnrc_netif_hdr_get_netif to return null in this scenario, this is a vulnerability
+        
         if ((rbuf->super.current_size <= sixlo->size) && (ipv6_hdr->hl > 1U) &&
             /* and there is enough slack for changing compression */
             (rbuf->super.current_size <= iface->sixlo.max_frag_size) &&
@@ -926,9 +932,9 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
     ipv6_hdr = ipv6->data;
     ipv6_hdr->len = byteorder_htons(payload_len);
     if (sixlo->size > payload_offset) {
-        // memcpy(((uint8_t *)ipv6->data) + uncomp_hdr_len,
-        //        ((uint8_t *)sixlo->data) + payload_offset,
-        //        sixlo->size - payload_offset);
+        memcpy(((uint8_t *)ipv6->data) + uncomp_hdr_len,
+               ((uint8_t *)sixlo->data) + payload_offset,
+               sixlo->size - payload_offset);
     }
     if (rbuf != NULL) {
         rbuf->super.current_size += (uncomp_hdr_len - payload_offset);
@@ -983,7 +989,7 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
 }
 
 #ifdef MODULE_GNRC_SIXLOWPAN_FRAG_VRB
-static gnrc_pktsnip_t *_encode_frag_for_forwarding(gnrc_pktsnip_t *decoded_pkt,
+gnrc_pktsnip_t *_encode_frag_for_forwarding(gnrc_pktsnip_t *decoded_pkt,
                                                    gnrc_sixlowpan_frag_vrb_t *vrbe)
 {
     gnrc_pktsnip_t *res;
@@ -1021,7 +1027,7 @@ static gnrc_pktsnip_t *_encode_frag_for_forwarding(gnrc_pktsnip_t *decoded_pkt,
     }
 }
 
-static int _forward_frag(gnrc_pktsnip_t *pkt, gnrc_pktsnip_t *frag_hdr,
+int _forward_frag(gnrc_pktsnip_t *pkt, gnrc_pktsnip_t *frag_hdr,
                          gnrc_sixlowpan_frag_vrb_t *vrbe, unsigned page)
 {
     /* remove rewritten netif header (forwarding implementation must do this

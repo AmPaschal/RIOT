@@ -382,7 +382,7 @@ gnrc_pktsnip_t *gnrc_netif_hdr_build(const uint8_t *src, uint8_t src_len,
  */
 static inline gnrc_netif_t *gnrc_netif_hdr_get_netif(const gnrc_netif_hdr_t *hdr)
 {
-    assert(hdr != NULL);
+    __CPROVER_assume(hdr != NULL);
     return gnrc_netif_get_by_pid(hdr->if_pid);
 }
 

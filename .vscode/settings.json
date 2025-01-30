@@ -23,7 +23,14 @@
         "hdr.h": "c",
         "minfwd.h": "c",
         "ipv6.h": "c",
-        "pkt.h": "c"
+        "pkt.h": "c",
+        "chrono": "c",
+        "functional": "c",
+        "istream": "c",
+        "ostream": "c",
+        "ratio": "c",
+        "tuple": "c",
+        "type_traits": "c"
     },
     "[shellscript][c][cpp]": {
         "editor.tabSize": 4,
