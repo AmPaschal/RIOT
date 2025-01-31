@@ -1650,7 +1650,19 @@ gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
         else {
             dispatch->next = ptr;
         }
-        dispatch_size += ptr->size;
+
+        if (ptr->type == GNRC_NETTYPE_UNDEF) {
+            /* most likely UDP for now so use that (XXX: extend if extension
+             * headers make problems) */
+            dispatch_size += sizeof(udp_hdr_t);
+            break; /* nothing special after UDP so quit even if more UNDEF
+                     * come */
+        }
+        else {
+            dispatch_size += ptr->size;
+        }
+
+        // dispatch_size += ptr->size;
         dispatch = ptr; /* use dispatch as temporary point for prev */
         ptr = ptr->next;
     }
@@ -1662,10 +1674,10 @@ gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
     // Dispatch may overflow due to huge sizes,
     // or it may just not be given a very large value
 
-    if (dispatch_size < sizeof(ipv6_hdr_t)) {
-        DEBUG("6lo iphc: decoded dispatch size too small\n");
-        return NULL;
-    }
+    // if (dispatch_size < sizeof(ipv6_hdr_t)) {
+    //     DEBUG("6lo iphc: decoded dispatch size too small\n");
+    //     return NULL;
+    // }
 
     dispatch = gnrc_pktbuf_add(NULL, NULL, dispatch_size + 1,
                                GNRC_NETTYPE_SIXLOWPAN);
@@ -1678,17 +1690,17 @@ gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
     // NEW VULNERABILITY
     // Reported sizes may be very small
 
-    if (pkt->next->size < sizeof(ipv6_hdr_t)) {
-        return NULL;
-    }
+    // if (pkt->next->size < sizeof(ipv6_hdr_t)) {
+    //     return NULL;
+    // }
 
     // NEW VULNERABILITY
     // dispatch data or packet data may be NULL, does not check properly:
 
-    if (pkt->next->data == NULL) {
-        DEBUG("6lo iphc: error allocating dispatch space\n");
-        return NULL;
-    }
+    // if (pkt->next->data == NULL) {
+    //     DEBUG("6lo iphc: error allocating dispatch space\n");
+    //     return NULL;
+    // }
 
     iphc_hdr = dispatch->data;
     inline_pos = _iphc_ipv6_encode(pkt, netif_hdr, iface, iphc_hdr);
