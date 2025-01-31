@@ -35,6 +35,22 @@ int gnrc_netif_ipv6_get_iid(gnrc_netif_t *netif, eui64_t *iid) {
     return res;
 }
 
+int gnrc_netif_hdr_ipv6_iid_from_dst(const gnrc_netif_t *netif,
+                                     const gnrc_netif_hdr_t *hdr,
+                                     eui64_t *iid)
+{
+
+    // Allocate some iid data:
+
+    iid = (eui64_t *)malloc(sizeof(eui64_t));
+
+    // Just return unconstrained int:
+
+    int val;
+
+    return val;
+}
+
 /**
  * @brief Starting point for formal analysis
  * 

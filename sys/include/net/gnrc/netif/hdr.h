@@ -338,19 +338,14 @@ static inline int gnrc_netif_hdr_ipv6_iid_from_src(const gnrc_netif_t *netif,
  *
  * @return  same as gnrc_netif_ipv6_iid_from_addr().
  */
-static inline int gnrc_netif_hdr_ipv6_iid_from_dst(const gnrc_netif_t *netif,
-                                                   const gnrc_netif_hdr_t *hdr,
-                                                   eui64_t *iid)
-{
-    return gnrc_netif_ipv6_iid_from_addr(netif,
-                                         gnrc_netif_hdr_get_dst_addr(hdr),
-                                         hdr->dst_l2addr_len,
-                                         iid);
-}
-#else   /* defined(MODULE_GNRC_IPV6) || defined(DOXYGEN) */
-#define gnrc_netif_hdr_ipv6_iid_from_src(netif, hdr, iid)   (-ENOTSUP);
-#define gnrc_netif_hdr_ipv6_iid_from_dst(netif, hdr, iid)   (-ENOTSUP);
-#endif  /* defined(MODULE_GNRC_IPV6) || defined(DOXYGEN) */
+int gnrc_netif_hdr_ipv6_iid_from_dst(const gnrc_netif_t *netif,
+                                     const gnrc_netif_hdr_t *hdr,
+                                     eui64_t *iid);
+                                     
+#  else /* defined(MODULE_GNRC_IPV6) || defined(DOXYGEN) */
+#    define gnrc_netif_hdr_ipv6_iid_from_src(netif, hdr, iid) (-ENOTSUP);
+#    define gnrc_netif_hdr_ipv6_iid_from_dst(netif, hdr, iid) (-ENOTSUP);
+#  endif /* defined(MODULE_GNRC_IPV6) || defined(DOXYGEN) */
 
 /**
  * @brief   Builds a generic network interface header for sending and
