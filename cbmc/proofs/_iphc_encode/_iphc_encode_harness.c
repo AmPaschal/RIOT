@@ -68,10 +68,6 @@ void harness(void)
 
     if (pkt.next != NULL) {
 
-        // Allocate IPV6 header data:
-
-        // __CPROVER_assume(pkt.next->size <= sizeof(ipv6_hdr_t));  // COULD be less than target
-
         // pkt.next->size = sizeof(ipv6_hdr_t);
         // pkt.next->data = (ipv6_hdr_t *)malloc(sizeof(ipv6_hdr_t));  // COULD fail
 
@@ -106,7 +102,7 @@ void harness(void)
 
             npkt->next->data = malloc(npkt->next->size);
 
-            __CPROVER_assume(npkt->next->data != NULL);
+            // __CPROVER_assume(npkt->next->data != NULL);
 
             // Update new snip to model:
 
