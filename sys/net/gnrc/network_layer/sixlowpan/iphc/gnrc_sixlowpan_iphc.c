@@ -1669,6 +1669,7 @@ gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
         return NULL;
     }
 
+    // NEW VULNERABILITY
     // Reported sizes may be very small
 
     if (pkt->next->size < sizeof(ipv6_hdr_t) || dispatch->size < sizeof(ipv6_hdr_t)) {

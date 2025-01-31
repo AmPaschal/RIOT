@@ -32,10 +32,6 @@ bool _compressible_nh(uint8_t nh)
     return false;
 }
 
-void _assert_panic(void) {
-    __CPROVER_assume(false);
-}
-
 /**
  * @brief Starting point for formal analysis
  * 
