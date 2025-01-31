@@ -1094,15 +1094,15 @@ size_t _iphc_ipv6_encode(gnrc_pktsnip_t *pkt,
 
     assert(iface != NULL);
 
-    if (pkt->next == NULL || pkt->next->data == NULL) {  // NEW VULNERABILITY: Check if data is NULL
-        DEBUG("6lo iphc: packet missing header\n");
-        return 0;
-    }
+    // if (pkt->next == NULL || pkt->next->data == NULL) {  // NEW VULNERABILITY: Check if data is NULL
+    //     DEBUG("6lo iphc: packet missing header\n");
+    //     return 0;
+    // }
 
-    if (pkt->next->size < sizeof(ipv6_hdr_t)) {  // NEW VULNERABILITY: Check if packet size is not large enough
-        DEBUG("6lo iphc: insufficent packet data\n");
-        return 0;
-    }
+    // if (pkt->next->size < sizeof(ipv6_hdr_t)) {  // NEW VULNERABILITY: Check if packet size is not large enough
+    //     DEBUG("6lo iphc: insufficent packet data\n");
+    //     return 0;
+    // }
 
     ipv6_hdr = pkt->next->data;
 
