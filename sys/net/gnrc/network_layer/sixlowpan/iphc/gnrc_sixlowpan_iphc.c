@@ -145,7 +145,7 @@ static inline bool _context_overlaps_iid(gnrc_sixlowpan_ctx_t *ctx,
 
     // NEW VULNERABILITY (see _iphc_ipv6_encode for details)
 
-    if (((ctx->prefix_len / 8) - 7) < sizeof(network_uint64_t)) {
+    if (((ctx->prefix_len / 8) - 7) > sizeof(network_uint64_t)) {
         return false;
     }
 
