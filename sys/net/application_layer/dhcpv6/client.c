@@ -650,7 +650,7 @@ int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf)
     }
     len -= sizeof(dhcpv6_msg_t);
     for (dhcpv6_opt_t *opt = (dhcpv6_opt_t *)(&adv[sizeof(dhcpv6_msg_t)]);
-         len > 0 && len >= sizeof(dhcpv6_opt_t); len -= _opt_len(opt), opt = _opt_next(opt)) {  // NEW VULNERABILITY: Ensure we have enough size for cast
+         len > 0; len -= _opt_len(opt), opt = _opt_next(opt)) {  // NEW VULNERABILITY: Ensure we have enough size for cast
         if (len > orig_len) {
             DEBUG("DHCPv6 client: ADVERTISE options overflow packet boundaries\n");
             return -1;
@@ -815,7 +815,7 @@ void _parse_advertise(uint8_t *adv, size_t len)
     DEBUG("DHCPv6 client: scheduling REQUEST\n");
     event_post(event_queue, &request);
     for (dhcpv6_opt_t *opt = (dhcpv6_opt_t *)(&adv[sizeof(dhcpv6_msg_t)]);
-         len > 0 && len >= sizeof(dhcpv6_opt_t); len -= _opt_len(opt), opt = _opt_next(opt)) {  // NEW VULNERABILITY: Ensure enough space for cast
+         len > 0; len -= _opt_len(opt), opt = _opt_next(opt)) {  // NEW VULNERABILITY: Ensure enough space for cast
         switch (byteorder_ntohs(opt->type)) {
             case DHCPV6_OPT_IA_PD:
                 if (_opt_len(opt) < sizeof(dhcpv6_opt_ia_pd_t)) {
