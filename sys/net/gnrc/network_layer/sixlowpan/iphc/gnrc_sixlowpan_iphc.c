@@ -143,6 +143,12 @@ static inline bool _context_overlaps_iid(gnrc_sixlowpan_ctx_t *ctx,
         return false;
     }
 
+    // NEW VULNERABILITY (see _iphc_ipv6_encode for details)
+
+    if (((ctx->prefix_len / 8) - 7) < sizeof(network_uint64_t)) {
+        return false;
+    }
+
     return ((ctx->prefix_len == 128) || /* Full-length prefix overlaps IID in any case */
             ((ctx->prefix_len > 64) &&  /* otherwise, if bigger than 64-bit */
              /* compare bytes until prefix length with IID */
