@@ -143,8 +143,6 @@ static inline bool _context_overlaps_iid(gnrc_sixlowpan_ctx_t *ctx,
         return false;
     }
 
-    size_t amount = sizeof(network_uint64_t) - ((ctx->prefix_len / 8) - 7);
-
     // New vulnerability
     // If the size is very big, then we can get an underflow:
 
