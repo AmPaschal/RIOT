@@ -98,7 +98,7 @@ void harness(void)
 
             // Model some input data:
 
-            __CPROVER_assume(npkt->next->size <= 50);
+            __CPROVER_assume(npkt->next->size <= 100);
 
             npkt->next->data = malloc(npkt->next->size);
 
