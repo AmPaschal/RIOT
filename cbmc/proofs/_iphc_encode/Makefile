@@ -14,7 +14,7 @@ H_ENTRY = _iphc_encode
 H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset _iphc_encode.1:12 --unwindset harness.0:11 --unwindset gnrc_pktbuf_release_error.1:10 --unwindset gnrc_sixlowpan_ctx_lookup_addr.0:17 --unwindset memcmp.0:17
 
 
-H_DEF = -DMODULE_GNRC_IPV6=1 -DMODULE_GNRC_NETTYPE_IPV6=1 -DMODULE_GNRC_NETTYPE_SIXLOWPAN=1
+H_DEF = -DMODULE_GNRC_IPV6=1 -DMODULE_GNRC_NETTYPE_IPV6=1 -DMODULE_GNRC_NETTYPE_SIXLOWPAN=1 -DMODULE_GNRC_NETIF_IPV6=1
 #-DMODULE_GNRC_NETIF_IPV6=1
 
 H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \

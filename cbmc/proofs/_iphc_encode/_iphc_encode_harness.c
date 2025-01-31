@@ -32,6 +32,21 @@ bool _compressible_nh(uint8_t nh)
     return false;
 }
 
+int gnrc_netif_hdr_ipv6_iid_from_dst(const gnrc_netif_t *netif,
+                                     const gnrc_netif_hdr_t *hdr,
+                                     eui64_t *iid)
+{
+    // Allocate some iid data:
+
+    iid = (eui64_t *)malloc(sizeof(eui64_t));
+
+    // Just return unconstrained int:
+
+    int val;
+
+    return val;
+}
+
 /**
  * @brief Starting point for formal analysis
  * 
@@ -45,21 +60,13 @@ void harness(void)
     gnrc_netif_hdr_t netif_hdr;
     gnrc_netif_t *iface;
 
-    // Set next pointer to be NULL:
+    // Allocate packetsnip:
 
-    pkt.next = NULL;
+    pkt.next = (gnrc_pktsnip_t *)malloc(sizeof(gnrc_pktsnip_t));
 
     // Determine if we are adding IPv6 header:
 
-    bool add;
-
-    if (add) {
-
-        // Packet immediately after MUST be ipv6_hdr_t
-
-        pkt.next = (gnrc_pktsnip_t *)malloc(sizeof(gnrc_pktsnip_t));
-
-        __CPROVER_assume(pkt.next != NULL);
+    if (pkt.next != NULL) {
 
         // Allocate IPV6 header data:
 
