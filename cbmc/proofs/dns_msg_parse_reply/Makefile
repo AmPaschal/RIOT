@@ -11,7 +11,7 @@ LINK = $(ROOT)/sys/net/application_layer/dns/msg.c
 H_ENTRY = dns_msg_parse_reply
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset dns_msg_parse_reply.0:10 --unwindset dns_msg_parse_reply.3:10
+H_CBMCFLAGS = --nondet-static --unwind 1
 
 H_DEF = -DRIOT_VERSION=1 -DMODULE_SOCK_UDP=y -DSOCK_HAS_IPV6=y
 
