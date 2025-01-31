@@ -77,7 +77,7 @@ void harness(void)
 
         // Allocated data will NOT be null:
 
-        __CPROVER_assume(pkt.next->data != NULL);
+        // __CPROVER_assume(pkt.next->data != NULL);
 
         pkt.next->size = sizeof(ipv6_hdr_t);
     }

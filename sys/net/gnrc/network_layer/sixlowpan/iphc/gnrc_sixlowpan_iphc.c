@@ -1094,7 +1094,7 @@ size_t _iphc_ipv6_encode(gnrc_pktsnip_t *pkt,
 
     assert(iface != NULL);
 
-    if (pkt->next == NULL) {
+    if (pkt->next == NULL || pkt->next->data == NULL) {
         DEBUG("6lo iphc: packet missing header\n");
         return 0;
     }
