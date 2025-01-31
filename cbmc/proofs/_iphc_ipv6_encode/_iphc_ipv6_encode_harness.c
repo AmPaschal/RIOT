@@ -73,13 +73,15 @@ void harness(void)
     if (pkt.next != NULL) {
         // Allocate a IPv6 header in the data:
 
-        pkt.next->data = malloc(sizeof(ipv6_hdr_t));
+        // pkt.next->data = malloc(sizeof(ipv6_hdr_t));
+        pkt.next->data = malloc(pkt.next->size);  // Use unconstrained size
 
         // Allocated data will NOT be null:
 
         // __CPROVER_assume(pkt.next->data != NULL);
 
-        pkt.next->size = sizeof(ipv6_hdr_t);
+        // Unconstrained size
+        // pkt.next->size = sizeof(ipv6_hdr_t);
     }
 
     // Allocate some data

@@ -1088,16 +1088,22 @@ size_t _iphc_ipv6_encode(gnrc_pktsnip_t *pkt,
                                 uint8_t *iphc_hdr)
 {
     gnrc_sixlowpan_ctx_t *src_ctx = NULL, *dst_ctx = NULL;
-    ipv6_hdr_t *ipv6_hdr;
+     *ipv6_hdr;
     bool addr_comp = false;
     uint16_t inline_pos = SIXLOWPAN_IPHC_HDR_LEN;
 
     assert(iface != NULL);
 
-    if (pkt->next == NULL || pkt->next->data == NULL) {
+    if (pkt->next == NULL || pkt->next->data == NULL) {  // NEW VULNERABILITY: Check if data is NULL
         DEBUG("6lo iphc: packet missing header\n");
         return 0;
     }
+
+    if (pkt->next->size < sizeof(ipv6_hdr_t)) {  // NEW VULNERABILITY: Check if packet size is not large enough
+        DEBUG("6lo iphc: insufficent packet data\n");
+        return 0;
+    }
+
     ipv6_hdr = pkt->next->data;
 
     /* set initial dispatch value*/
