@@ -32,7 +32,7 @@ static char addr_str[IPV6_ADDR_MAX_STR_LEN];
 
 /* checks if multiple addresses within the source routing header exist on my
  * interfaces */
-static void *_contains_multiple_of_my_addr(const ipv6_addr_t *dst,
+void *_contains_multiple_of_my_addr(const ipv6_addr_t *dst,
                                            const gnrc_rpl_srh_t *rh,
                                            unsigned num_addr,
                                            unsigned compri_addr_len)
