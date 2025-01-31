@@ -1088,7 +1088,7 @@ size_t _iphc_ipv6_encode(gnrc_pktsnip_t *pkt,
                                 uint8_t *iphc_hdr)
 {
     gnrc_sixlowpan_ctx_t *src_ctx = NULL, *dst_ctx = NULL;
-     *ipv6_hdr;
+    ipv6_hdr_t *ipv6_hdr;
     bool addr_comp = false;
     uint16_t inline_pos = SIXLOWPAN_IPHC_HDR_LEN;
 
