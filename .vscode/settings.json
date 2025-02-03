@@ -30,7 +30,18 @@
         "ostream": "c",
         "ratio": "c",
         "tuple": "c",
-        "type_traits": "c"
+        "type_traits": "c",
+        "addr.h": "c",
+        "dns.h": "c",
+        "udp.h": "c",
+        "sock_types.h": "c",
+        "types.h": "c",
+        "msg.h": "c",
+        "af.h": "c",
+        "sock.h": "c",
+        "byteorder.h": "c",
+        "inet.h": "c",
+        "errno.h": "c"
     },
     "[shellscript][c][cpp]": {
         "editor.tabSize": 4,

@@ -162,7 +162,7 @@ int dns_msg_parse_reply(const uint8_t *buf, size_t len, int family,
         }
         bufpos += tmp;
         if ((bufpos + RR_TYPE_LENGTH + RR_CLASS_LENGTH +
-             RR_TTL_LENGTH + sizeof(uint16_t)) >= buflim) {
+             RR_TTL_LENGTH) >= buflim) {
             DEBUG("dns_msg: record beyond buf limit");
             return -EBADMSG;
         }
