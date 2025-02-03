@@ -17,17 +17,31 @@
 extern char* _result_buf;
 extern size_t _result_buf_len;
 
+#define MAIN_QUEUE_SIZE     (8)
+static msg_t _main_msg_queue[MAIN_QUEUE_SIZE];
+
 /// Should we put an actual version here? Could not find after simple search
 static coap_pkt_t* alloc_coap_pkt(void) {
     //Paschal's implementation
 
     coap_pkt_t* pkt = malloc(sizeof(coap_pkt_t));
     // __CPROVER_assume(pkt != NULL);
+
+
+    // Model the attributes of this packet:
+
+    pkt->hdr = NULL;
+    pkt->payload = NULL;
+    pkt->snips = NULL;
+    pkt->payload_len = 0;
+    pkt->options_len = 0;
+
     uint8_t pkt_size = 40;
     // __CPROVER_assume(pkt_size > sizeof(coap_hdr_t));
-    uint8_t *hdr = malloc(pkt_size);
+    coap_hdr_t *hdr = malloc(sizeof(coap_hdr_t));
+
     // __CPROVER_assume(hdr != NULL);
-    pkt->hdr = (coap_hdr_t *)hdr;
+    pkt->hdr = hdr;
     uint8_t payload_offset = 39;
     // __CPROVER_assume(payload_offset >= sizeof(coap_hdr_t) && payload_offset <= pkt_size);
     pkt->payload = hdr + payload_offset;
@@ -47,6 +61,13 @@ void _on_rd_init(const gcoap_request_memo_t *memo, coap_pkt_t *pdu,
 
 int main(void)
 {
+
+    // Create a message queue?
+
+    /* we need a message queue for the thread running the shell in order to
+     * receive potentially fast incoming networking packets */
+    msg_init_queue(_main_msg_queue, MAIN_QUEUE_SIZE);
+
 
     // Create the input arguments:
 
