@@ -60,7 +60,7 @@ static const char *_consume_scheme(uri_parser_result_t *result, const char *uri,
     result->scheme_len = p - uri;
 
     /* check if authority part exists '://' */
-    if ((p[1] != '\0') && (p[2] != '\0') && (p[1] == '/') && (p[2] == '/')) {
+    if (((uri_end - p) > 2) && (p[1] == '/') && (p[2] == '/')) {
         *has_authority = true;
         /* skip '://' */
         return p + 3;
@@ -165,9 +165,9 @@ static const char *_consume_authority(uri_parser_result_t *result, const char *u
     _consume_userinfo(result, uri, authority_end);
 
     /* host is empty */
-    if (result->host_len == 0) {
-        return authority_end;
-    }
+    // if (result->host_len == 0) {
+    //     return authority_end;
+    // }
 
     const char *ipv6_end = NULL;
     /* validate IPv6 form */
@@ -263,10 +263,10 @@ static int _parse_absolute(uri_parser_result_t *result, const char *uri,
         return -1;
     }
 
-    if (uri >= uri_end) {
-        /* nothing more to consume */
-        return 0;
-    }
+    // if (uri >= uri_end) {
+    //     /* nothing more to consume */
+    //     return 0;
+    // }
 
     if (has_authority) {
         uri = _consume_authority(result, uri, uri_end);
@@ -276,7 +276,7 @@ static int _parse_absolute(uri_parser_result_t *result, const char *uri,
     }
 
     /* is there more to parse after authority? */
-    if (uri < uri_end) {
+    if (1) {
         /* parsing the path, starting with '/' */
         return _parse_relative(result, uri, uri_end);
     }
