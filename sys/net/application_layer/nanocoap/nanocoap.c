@@ -324,9 +324,9 @@ static unsigned _get_content_format(coap_pkt_t *pkt, unsigned int opt_num)
 
         /****POTENTIAL VULNERABILITY ****/
         //Added: Check that the option can't claim length past end of options buffer
-        if (pkt_pos + option_len > pkt->payload + pkt->payload_len) {
-            return 0;
-        }
+        // if (pkt_pos + option_len > pkt->payload + pkt->payload_len) {
+        //     return 0;
+        // }
 
         if (option_len == 0) { 
             content_type = 0;

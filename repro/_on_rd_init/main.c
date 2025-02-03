@@ -17,7 +17,7 @@
 extern char* _result_buf;
 extern size_t _result_buf_len;
 
-/// Should we put an actaal version here? Could not find after simple search
+/// Should we put an actual version here? Could not find after simple search
 static coap_pkt_t* alloc_coap_pkt(void) {
     //Paschal's implementation
 
@@ -51,7 +51,6 @@ int main(void)
     // Create the input arguments:
 
     gcoap_request_memo_t memo;
-    
 
     coap_pkt_t *pdu = alloc_coap_pkt();  // Using custom allocator function
 

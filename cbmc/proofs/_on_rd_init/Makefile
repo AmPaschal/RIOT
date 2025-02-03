@@ -1,6 +1,6 @@
 # Defines the root of the project.
 # Be aware of how many directories deep you go!
-ROOT = /home/tlelievr/RIOT
+ROOT = ../../..
 
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
