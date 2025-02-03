@@ -31,7 +31,7 @@
 #include "debug.h"
 
 /* strchr for non-Null-terminated strings (buffers) */
-static const char *_strchrb(const char *start, const char *stop, char c)
+const char *_strchrb(const char *start, const char *stop, char c)
 {
     for (; start < stop; start++) {
         if (*start == c) {
@@ -44,7 +44,7 @@ static const char *_strchrb(const char *start, const char *stop, char c)
 static const char *_consume_scheme(uri_parser_result_t *result, const char *uri,
                                    const char *uri_end, bool *has_authority)
 {
-    assert(uri);
+    __CPROVER_assume(uri);
 
     /* assume no authority section first */
     *has_authority = false;
@@ -60,7 +60,7 @@ static const char *_consume_scheme(uri_parser_result_t *result, const char *uri,
     result->scheme_len = p - uri;
 
     /* check if authority part exists '://' */
-    if (((uri_end - p) > 2) && (p[1] == '/') && (p[2] == '/')) {
+    if ((p[1] != '\0') && (p[2] != '\0') && (p[1] == '/') && (p[2] == '/')) {
         *has_authority = true;
         /* skip '://' */
         return p + 3;
@@ -151,7 +151,7 @@ bool _consume_port(uri_parser_result_t *result, const char *ipv6_end,
 static const char *_consume_authority(uri_parser_result_t *result, const char *uri,
                                       const char *uri_end)
 {
-    assert(uri);
+    __CPROVER_assume(uri);
 
     /* search until first '/' */
     const char *authority_end = _strchrb(uri, uri_end, '/');
@@ -172,9 +172,16 @@ static const char *_consume_authority(uri_parser_result_t *result, const char *u
     const char *ipv6_end = NULL;
     /* validate IPv6 form */
     if (result->host[0] == '[') {
+
+        //****** Potential (minor) vulnerability ******/
+        //If there is no ']' in the input buffer, ipv6_end can be NULL here
+        //This can lead to some arithmatic overflows, although no OOB reads/writes
         ipv6_end = _strchrb(result->host, uri_end, ']');
+
         /* found end marker of IPv6 form beyond authority part */
-        if (ipv6_end >= authority_end) {
+        if (ipv6_end >= authority_end
+            || ipv6_end == NULL //Fixes vuln mentioned above
+            ) {
             return NULL;
         }
 
@@ -210,7 +217,7 @@ static const char *_consume_authority(uri_parser_result_t *result, const char *u
 static const char *_consume_path(uri_parser_result_t *result, const char *uri,
                                  const char *uri_end)
 {
-    assert(uri);
+    __CPROVER_assume(uri);
 
     result->path = uri;
     result->path_len = (uri_end - uri);
