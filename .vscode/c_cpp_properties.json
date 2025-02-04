@@ -9,7 +9,8 @@
             ],
             "includePath": [
                 "${default}",
-                "${workspaceFolder}/sys"
+                "${workspaceFolder}/sys",
+                "${workspaceFolder}/sys/clif/include"
             ]
         }
     ],
