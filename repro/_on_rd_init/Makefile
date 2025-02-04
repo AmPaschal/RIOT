@@ -11,5 +11,20 @@ RIOTBASE ?= $(CURDIR)/../..
 USEMODULE += cord_lc
 USEMODULE += gnrc_ipv6_default
 
+# Disable warnings
+WERROR ?= 0
+
+# Use LLVM
+
+TOOLCHAIN ?= llvm
+
+# Enable address sanitizer
+
+CFLAGS += -fsanitize=address
+CFLAGS += -fno-omit-frame-pointer
+
+LDFLAGS += -fsanitize=address
+LDFLAGS += -fno-omit-frame-pointer
 
 include $(RIOTBASE)/Makefile.include
+ 

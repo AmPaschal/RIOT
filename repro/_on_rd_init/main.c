@@ -36,19 +36,19 @@ static coap_pkt_t* alloc_coap_pkt(void) {
     pkt->payload_len = 0;
     pkt->options_len = 0;
 
-    uint8_t pkt_size = 40;
+    uint8_t pkt_size = 198;
     // __CPROVER_assume(pkt_size > sizeof(coap_hdr_t));
-    coap_hdr_t *hdr = malloc(sizeof(coap_hdr_t));
+    uint8_t *hdr = (uint8_t*)malloc(pkt_size);
 
     // __CPROVER_assume(hdr != NULL);
-    pkt->hdr = hdr;
-    uint8_t payload_offset = 39;
+    pkt->hdr = (coap_hdr_t*)hdr;
+    uint8_t payload_offset = 197;
     // __CPROVER_assume(payload_offset >= sizeof(coap_hdr_t) && payload_offset <= pkt_size);
     pkt->payload = hdr + payload_offset;
     pkt->payload_len = pkt_size - payload_offset;
 
     //Max number of options is 16
-    uint16_t opt_len = 1;
+    uint16_t opt_len = 10;
     // __CPROVER_assume(opt_len <= 16);
     pkt -> options_len = opt_len;
 
