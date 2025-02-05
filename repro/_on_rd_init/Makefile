@@ -14,6 +14,9 @@ USEMODULE += gnrc_ipv6_default
 # Disable warnings
 WERROR ?= 0
 
+# Show compile commands
+QUIET ?= 0
+
 # Use LLVM
 
 TOOLCHAIN ?= llvm
@@ -23,8 +26,7 @@ TOOLCHAIN ?= llvm
 CFLAGS += -fsanitize=address
 CFLAGS += -fno-omit-frame-pointer
 
-LDFLAGS += -fsanitize=address
-LDFLAGS += -fno-omit-frame-pointer
+LINKFLAGS += -fsanitize=address
+LINKFLAGS += -fno-omit-frame-pointer
 
 include $(RIOTBASE)/Makefile.include
- 

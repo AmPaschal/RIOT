@@ -238,7 +238,9 @@ void _on_rd_init(const gcoap_request_memo_t *memo, coap_pkt_t *pdu,
     }
 
 end:
-    thread_flags_set(_waiter, flag);
+
+    // thread_flags_set(_waiter, flag);
+    return;
 }
 
 static int _send_rd_init_req(coap_pkt_t *pkt, const sock_udp_ep_t *remote,
