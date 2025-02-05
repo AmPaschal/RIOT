@@ -42,7 +42,12 @@
         "byteorder.h": "c",
         "inet.h": "c",
         "errno.h": "c",
-        "executor": "c"
+        "executor": "c",
+        "cstring": "c",
+        "architecture.h": "c",
+        "string.h": "c",
+        "clif.h": "c",
+        "clif_internal.h": "c"
     },
     "[shellscript][c][cpp]": {
         "editor.tabSize": 4,
