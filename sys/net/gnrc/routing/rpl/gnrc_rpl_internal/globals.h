@@ -28,6 +28,8 @@ extern "C" {
 /**
  * @brief Event queue for msg events.
  */
+typedef evtimer_t evtimer_msg_t;
+
 extern evtimer_msg_t gnrc_rpl_evtimer;
 
 /**
