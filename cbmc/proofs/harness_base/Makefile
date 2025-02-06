@@ -24,4 +24,5 @@ H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
             -I$(ROOT)/boards/native/include/  \
 
 # Include our special build file
-include ../Makefile.include
+INCLUDE_PATH ?= ..
+include $(INCLUDE_PATH)/Makefile.include

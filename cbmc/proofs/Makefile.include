@@ -149,13 +149,22 @@ $(ENTRY).goto: $(ENTRY)5.goto
 # report if the proof failed. If the proof failed, we separately fail
 # the entire job using the check-cbmc-result rule.
 cbmc.xml: $(ENTRY).goto
-	-cbmc $(CBMCFLAGS) $(SOLVER) --unwinding-assertions --trace --xml-ui build/$^ > build/reports/$@ 2>&1
+	-@start=$$(date +%s); \
+	cbmc $(CBMCFLAGS) $(SOLVER) --unwinding-assertions --trace --xml-ui build/$^ > build/reports/$@ 2>&1; \
+	end=$$(date +%s); \
+	echo "CBMC execution time: $$(((end - start) / 60))m $$(((end - start) % 60))s"
 
 property.xml: $(ENTRY).goto
-	cbmc $(CBMCFLAGS) --unwinding-assertions --show-properties --xml-ui build/$^ > build/reports/$@ 2>&1
+	@start=$$(date +%s); \
+	cbmc $(CBMCFLAGS) --unwinding-assertions --show-properties --xml-ui build/$^ > build/reports/$@ 2>&1; \
+	end=$$(date +%s); \
+	echo "Property generation time: $$(((end - start) / 60))m $$(((end - start) % 60))s"
 
 coverage.xml: $(ENTRY).goto
-	cbmc $(CBMCFLAGS) --cover location --xml-ui build/$^ > build/reports/$@ 2>&1
+	@start=$$(date +%s); \
+	cbmc $(CBMCFLAGS) --cover location --xml-ui build/$^ > build/reports/$@ 2>&1; \
+	end=$$(date +%s); \
+	echo "Coverage generation time: $$(((end - start) / 60))m $$(((end - start) % 60))s"
 
 cbmc: cbmc.xml
 
