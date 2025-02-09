@@ -11,7 +11,7 @@ LINK = $(ROOT)/sys/base64/base64.c
 H_ENTRY = base64_encode_base
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1
+H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset base64_encode_base.0:7
 
 H_DEF = -DRIOT_VERSION=1 -DMODULE_SOCK_UDP=y -DSOCK_HAS_IPV6=y
 

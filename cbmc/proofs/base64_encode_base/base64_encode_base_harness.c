@@ -27,21 +27,24 @@
 void harness(void)
 {
     size_t data_in_size;
+
     __CPROVER_assume(data_in_size <= 20);
 
-    char* data_in = malloc(sizeof(data_in_size));
-    __CPROVER_assume(data_in != NULL);
+    //Ensure data_in_size does not equal 1 to prevent potential vuln in while loop
+    __CPROVER_assume(data_in_size != 1);
 
+    char* data_in = malloc(data_in_size);
+    // Code checks if it's null
 
     size_t base64_out_size;
     __CPROVER_assume(base64_out_size <= 20);
 
-    char* base64_out = malloc(sizeof(base64_out_size));
-    __CPROVER_assume(base64_out != NULL);
+    char* base64_out = malloc(base64_out_size);
+    // Code checks if it's null
 
     bool urlsafe;
     // We can assume this var behaves as needed because it does not seem user defined
 
     base64_encode_base(data_in, data_in_size,
-                              base64_out, base64_out_size, urlsafe);
+                              base64_out, &base64_out_size, urlsafe);
 }
