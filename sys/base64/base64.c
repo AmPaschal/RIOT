@@ -86,7 +86,7 @@ static void encode_three_bytes(uint8_t *dest,
     dest[3] = getsymbol(b3 & 0x3f, urlsafe);
 }
 
-static int base64_encode_base(const void *data_in, size_t data_in_size,
+int base64_encode_base(const void *data_in, size_t data_in_size,
                               void *base64_out, size_t *base64_out_size,
                               bool urlsafe)
 {
