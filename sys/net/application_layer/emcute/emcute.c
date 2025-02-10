@@ -51,7 +51,7 @@ static sock_udp_ep_t gateway;
 static uint8_t rbuf[CONFIG_EMCUTE_BUFSIZE];
 static uint8_t tbuf[CONFIG_EMCUTE_BUFSIZE];
 
-static emcute_sub_t *subs = NULL;
+emcute_sub_t *subs = NULL;
 
 static mutex_t txlock;
 
