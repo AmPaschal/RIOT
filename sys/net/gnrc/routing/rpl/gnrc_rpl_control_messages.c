@@ -512,7 +512,7 @@ static inline uint32_t _sec_to_ms(uint32_t sec)
 }
 
 /** @todo allow target prefixes in target options to be of variable length */
-static bool _parse_options(int msg_type, gnrc_rpl_instance_t *inst, gnrc_rpl_opt_t *opt,
+bool _parse_options(int msg_type, gnrc_rpl_instance_t *inst, gnrc_rpl_opt_t *opt,
                            uint16_t len,
                            ipv6_addr_t *src, uint32_t *included_opts)
 {
