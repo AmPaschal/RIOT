@@ -22,9 +22,34 @@
  */
 
 #include <stdlib.h>
+
 #include "sys/include/net/gnrc/rpl/structs.h"
 #include "net/ipv6.h"
+#include "evtimer_msg.h"
 
+#include "sys/net/gnrc/routing/rpl/gnrc_rpl_control_messages.c"
+
+void gnrc_ipv6_nib_ft_del(const ipv6_addr_t *dst, unsigned dst_len)
+{
+    return;
+}
+
+int gnrc_ipv6_nib_ft_add(const ipv6_addr_t *dst, unsigned dst_len,
+                         const ipv6_addr_t *next_hop, unsigned iface,
+                         uint32_t ltime)
+{
+    return;
+}
+
+gnrc_netif_t *gnrc_netif_get_by_pid(kernel_pid_t pid) {
+    //Normally this function can return NULL
+    //But _parse_options has an assert that checks for this
+    //So in the stub I'll assume it can't return NULL
+    gnrc_netif_t *new_netif = malloc(sizeof(gnrc_netif_t));
+    __CPROVER_assume(new_netif != NULL);
+    return new_netif;
+
+}
 
 void harness(void)
 {
@@ -38,7 +63,11 @@ void harness(void)
     //Options length doesn't include first 2 bytes in the struct
     gnrc_rpl_opt_t* opt = malloc(sizeof(gnrc_rpl_opt_t) + opt_len);
     __CPROVER_assume(opt != NULL);
-    opt -> length = opt_len;
+
+    //I believe this field represents the length of the data for this option stored in the buffer
+    //Rather than the length of the entire buffer (which stores several options)
+    __CPROVER_assume(opt -> length <= opt_len);
+
 
     ipv6_addr_t src; 
     uint32_t included_opts;

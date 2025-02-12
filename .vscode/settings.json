@@ -47,7 +47,9 @@
         "architecture.h": "c",
         "string.h": "c",
         "clif.h": "c",
-        "clif_internal.h": "c"
+        "clif_internal.h": "c",
+        "stdio.h": "c",
+        "evtimer_msg.h": "c"
     },
     "[shellscript][c][cpp]": {
         "editor.tabSize": 4,

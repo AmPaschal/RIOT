@@ -563,7 +563,13 @@ bool _parse_options(int msg_type, gnrc_rpl_instance_t *inst, gnrc_rpl_opt_t *opt
             inst->min_hop_rank_inc = byteorder_ntohs(dc->min_hop_rank_inc);
             dodag->default_lifetime = dc->default_lifetime;
             dodag->lifetime_unit = byteorder_ntohs(dc->lifetime_unit);
-            dodag->trickle.Imin = (1 << dodag->dio_min);
+
+            //******* POTENTIAL VULNERABILITY *******/
+            // There can be an arithmatic overflow here if dodag->dio_min >= 32
+            // dodag->dio_min is assigned just above here, and comes from the input options
+            // Which I believe is user controlled
+            // I'll change this line to use a max of 31 to remove the error
+            dodag->trickle.Imin = (1 << (dodag->dio_min >= 31 ? 30 : dodag->dio_min));
             dodag->trickle.Imax = dodag->dio_interval_doubl;
             dodag->trickle.k = dodag->dio_redun;
             break;
