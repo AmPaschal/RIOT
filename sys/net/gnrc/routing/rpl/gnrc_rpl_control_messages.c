@@ -169,7 +169,7 @@ static inline bool gnrc_rpl_validation_DAO_ACK(gnrc_rpl_dao_ack_t *dao_ack,
     return false;
 }
 
-static gnrc_netif_t *_find_interface_with_rpl_mcast(void)
+gnrc_netif_t *_find_interface_with_rpl_mcast(void)
 {
     gnrc_netif_t *netif = NULL;
 
