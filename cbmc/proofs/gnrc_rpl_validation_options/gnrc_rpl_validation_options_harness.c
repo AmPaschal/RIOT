@@ -38,12 +38,12 @@ void harness(void)
     __CPROVER_assume(opt_len <= 100);
 
     //Options length doesn't include first 2 bytes in the struct
-    gnrc_rpl_opt_t* opt = malloc(sizeof(gnrc_rpl_opt_t) + opt_len);
+    gnrc_rpl_opt_t* opt = malloc(opt_len);
     __CPROVER_assume(opt != NULL);
 
     //I believe this field represents the length of the data for this option stored in the buffer
     //Rather than the length of the entire buffer (which stores several options)
-    __CPROVER_assume(opt -> length <= opt_len);
+    // __CPROVER_assume(opt -> length <= opt_len);
 
     gnrc_rpl_validation_options(msg_type, &inst, opt, opt_len);
 }
