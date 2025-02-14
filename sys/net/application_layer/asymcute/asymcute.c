@@ -413,7 +413,7 @@ static void _on_pingresp(asymcute_con_t *con)
     mutex_unlock(&con->lock);
 }
 
-static void _on_regack(asymcute_con_t *con, const uint8_t *data, size_t len)
+void _on_regack(asymcute_con_t *con, const uint8_t *data, size_t len)
 {
     mutex_lock(&con->lock);
     asymcute_req_t *req = _req_preprocess(con, len, MINLEN_REGACK,
