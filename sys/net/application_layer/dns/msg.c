@@ -71,36 +71,36 @@ static unsigned _get_short(const uint8_t *buf)
     return _tmp;
 }
 
-static ssize_t _skip_hostname(const uint8_t *buf, size_t len,
-                              const uint8_t *bufpos)
+static ssize_t _skip_hostname(const uint8_t *buf)
 {
-    const uint8_t *buflim = buf + len;
-    unsigned res = 0;
+    uint8_t* bufpos = buf;
+    // const uint8_t *buflim = buf + len;
+    // unsigned res = 0;
 
-    if (bufpos >= buflim) {
-        /* out-of-bound */
-        DEBUG("dns_msg: bufpos is out of bounds\n");
-        return -EBADMSG;
-    }
+    // if (bufpos >= buflim) {
+    //     /* out-of-bound */
+    //     DEBUG("dns_msg: bufpos is out of bounds\n");
+    //     return -EBADMSG;
+    // }
 
     /* handle DNS Message Compression */
     if (*bufpos & 0xc0) {
         DEBUG("dns_msg: hostname is compressed\n");
-        if ((bufpos + 2) >= buflim) {
-            return -EBADMSG;
-        }
+        // if ((bufpos + 2) >= buflim) {
+        //     return -EBADMSG;
+        // }
         return 2;
     }
 
-    while (bufpos[res]) {
-        res += bufpos[res] + 1;
-        if ((&bufpos[res]) >= buflim) {
-            /* out-of-bound */
-            DEBUG("dns_msg: hostname out-of-bounds\n");
-            return -EBADMSG;
-        }
+    while (*bufpos) {
+        bufpos += *bufpos + 1;
+        // if ((&bufpos[res]) >= buflim) {
+        //     /* out-of-bound */
+        //     DEBUG("dns_msg: hostname out-of-bounds\n");
+        //     return -EBADMSG;
+        // }
     }
-    return res + 1;
+    return (bufpos - buf + 1);
 }
 
 size_t dns_msg_compose_query(void *dns_buf, const char *domain_name,
@@ -146,26 +146,29 @@ int dns_msg_parse_reply(const uint8_t *buf, size_t len, int family,
 
     /* skip all queries that are part of the reply */
     for (unsigned n = 0; n < ntohs(hdr->qdcount); n++) {
-        ssize_t tmp = _skip_hostname(buf, len, bufpos);
-        if (tmp < 0) {
-            return tmp;
-        }
-        bufpos += tmp;
-        /* skip type and class of query */
-        bufpos += (RR_TYPE_LENGTH + RR_CLASS_LENGTH);
+        bufpos += _skip_hostname(bufpos);
+        bufpos += 4;    /* skip type and class of query */
+        // ssize_t tmp = _skip_hostname(buf, len, bufpos);
+        // if (tmp < 0) {
+        //     return tmp;
+        // }
+        // bufpos += tmp;
+        // /* skip type and class of query */
+        // bufpos += (RR_TYPE_LENGTH + RR_CLASS_LENGTH);
     }
 
     for (unsigned n = 0; n < ntohs(hdr->ancount); n++) {
-        ssize_t tmp = _skip_hostname(buf, len, bufpos);
-        if (tmp < 0) {
-            return tmp;
-        }
-        bufpos += tmp;
-        if ((bufpos + RR_TYPE_LENGTH + RR_CLASS_LENGTH +
-             RR_TTL_LENGTH) >= buflim) {
-            DEBUG("dns_msg: record beyond buf limit");
-            return -EBADMSG;
-        }
+        bufpos += _skip_hostname(bufpos);
+        // ssize_t tmp = _skip_hostname(buf, len, bufpos);
+        // if (tmp < 0) {
+        //     return tmp;
+        // }
+        // bufpos += tmp;
+        // if ((bufpos + RR_TYPE_LENGTH + RR_CLASS_LENGTH +
+        //      RR_TTL_LENGTH + sizeof(uint16_t)) >= buflim) {
+        //     DEBUG("dns_msg: record beyond buf limit");
+        //     return -EBADMSG;
+        // }
         uint16_t _type = ntohs(_get_short(bufpos));
         bufpos += RR_TYPE_LENGTH;
         uint16_t class = ntohs(_get_short(bufpos));
@@ -189,21 +192,21 @@ int dns_msg_parse_reply(const uint8_t *buf, size_t len, int family,
                 ((_type == DNS_TYPE_AAAA) && (family == AF_INET)) ||
                 ! ((_type == DNS_TYPE_A) || ((_type == DNS_TYPE_AAAA))
                     )) {
-            if (rdlen > len) {
-                /* buffer wraps around memory space */
-                return -EBADMSG;
-            }
+            // if (rdlen > len) {
+            //     /* buffer wraps around memory space */
+            //     return -EBADMSG;
+            // }
             bufpos += rdlen;
             /* other out-of-bound is checked in `_skip_hostname()` at start of
              * loop */
             continue;
         }
-        if (((rdlen != INADDRSZ)  && (family == AF_INET))  ||
-            ((rdlen != IN6ADDRSZ) && (family == AF_INET6)) ||
-            ((rdlen != IN6ADDRSZ) && (rdlen != INADDRSZ) &&
-             (family == AF_UNSPEC))) {
-            return -EBADMSG;
-        }
+        // if (((rdlen != INADDRSZ)  && (family == AF_INET))  ||
+        //     ((rdlen != IN6ADDRSZ) && (family == AF_INET6)) ||
+        //     ((rdlen != IN6ADDRSZ) && (rdlen != INADDRSZ) &&
+        //      (family == AF_UNSPEC))) {
+        //     return -EBADMSG;
+        // }
 
         memcpy(addr_out, bufpos, rdlen);
         return rdlen;
