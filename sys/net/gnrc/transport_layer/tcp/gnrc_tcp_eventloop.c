@@ -263,7 +263,7 @@ int _receive(gnrc_pktsnip_t *pkt)
                 TCP_DEBUG_ERROR("Can't dispatch to network layer.");
             }
         }
-        gnrc_pktbuf_release(pkt);
+        // gnrc_pktbuf_release(pkt);
         TCP_DEBUG_ERROR("-ENOTCONN: Unable to find matching TCB.");
         TCP_DEBUG_LEAVE;
         return -ENOTCONN;
