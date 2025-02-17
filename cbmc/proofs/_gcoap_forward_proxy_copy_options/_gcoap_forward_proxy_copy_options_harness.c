@@ -36,49 +36,21 @@
             -   different. Hence, I dont think they should be fully allocated with the same function. Maybe a base allocation function and additional constraints as needed.
     */
 
-static coap_pkt_t* alloc_coap_pkt_t()
-{
-    coap_pkt_t *pkt = malloc(sizeof(coap_pkt_t));
-    __CPROVER_assume(pkt != NULL);
+ssize_t coap_opt_get_next(const coap_pkt_t *pkt, coap_optpos_t *opt,
+                               uint8_t **value, bool init_opt) {
 
-    //The target function requires a buffer of options in the packet, which based on _add_opt_pkt,
-    //are kept in between the header and the payload. I think each option is 1-5 bytes long,
-    //stores information about its own length and you can have up to 16 of them
-    uint16_t opt_len;
-    __CPROVER_assume(opt_len <= 16);
-    pkt -> options_len = opt_len;
+    uint16_t opt_num;
+    uint16_t offset;
 
+    opt->opt_num = opt_num;
+    opt->offset = offset;
 
+    uint16_t len;
+    *value = malloc(len);
+    __CPROVER_assume(*value != NULL);
 
-    uint16_t payload_len;
-    __CPROVER_assume(payload_len <= 100);
-
-    //Based on the comment in the header file, the payload pointer must point to
-    //the end of the header at all times, so I'll allocate the space for the payload
-    //after the end of the header and point payload to directly after it
-    coap_hdr_t *hdr = malloc(sizeof(coap_hdr_t) + (opt_len) + payload_len);
-    __CPROVER_assume(hdr != NULL);
-    __CPROVER_assume(__CPROVER_rw_ok(hdr, sizeof(coap_hdr_t) + (opt_len) + payload_len));
-
-    //Set a token length of 0 to make it easier to model
-    uint8_t token_len = 0xf0;
-
-    hdr -> ver_t_tkl = token_len;
+    return len;
     
-    //The length stored in each option is used to try and read values, I'm going to set the delta to 1 and the length to 0 for everything
-    //Because the actual values for each option don't matter for this function (I think)
-    // for(int i = 0; i < opt_len; i++) {
-    //     *(uint8_t*)(hdr + sizeof(coap_hdr_t) + i) == 0x10;
-    // }
-
-    pkt -> hdr = hdr;
-
-    uint8_t *payload = (uint8_t*) ((uint8_t*) hdr + sizeof(coap_hdr_t) + (opt_len));
-
-    pkt->payload = payload;
-    pkt->payload_len = payload_len;
-
-    return pkt;
 }
 
 static coap_pkt_t* alloc_coap_pkt() {
