@@ -429,10 +429,10 @@ void _on_regack(asymcute_con_t *con, const uint8_t *data, size_t len)
     if (data[6] == MQTTSN_ACCEPTED) {
         /* finish the registration by applying the topic id */
         asymcute_topic_t *topic = req->arg;
-        if (topic == NULL) {
-            mutex_unlock(&con->lock);
-            return;
-        }
+        // if (topic == NULL) {
+        //     mutex_unlock(&con->lock);
+        //     return;
+        // }
 
         topic->id = byteorder_bebuftohs(&data[2]);
         topic->con = con;
