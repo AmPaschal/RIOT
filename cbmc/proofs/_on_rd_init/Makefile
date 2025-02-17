@@ -11,7 +11,7 @@ LINK = $(ROOT)/sys/net/application_layer/cord/lc/cord_lc.c # $(ROOT)/sys/net/app
 H_ENTRY = _on_rd_init
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1 
+H_CBMCFLAGS = --nondet-static
 
 
 H_DEF = -DRIOT_VERSION=1 -DMODULE_SOCK_UDP=y -DSOCK_HAS_IPV6=y
@@ -27,4 +27,5 @@ H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
             -I$(ROOT)/sys/clif/include/ \
 
 # Include our special build file
-include ../Makefile.include
+MAKE_INCLUDE_PATH ?= ..
+include $(MAKE_INCLUDE_PATH)/Makefile.include
