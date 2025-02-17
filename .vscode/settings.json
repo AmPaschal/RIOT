@@ -49,7 +49,10 @@
         "clif.h": "c",
         "clif_internal.h": "c",
         "stdio.h": "c",
-        "evtimer_msg.h": "c"
+        "evtimer_msg.h": "c",
+        "buffer": "c",
+        "internet": "c",
+        "socket": "c"
     },
     "[shellscript][c][cpp]": {
         "editor.tabSize": 4,
