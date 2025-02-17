@@ -23,7 +23,8 @@ H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
             -I$(ROOT)/cpu/native/include/  \
             -I$(ROOT)/drivers/include/  \
             -I$(ROOT)/boards/native/include/  \
-            -I$(ROOT)/sys/net/gnrc/sock/include/
+            -I$(ROOT)/sys/net/gnrc/sock/include/ \
+            -I$(ROOT)/sys/net/application_layer/dhcpv6/ \
 
 # Include our special build file
 include ../Makefile.include

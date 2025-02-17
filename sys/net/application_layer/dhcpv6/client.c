@@ -799,11 +799,6 @@ void _parse_advertise(uint8_t *adv, size_t len)
 {
     dhcpv6_opt_smr_t *smr = NULL;
 
-    if (0) {  // NEW VULNERABILITY: Also allocate size for the first option
-        // NEEDS to be at least this size
-        return;
-    }
-
     /* might not have been executed when not received in first retransmission
      * window => redo even if already done */
     if (_preparse_advertise(adv, len, NULL) < 0) {
@@ -814,11 +809,14 @@ void _parse_advertise(uint8_t *adv, size_t len)
     }
     DEBUG("DHCPv6 client: scheduling REQUEST\n");
     event_post(event_queue, &request);
+    size_t lastlen = len;
+    len -= sizeof(dhcpv6_msg_t);
     for (dhcpv6_opt_t *opt = (dhcpv6_opt_t *)(&adv[sizeof(dhcpv6_msg_t)]);
-         len > 0; len -= _opt_len(opt), opt = _opt_next(opt)) {  // NEW VULNERABILITY: Ensure enough space for cast
-        switch (byteorder_ntohs(opt->type)) {
+         len > sizeof(dhcpv6_opt_t) && len < lastlen; len -= _opt_len(opt), opt = _opt_next(opt)) {  // NEW VULNERABILITY: Ensure enough space for cast
+        lastlen = len;
+            switch (byteorder_ntohs(opt->type)) {
             case DHCPV6_OPT_IA_PD:
-                if (_opt_len(opt) < sizeof(dhcpv6_opt_ia_pd_t)) {
+                if (len < sizeof(dhcpv6_opt_ia_pd_t)) {
                     DEBUG("DHCPv6 client: IA_PD option underflow minimum size\n");
                     return;
                 }
@@ -863,7 +861,7 @@ void _parse_advertise(uint8_t *adv, size_t len)
                 }
                 break;
             case DHCPV6_OPT_IA_NA:
-                if (_opt_len(opt) < sizeof(dhcpv6_opt_ia_na_t)) {
+                if (len < sizeof(dhcpv6_opt_ia_na_t)) {
                     DEBUG("DHCPv6 client: IA_NA option underflows minimum size\n");
                     return;
                 }
@@ -909,7 +907,7 @@ void _parse_advertise(uint8_t *adv, size_t len)
                 }
                 break;
             case DHCPV6_OPT_SMR:
-                if (_opt_len(opt) < sizeof(dhcpv6_opt_smr_t)) {
+                if (len < sizeof(dhcpv6_opt_smr_t)) {
                     DEBUG("DHCPv6 client: SMR option underflows minimum size\n");
                     return;
                 }

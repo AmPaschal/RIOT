@@ -11,6 +11,28 @@
 
 #include "byteorder.h"
 
+#include <assert.h>
+#include <stdbool.h>
+
+#include "event.h"
+#include "event/timeout.h"
+#include "log.h"
+#include "kernel_defines.h"
+#include "net/dhcpv6/client.h"
+#include "net/dhcpv6.h"
+#include "net/netif.h"
+#include "net/sock/udp.h"
+#include "random.h"
+#include "timex.h"
+#if IS_USED(MODULE_ZTIMER)
+#include "ztimer.h"
+#else
+#include "xtimer.h"
+#include "xtimer/implementation.h"
+#endif
+
+#include "_dhcpv6.h"
+
 uint32_t random_uint32_range(uint32_t a, uint32_t b) {
 
     // Create unconstrained int
@@ -31,11 +53,11 @@ uint32_t random_uint32_range(uint32_t a, uint32_t b) {
 //     return val;
 // }
 
-// int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf) {
-//     int val;
+int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf) {
+    int val;
 
-//     return val;
-// }
+    return val;
+}
 
 /**
  * @brief Starting point for formal analysis
@@ -49,7 +71,7 @@ uint32_t random_uint32_range(uint32_t a, uint32_t b) {
 
     // Constrain size to be something reasonable:
 
-    __CPROVER_assume(len <= 500);
+    __CPROVER_assume(len >= sizeof(dhcpv6_msg_t) + sizeof(dhcpv6_opt_t));
 
     // Allocate data of length
 
