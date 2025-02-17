@@ -650,7 +650,7 @@ int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf)
     }
     len -= sizeof(dhcpv6_msg_t);
     for (dhcpv6_opt_t *opt = (dhcpv6_opt_t *)(&adv[sizeof(dhcpv6_msg_t)]);
-         len > 0; len -= _opt_len(opt), opt = _opt_next(opt)) {  // NEW VULNERABILITY: Ensure we have enough size for cast
+         len > sizeof(dhcpv6_opt_t); len -= _opt_len(opt), opt = _opt_next(opt)) {  // NEW VULNERABILITY: Ensure we have enough size for cast
         if (len > orig_len) {
             DEBUG("DHCPv6 client: ADVERTISE options overflow packet boundaries\n");
             return -1;
@@ -697,13 +697,6 @@ int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf)
     }
     if ((server.duid_len == 0) || (pref_val > server.pref)) {
 
-        // Check to see if destination size is large enough:
-
-        if (DHCPV6_CLIENT_BUFLEN < orig_len) {
-            // Requested copy size is too big
-
-            return -1;
-        }
         memcpy(best_adv, recv_buf, orig_len);
         if (buf != NULL) {
             *buf = best_adv;
