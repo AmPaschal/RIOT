@@ -11,7 +11,7 @@ ROOT = ../../..
 H_ENTRY = nimble_scanlist_update
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1
+H_CBMCFLAGS = --nondet-static 
 
 
 H_DEF = 
@@ -29,4 +29,5 @@ H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
             -I$(ROOT)/pkg/nimble/npl/include/
 
 # Include our special build file
-include ../Makefile.include
+MAKE_INCLUDE_PATH ?= ..
+include $(MAKE_INCLUDE_PATH)/Makefile.include

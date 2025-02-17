@@ -64,27 +64,19 @@ ztimer_now_t ztimer_now(ztimer_clock_t *clock) {
 
 nimble_scanlist_entry_t *_find(const ble_addr_t *addr)
 {
-    bool val;
+    nimble_scanlist_entry_t *ent = (nimble_scanlist_entry_t *)malloc(sizeof(nimble_scanlist_entry_t));
 
-    if (val) {
-        // Create unconstrained scanlist entry:
-
-        nimble_scanlist_entry_t *ent = (nimble_scanlist_entry_t *)malloc(sizeof(nimble_scanlist_entry_t));
-
-        return ent;
-    }
-
-    return NULL;
+    return ent;
 }
 
 clist_node_t *clist_lpop(clist_node_t *list)
 {
-    return (clist_node_t*)_find(NULL);
+    uint8_t size;
+    __CPROVER_assume(size > sizeof(nimble_scanlist_entry_t));
+
+    uint8_t *item = malloc(size);
+    return item;
 }
-
-void clist_rpush(clist_node_t *list, clist_node_t *new_node) {}
-
-void _assert_panic(void) {}
 
 void nimble_scanlist_update(uint8_t type, const ble_addr_t *addr,
                             const nimble_scanner_info_t *info,
@@ -93,8 +85,8 @@ void nimble_scanlist_update(uint8_t type, const ble_addr_t *addr,
     assert(addr);
 
     /* Ignore bogus advertisements */
-    // if (len > BLE_ADV_PDU_LEN) {
-    if (0) {  // Disable length check
+    if (len > BLE_ADV_PDU_LEN) {
+    // if (0) {  // Disable length check
 
         assert(0);
         return;
