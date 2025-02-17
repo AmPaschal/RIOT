@@ -53,14 +53,6 @@ typedef struct {
     uint8_t phy_sec;             /**< secondary PHY advertised */
 } nimble_scanlist_entry_t;
 
-ztimer_now_t ztimer_now(ztimer_clock_t *clock) {
-
-    // Just return unconstrained value:
-
-    ztimer_now_t val;
-
-    return val;
-}
 
 nimble_scanlist_entry_t *_find(const ble_addr_t *addr)
 {
@@ -78,6 +70,12 @@ clist_node_t *clist_lpop(clist_node_t *list)
     return item;
 }
 
+uint32_t *now(ztimer_clock_t *clock) {
+    uint8_t *time = malloc(sizeof(uint32_t));
+    return time;
+
+}
+
 void nimble_scanlist_update(uint8_t type, const ble_addr_t *addr,
                             const nimble_scanner_info_t *info,
                             const uint8_t *ad, size_t len)
@@ -92,7 +90,7 @@ void nimble_scanlist_update(uint8_t type, const ble_addr_t *addr,
         return;
     }
 
-    uint32_t now = (uint32_t)ztimer_now(0);
+    uint32_t now = (uint32_t)ztimer_now(ZTIMER_USEC);
     nimble_scanlist_entry_t *e = _find(addr);
 
     if (!e) {
@@ -121,6 +119,8 @@ void nimble_scanlist_update(uint8_t type, const ble_addr_t *addr,
     e->last_update = now;
 }
 
+ztimer_clock_t * ZTIMER_USEC;
+
 void harness(void)
 {
     // Model input variables:
@@ -137,6 +137,13 @@ void harness(void)
     uint8_t *ad = (uint8_t *)malloc(sizeof(uint8_t) * len);
 
     // Call the function with inputs:
+
+    ZTIMER_USEC = malloc(sizeof(ztimer_clock_t));
+    __CPROVER_assume(ZTIMER_USEC != NULL);
+    ZTIMER_USEC->ops = malloc(sizeof(ztimer_ops_t));
+    __CPROVER_assume(ZTIMER_USEC->ops != NULL);
+    ZTIMER_USEC->ops->now = now;
+
 
     nimble_scanlist_update(type, &addr, &info, ad, len);
 }

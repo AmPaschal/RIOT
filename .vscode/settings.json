@@ -10,7 +10,8 @@
         "*.mk": "makefile",
         "*.sketch": "cpp",
         "*.inc": "c",
-        "cassert": "c"
+        "cassert": "c",
+        "chrono": "cpp"
     },
     "[shellscript][c][cpp]": {
         "editor.tabSize": 4,

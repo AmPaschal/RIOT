@@ -368,7 +368,7 @@ typedef struct {
  */
 struct ztimer_clock {
     ztimer_base_t list;             /**< list of active timers              */
-    const ztimer_ops_t *ops;        /**< pointer to methods structure       */
+    ztimer_ops_t *ops;        /**< pointer to methods structure       */
     ztimer_base_t *last;            /**< last timer in queue, for _is_set() */
     uint16_t adjust_set;            /**< will be subtracted on every set()  */
     uint16_t adjust_sleep;          /**< will be subtracted on every sleep(),
@@ -827,7 +827,7 @@ static inline void ztimer_init_extend(ztimer_clock_t *clock)
 /**
  * @brief   Default ztimer microsecond clock
  */
-extern ztimer_clock_t *const ZTIMER_USEC;
+extern ztimer_clock_t * ZTIMER_USEC;
 
 /**
  * @brief   Default ztimer millisecond clock
