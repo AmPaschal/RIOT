@@ -125,23 +125,12 @@ void harness(void)
     //I'm allocing this because the path var which I need to make sure is defined is constant
 
     uint8_t path_len;
-    __CPROVER_assume(path_len <= 20);
     char* path = malloc(path_len);
     __CPROVER_assume(path != NULL);
 
-    if(path_len != 0) {
-        __CPROVER_assume(path[path_len - 1] == '\0');
-    }
-
     uint8_t query_len;
-    __CPROVER_assume(query_len <= 20);
     char* query = malloc(query_len);
     __CPROVER_assume(query != NULL);
-
-
-    if(query_len != 0) {
-        __CPROVER_assume(query[query_len - 1] == '\0');
-    }
 
     urip -> path = path;
     urip -> path_len = path_len;
