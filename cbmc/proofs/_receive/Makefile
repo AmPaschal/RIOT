@@ -11,9 +11,9 @@ LINK = $(ROOT)/sys/net/gnrc/transport_layer/tcp/gnrc_tcp_eventloop.c
 H_ENTRY = _receive
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1
+H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset  _receive.15:2
 
-H_DEF = -DRIOT_VERSION=1 -DMODULE_SOCK_UDP=y -DSOCK_HAS_IPV6=y -DMODULE_GNRC_NETIF_IPV6=1
+H_DEF = -DRIOT_VERSION=1 -DMODULE_SOCK_UDP=y -DSOCK_HAS_IPV6=y -DMODULE_GNRC_NETIF_IPV6=1 -DMODULE_GNRC_NETTYPE_TCP=1 -DMODULE_GNRC_IPV6=1 -DMODULE_GNRC_NETTYPE_IPV6=1
 
 H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
             -I$(ROOT)/core/lib/include/  \
@@ -21,7 +21,8 @@ H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
             -I$(ROOT)/cpu/native/include/  \
             -I$(ROOT)/drivers/include/  \
             -I$(ROOT)/boards/native/include/  \
-            -I$(ROOT)/sys/net/gnrc/sock/include \            
+            -I$(ROOT)/sys/net/gnrc/sock/include \
+            -I$(ROOT)/sys/net/gnrc/transport_layer/tcp/include/ \   
 
 # Include our special build file
 include ../Makefile.include
