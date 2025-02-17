@@ -44,11 +44,6 @@ static coap_pkt_t* alloc_coap_pkt() {
     pkt->payload = hdr + payload_offset;
     pkt->payload_len = pkt_size - payload_offset;
 
-    //Max number of options is 16
-    uint16_t opt_len;
-    __CPROVER_assume(opt_len <= 16);
-    pkt -> options_len = opt_len;
-
     return pkt;
 }
 
