@@ -12,10 +12,10 @@ H_ENTRY = _parse_advertise
 
 # Extra CBMC flags to be passed during CBMC analysis
 # H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset _preparse_advertise.3:5 --unwindset _parse_advertise.10:5 --unwindset memcmp.0:45 --unwindset _parse_advertise.4:5 --unwindset _parse_advertise.8:5 --unwindset _parse_advertise.3:5 --unwindset _parse_advertise.7:5 --unwindset _parse_advertise.10:5
-H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset _preparse_advertise.3:4 --unwindset _parse_advertise.10:4 --unwindset memcmp.0:45 --unwindset _parse_advertise.4:2 --unwindset _parse_advertise.8:2 --unwindset _parse_advertise.3:2 --unwindset _parse_advertise.7:2 --unwindset _parse_advertise.10:2
+H_CBMCFLAGS = --nondet-static --unwindset _parse_advertise.3:2 --unwindset _parse_advertise.7:2 --unwindset _parse_advertise.10:2
 
 
-H_DEF = -DSOCK_HAS_IPV6=1 -DMODULE_DHCPV6_CLIENT_IA_PD=1 -DMODULE_DHCPV6_CLIENT_IA_NA=1
+H_DEF = -DSOCK_HAS_IPV6=1 -DMODULE_DHCPV6_CLIENT_IA_PD=1 -DMODULE_DHCPV6_CLIENT_IA_NA=1 -DENABLE_DEBUG=1
 
 H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
             -I$(ROOT)/core/lib/include/  \
@@ -27,4 +27,5 @@ H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
             -I$(ROOT)/sys/net/application_layer/dhcpv6/ \
 
 # Include our special build file
-include ../Makefile.include
+MAKE_INCLUDE_PATH ?= ..
+include $(MAKE_INCLUDE_PATH)/Makefile.include
