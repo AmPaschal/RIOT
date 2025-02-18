@@ -3,52 +3,36 @@
  * @brief Implements the proof harness for _iphc_ipv6_encode function.
  */
 
+#include <stdbool.h>
+
+#include "byteorder.h"
+#include "net/ipv6/hdr.h"
+#include "net/ipv6/ext.h"
 #include "net/gnrc.h"
+#include "net/gnrc/netif/internal.h"
+#include "net/gnrc/sixlowpan.h"
+#include "net/gnrc/sixlowpan/ctx.h"
+#include "net/gnrc/sixlowpan/frag/rb.h"
+#include "net/gnrc/sixlowpan/frag/minfwd.h"
+#ifdef MODULE_GNRC_SIXLOWPAN_FRAG_SFR
+#include "net/gnrc/sixlowpan/frag/sfr.h"
+#endif  /* MODULE_GNRC_SIXLOWPAN_FRAG_SFR */
+#ifdef MODULE_GNRC_SIXLOWPAN_FRAG_VRB
+#include "net/gnrc/sixlowpan/frag/vrb.h"
+#endif  /* MODULE_GNRC_SIXLOWPAN_FRAG_VRB */
+#include "net/gnrc/sixlowpan/internal.h"
+#include "net/sixlowpan.h"
+#include "utlist.h"
+#include "net/gnrc/nettype.h"
+#include "net/gnrc/udp.h"
+#include "od.h"
 
-// Do nothing when locking a mutex
-inline void mutex_lock(mutex_t *mutex) {}
+#include "net/gnrc/sixlowpan/iphc.h"
 
-void rmutex_lock(rmutex_t *rmutex) {}
-
-void rmutex_unlock(rmutex_t *rmutex) {}
-
-uint32_t _xtimer_now(void) {}
-
-void _assert_panic(void) {
-    __CPROVER_assume(false);
-}
-
-uint8_t ipv6_addr_match_prefix(const ipv6_addr_t *a, const ipv6_addr_t *b) {
-    uint8_t prefix_len;
-
-    return prefix_len;
-}
-
-int gnrc_netif_ipv6_get_iid(gnrc_netif_t *netif, eui64_t *iid) {
-
-    // Create iid:
-
-    iid = (eui64_t*)malloc(sizeof(eui64_t));
-
-    int res;
-
-    return res;
-}
-
-int gnrc_netif_hdr_ipv6_iid_from_dst(const gnrc_netif_t *netif,
-                                     const gnrc_netif_hdr_t *hdr,
-                                     eui64_t *iid)
-{
-
-    // Allocate some iid data:
-
-    iid = (eui64_t *)malloc(sizeof(eui64_t));
-
-    // Just return unconstrained int:
-
-    int val;
-
-    return val;
+gnrc_sixlowpan_ctx_t *gnrc_sixlowpan_ctx_lookup_addr(const ipv6_addr_t *addr) {
+    gnrc_sixlowpan_ctx_t *ctx = malloc(sizeof(gnrc_sixlowpan_ctx_t));
+    
+    return ctx;
 }
 
 /**
@@ -73,23 +57,19 @@ void harness(void)
     if (pkt.next != NULL) {
         // Allocate a IPv6 header in the data:
 
+        uint16_t size;
+
+        __CPROVER_assume(size > sizeof(ipv6_hdr_t));
+
         // pkt.next->data = malloc(sizeof(ipv6_hdr_t));
-        pkt.next->data = malloc(pkt.next->size);  // Use unconstrained size
-
-        // Allocated data will NOT be null:
-
-        // __CPROVER_assume(pkt.next->data != NULL);
-
-        // Unconstrained size
-        // pkt.next->size = sizeof(ipv6_hdr_t);
+        pkt.next->data = malloc(size);  // Use unconstrained size
+        __CPROVER_assume(pkt.next->data != NULL);
+        pkt.next->size = size;
     }
-
-    // Allocate some data
-    // (Not sure what size to use yet)
 
     size_t len;
 
-    __CPROVER_assume(len >= 50);
+    __CPROVER_assume(len >= 41);
 
     uint8_t *data = (uint8_t*)malloc(sizeof(uint8_t) * len);
 
