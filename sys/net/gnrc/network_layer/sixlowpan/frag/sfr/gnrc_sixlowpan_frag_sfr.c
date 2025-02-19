@@ -92,7 +92,7 @@ static uint32_t _last_frame_sent = 0U;
 static _frag_desc_t _frag_descs_pool[FRAG_DESCS_POOL_SIZE];
 static _frame_queue_t _frame_queue_pool[FRAME_QUEUE_POOL_SIZE];
 
-static clist_node_t _frag_descs_free;
+clist_node_t _frag_descs_free;
 static clist_node_t _frame_queue_free;
 static clist_node_t _frame_queue;
 

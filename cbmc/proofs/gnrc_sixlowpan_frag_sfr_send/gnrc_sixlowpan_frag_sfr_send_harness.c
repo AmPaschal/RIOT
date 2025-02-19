@@ -53,6 +53,7 @@
 #include "net/gnrc/sixlowpan/frag/sfr/congure.h"
 
 extern evtimer_msg_t _arq_timer;
+extern clist_node_t _frag_descs_free;
 
 typedef struct {
     clist_node_t super;     /**< list parent instance */
@@ -103,12 +104,6 @@ clist_node_t *clist_lpop(clist_node_t *list)
     return node;
 }
 
-//Adds onto a circular linked list
-//I think this is how I would stub this?
-void clist_rpush(clist_node_t *list, clist_node_t *new_node)
-{
-    __CPROVER_havoc_object(list -> next);
-}
 
 
 void harness(void) 
@@ -121,13 +116,13 @@ void harness(void)
 
     //Data buffer is read as gnrc_netif_hdr_t, I'm going to assume it's at least that size
     //However if it is less than that size I think it can cause an OOB read
-    __CPROVER_assume(size <= 100 && size >= sizeof(gnrc_netif_hdr_t));
+    __CPROVER_assume(size >= sizeof(gnrc_netif_hdr_t));
     uint8_t* data = malloc(size);
     __CPROVER_assume(data != NULL);
     
     pkt -> data = data;
     pkt -> size = size;
-    pkt -> type = GNRC_NETTYPE_NETIF; //This is checked via an assert at the start of the func
+    // pkt -> type = GNRC_NETTYPE_NETIF; //This is checked via an assert at the start of the func
 
     gnrc_sixlowpan_frag_fb_t* ctx = malloc(sizeof(gnrc_sixlowpan_frag_fb_t));
     __CPROVER_assume(ctx != NULL);
@@ -150,6 +145,8 @@ void harness(void)
     //This is checked somewhere, I think it can be NULL but can't be an invalid obj
     evtimer_event_t* events = malloc(sizeof(evtimer_event_t));
     _arq_timer.events = events;
+
+    _frag_descs_free.next = malloc(sizeof(struct list_node));
 
     gnrc_sixlowpan_frag_sfr_send(pkt, ctx, page);
 
