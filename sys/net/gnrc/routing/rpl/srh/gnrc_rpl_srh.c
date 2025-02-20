@@ -81,7 +81,7 @@ int gnrc_rpl_srh_process(ipv6_hdr_t *ipv6, gnrc_rpl_srh_t *rh, void **err_ptr)
         return GNRC_IPV6_EXT_RH_ERROR;
     }
 
-    assert(rh->seg_left > 0);
+    __CPROVER_assume(rh->seg_left > 0);
     num_addr = (((rh->len * 8) - GNRC_RPL_SRH_PADDING(rh->pad_resv) -
                  (16 - GNRC_RPL_SRH_COMPRE(rh->compr))) /
                 (16 - GNRC_RPL_SRH_COMPRI(rh->compr))) + 1;

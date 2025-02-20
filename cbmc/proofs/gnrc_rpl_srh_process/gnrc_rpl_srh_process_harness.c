@@ -40,11 +40,17 @@ void harness(void)
     // Allocate input headers
     // The function can read a LOT of data, so we allocate a good amount
 
-    gnrc_rpl_srh_t *rh = (gnrc_rpl_srh_t *)malloc(sizeof(gnrc_rpl_srh_t) + 500);
+    uint8_t size;
+
+    __CPROVER_assume(size > sizeof(gnrc_rpl_srh_t));
+
+    gnrc_rpl_srh_t *rh = (gnrc_rpl_srh_t *)malloc(size);
 
     // Ensure we can't be NULL:
 
     __CPROVER_assume(rh != NULL);
+
+    __CPROVER_assume((rh->len * 8) + 8 <= size );
 
     char *point;
 
