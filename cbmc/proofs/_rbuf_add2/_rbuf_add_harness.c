@@ -103,7 +103,7 @@ void harness(void)
 
     uint8_t size;
     uint8_t minSize = MAX(sizeof(sixlowpan_frag_t), MAX(sizeof(sixlowpan_frag_n_t), sizeof(sixlowpan_sfr_rfrag_t)));
-    // __CPROVER_assume(size > minSize);
+    __CPROVER_assume(size > minSize);
     uint8_t *data = malloc(size);
     __CPROVER_assume(data != NULL);
     pkt->data = data;
