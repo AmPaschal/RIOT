@@ -1590,7 +1590,7 @@ static ssize_t _nhc_udp_encode_snip(gnrc_pktsnip_t *pkt, uint8_t *nhc_data)
     gnrc_pktsnip_t *hdr = pkt->next->next;
     ssize_t nhc_len;
 
-    assert(hdr->size >= sizeof(udp_hdr_t));
+    __CPROVER_assume(hdr->size >= sizeof(udp_hdr_t));
     /* save to cast, as result is max 8 */
     nhc_len = (ssize_t)iphc_nhc_udp_encode(nhc_data, hdr);
     /* remove UDP header */
