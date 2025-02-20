@@ -13,19 +13,6 @@ gnrc_netif_t *gnrc_netif_get_by_ipv6_addr(const ipv6_addr_t *addr)
     return netif;
 }
 
-// Stubbed function for speed reasons
-void *_contains_multiple_of_my_addr(const ipv6_addr_t *dst,
-                                    const gnrc_rpl_srh_t *rh,
-                                    unsigned num_addr,
-                                    unsigned compri_addr_len)
-{
-
-    // Allocate some junk data to return:
-    // (Could be NULL)
-
-    return malloc(1);
-}
-
 /**
  * @brief Starting point for formal analysis
  * 
