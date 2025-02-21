@@ -49,13 +49,16 @@ void harness(void)
     clif_t* link = malloc(sizeof(clif_t));
     __CPROVER_assume(link != NULL);
 
-    size_t attrs_len = 6;
+    size_t attrs_len;
+
+    // Constrained the len to avoid overflows during the multiplication
+    __CPROVER_assume(attrs_len < 100);
 
     //If done dynamically it takes way too long due to the amount of possibilities
-    clif_attr_t attrs[6];
+    clif_attr_t *attrs = malloc(attrs_len * sizeof(clif_attr_t));
+    __CPROVER_assume(attrs != NULL);
     
     size_t maxlen;
-    __CPROVER_assume(maxlen <= 10);
 
     char* buf = malloc(maxlen);
     __CPROVER_assume(buf != NULL);

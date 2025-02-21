@@ -265,9 +265,10 @@ ssize_t clif_get_attr(const char *input, size_t input_len, clif_attr_t *attr)
     attr->key_len = 0;
     attr->value_len = 0;
 
-    // if (input_len == 0) {
-    //     return CLIF_NOT_FOUND;
-    // }
+    // Uncomment to recreate CVE-2021-31660
+    if (input_len == 0) {
+        return CLIF_NOT_FOUND;
+    }
 
     /* an attribute should start with the separator */
     if (*pos != LF_ATTR_SEPARATOR_C) {
