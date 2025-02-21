@@ -289,7 +289,8 @@ ssize_t clif_get_attr(const char *input, size_t input_len, clif_attr_t *attr)
             attr->key_len = pos - attr->key;
             /* check if the value is quoted and prepare pointer for value scan */
             pos++;
-            if (0) {
+            // if (0) {
+            if (pos == end) {
                 /* found attribute-value separator but no value */
                 return CLIF_NOT_FOUND;
             }
