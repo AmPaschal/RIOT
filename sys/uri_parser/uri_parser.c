@@ -165,9 +165,9 @@ static const char *_consume_authority(uri_parser_result_t *result, const char *u
     _consume_userinfo(result, uri, authority_end);
 
     /* host is empty */
-    // if (result->host_len == 0) {
-    //     return authority_end;
-    // }
+    if (result->host_len == 0) {
+        return authority_end;
+    }
 
     const char *ipv6_end = NULL;
     /* validate IPv6 form */
@@ -179,8 +179,8 @@ static const char *_consume_authority(uri_parser_result_t *result, const char *u
         ipv6_end = _strchrb(result->host, uri_end, ']');
 
         /* found end marker of IPv6 form beyond authority part */
-        if (ipv6_end >= authority_end
-            || ipv6_end == NULL //Fixes vuln mentioned above
+        if (ipv6_end == NULL //Fixes vuln mentioned above
+            || ipv6_end >= authority_end 
             ) {
             return NULL;
         }
@@ -263,10 +263,10 @@ static int _parse_absolute(uri_parser_result_t *result, const char *uri,
         return -1;
     }
 
-    // if (uri >= uri_end) {
-    //     /* nothing more to consume */
-    //     return 0;
-    // }
+    if (uri >= uri_end) {
+        /* nothing more to consume */
+        return 0;
+    }
 
     if (has_authority) {
         uri = _consume_authority(result, uri, uri_end);
