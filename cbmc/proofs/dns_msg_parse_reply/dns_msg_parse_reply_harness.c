@@ -34,7 +34,7 @@ void harness(void)
 
     //Based on the start of the function, the buffer must have at least a dns_hdr_t
     //Might be a vuln depending on if it is possible for buf to be less than dns_hdr_t
-    __CPROVER_assume(len <= 100 && len >= sizeof(dns_hdr_t));
+    __CPROVER_assume(len >= sizeof(dns_hdr_t));
     uint8_t* buf = malloc(len);
     __CPROVER_assume(buf != NULL);
 
@@ -45,7 +45,10 @@ void harness(void)
     //Addr_out is a place where the IP addr can be writen to
     //Don't think it's user controlled, so I'm going to assume it can fit ipv6
     //and can't be null/too small
-    uint8_t addr_out[16];
+    uint8_t size;
+    __CPROVER_assume(size >= 16);
+    uint8_t *addr_out = malloc(size);
+    __CPROVER_assume(addr_out != NULL);
 
     uint32_t ttl;
     dns_msg_parse_reply(buf, len, family, addr_out, &ttl);

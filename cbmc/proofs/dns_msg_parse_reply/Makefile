@@ -1,6 +1,6 @@
 # Defines the root of the project.
 # Be aware of how many directories deep you go!
-ROOT = /home/tlelievr/RIOT
+ROOT ?= ../../..
 
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
@@ -27,4 +27,5 @@ H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
 
 
 # Include our special build file
-include ../Makefile.include
+MAKE_INCLUDE_PATH ?= ..
+include $(MAKE_INCLUDE_PATH)/Makefile.include
