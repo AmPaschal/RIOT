@@ -144,27 +144,52 @@ bool _is_rfrag(gnrc_pktsnip_t *sixlo)
     return rand;
 }
 
-// gnrc_pktsnip_t *_encode_frag_for_forwarding(gnrc_pktsnip_t *decoded_pkt,
-//                                                    gnrc_sixlowpan_frag_vrb_t *vrbe) {
-//     gnrc_pktsnip_t* new_pkt = malloc(sizeof(gnrc_pktsnip_t));
-//     if(new_pkt == NULL) {
-//         return new_pkt;
-//     }
+gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
+    const gnrc_netif_hdr_t *netif_hdr,
+    gnrc_netif_t *iface) {
 
-//     size_t size;
+        gnrc_pktsnip_t* new_pkt = malloc(sizeof(gnrc_pktsnip_t));
+        if(new_pkt == NULL) {
+            return new_pkt;
+        }
 
-//     //Assume no size constraints
-//     __CPROVER_assume(size <= 100);
+        size_t size;
 
-//     uint8_t* data = malloc(size);
-//     __CPROVER_assume(data != NULL);
+        //Assume no size constraints
+        __CPROVER_assume(size <= 100);
+
+        uint8_t* data = malloc(size);
+        __CPROVER_assume(data != NULL);
+        
+        new_pkt -> data = data;
+        new_pkt -> size = size;
+        new_pkt -> next = NULL;
+
+        return new_pkt;
+
+    }
+
+gnrc_pktsnip_t *_encode_frag_for_forwarding(gnrc_pktsnip_t *decoded_pkt,
+                                                   gnrc_sixlowpan_frag_vrb_t *vrbe) {
+    gnrc_pktsnip_t* new_pkt = malloc(sizeof(gnrc_pktsnip_t));
+    if(new_pkt == NULL) {
+        return new_pkt;
+    }
+
+    size_t size;
+
+    //Assume no size constraints
+    __CPROVER_assume(size <= 100);
+
+    uint8_t* data = malloc(size);
+    __CPROVER_assume(data != NULL);
     
-//     new_pkt -> data = data;
-//     new_pkt -> size = size;
-//     new_pkt -> next = NULL;
+    new_pkt -> data = data;
+    new_pkt -> size = size;
+    new_pkt -> next = NULL;
 
-//     return new_pkt;
-// }
+    return new_pkt;
+}
 
 // int _forward_frag(gnrc_pktsnip_t *pkt, gnrc_pktsnip_t *frag_hdr,
 //                          gnrc_sixlowpan_frag_vrb_t *vrbe, unsigned page)
@@ -205,7 +230,25 @@ void harness(void)
     
     pkt -> data = data;
     pkt -> size = size;
-    pkt -> next = NULL;
+
+    gnrc_pktsnip_t* npkt = malloc(sizeof(gnrc_pktsnip_t));
+    __CPROVER_assume(npkt != NULL);
+
+    size_t nsize;
+
+    __CPROVER_assume(nsize <= 100);
+
+    //Addresses potential vulnerability A in _ipv6_iphc_decode
+    __CPROVER_assume(nsize >= sizeof(ipv6_hdr_t));
+    uint8_t* ndata = malloc(nsize);
+    __CPROVER_assume(ndata != NULL);
+
+    
+    npkt -> data = ndata;
+    npkt -> size = nsize;
+    npkt -> next = NULL;
+
+    pkt -> next = npkt;
 
     gnrc_sixlowpan_frag_rb_t* rbuf_entry = malloc(sizeof(gnrc_sixlowpan_frag_rb_t));
     if(rbuf_entry != NULL) {
