@@ -83,10 +83,10 @@ void _consume_userinfo(uri_parser_result_t *result, const char *uri,
 
         /* shift host part beyond userinfo and '@', but only if possible */
         unsigned offset = result->userinfo_len + 1;
-        // if ((result->host + offset) > authority_end) {
-        //     result->host_len = 0;
-        //     return;
-        // }
+        if ((result->host + offset) > authority_end) {
+            result->host_len = 0;
+            return;
+        }
 
         result->host_len -= offset;
         result->host += offset;
@@ -165,9 +165,9 @@ static const char *_consume_authority(uri_parser_result_t *result, const char *u
     _consume_userinfo(result, uri, authority_end);
 
     /* host is empty */
-    // if (result->host_len == 0) {
-    //     return authority_end;
-    // }
+    if (result->host_len == 0) {
+        return authority_end;
+    }
 
     const char *ipv6_end = NULL;
     /* validate IPv6 form */
