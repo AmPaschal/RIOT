@@ -58,48 +58,6 @@
 
 #include "net/gnrc/sixlowpan/frag/rb.h"
 
-// gnrc_sixlowpan_frag_vrb_t *gnrc_sixlowpan_frag_vrb_get(const uint8_t *src, size_t src_len, unsigned src_tag) {
-//     //I believe this can return null
-//     gnrc_sixlowpan_frag_vrb_t* vrb = malloc(sizeof(gnrc_sixlowpan_frag_vrb_t));
-//     if(vrb == NULL) {
-//         return vrb;
-//     }
-
-//     //Need super defined
-//     gnrc_sixlowpan_frag_rb_base_t super;
-//     gnrc_sixlowpan_frag_rb_int_t* interval = malloc(sizeof(gnrc_sixlowpan_frag_rb_int_t));
-//     __CPROVER_assume(interval != NULL);
-//     //Assume it's a 1 entry LL
-//     //Can we assume this?
-//     __CPROVER_assume(interval -> next == NULL);
-
-//     super.ints = interval;
-//     vrb -> super = super;
-
-//     return vrb;
-// }
-
-// gnrc_pktsnip_t *gnrc_pktbuf_mark(gnrc_pktsnip_t *pkt, size_t size, gnrc_nettype_t type) {
-//     //Original function can change pkt data and size
-
-//     // This exposes CVE-2023-24825 but makes the run time far longer so I'm leaving it commented
-//     // __CPROVER_havoc_object(pkt);
-
-//     gnrc_pktsnip_t *new_pkt = malloc(sizeof(gnrc_pktsnip_t));
-//     //Based on the original function this can return null
-//     if(new_pkt == NULL) {
-//         return new_pkt;
-//     }
-
-//     uint8_t size;
-//     uint8_t *data = malloc(size);
-//     __CPROVER_assume(data != NULL);
-//     new_pkt->data = data;
-//     new_pkt->size = size;
-//     new_pkt->next = NULL;
-
-//     return new_pkt;
-// }
 
 gnrc_sixlowpan_ctx_t *gnrc_sixlowpan_ctx_lookup_id(uint8_t id) {
     gnrc_sixlowpan_ctx_t* context = malloc(sizeof(gnrc_sixlowpan_ctx_t));
@@ -144,31 +102,6 @@ bool _is_rfrag(gnrc_pktsnip_t *sixlo)
     return rand;
 }
 
-gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
-    const gnrc_netif_hdr_t *netif_hdr,
-    gnrc_netif_t *iface) {
-
-        gnrc_pktsnip_t* new_pkt = malloc(sizeof(gnrc_pktsnip_t));
-        if(new_pkt == NULL) {
-            return new_pkt;
-        }
-
-        size_t size;
-
-        //Assume no size constraints
-        __CPROVER_assume(size <= 100);
-
-        uint8_t* data = malloc(size);
-        __CPROVER_assume(data != NULL);
-        
-        new_pkt -> data = data;
-        new_pkt -> size = size;
-        new_pkt -> next = NULL;
-
-        return new_pkt;
-
-    }
-
 gnrc_pktsnip_t *_encode_frag_for_forwarding(gnrc_pktsnip_t *decoded_pkt,
                                                    gnrc_sixlowpan_frag_vrb_t *vrbe) {
     gnrc_pktsnip_t* new_pkt = malloc(sizeof(gnrc_pktsnip_t));
@@ -191,12 +124,6 @@ gnrc_pktsnip_t *_encode_frag_for_forwarding(gnrc_pktsnip_t *decoded_pkt,
     return new_pkt;
 }
 
-// int _forward_frag(gnrc_pktsnip_t *pkt, gnrc_pktsnip_t *frag_hdr,
-//                          gnrc_sixlowpan_frag_vrb_t *vrbe, unsigned page)
-// {
-//     int rand;
-//     return rand;
-// }
 
 void gnrc_pktbuf_release_error(gnrc_pktsnip_t *pkt, uint32_t err)
 {
@@ -269,19 +196,10 @@ void harness(void)
         __CPROVER_assume(interval != NULL);
         __CPROVER_assume(interval -> next == NULL);
 
-        // uint16_t datagram_size;
-        // __CPROVER_assume(datagram_size <= entry_size);
-        // super.datagram_size = datagram_size;
-
         super.ints = interval;
 
         rbuf_entry -> super = super;
         rbuf_entry -> pkt = rbuf_pkt;
-
-        // // Added this to fix a bug. Not sure how best to model it
-        // int8_t offset_diff;
-        // __CPROVER_assume(offset_diff >= 0); // Basically, offset diff should not be negative that it overflows.
-        // entry.offset_diff = offset_diff;
     }
 
     unsigned page;
