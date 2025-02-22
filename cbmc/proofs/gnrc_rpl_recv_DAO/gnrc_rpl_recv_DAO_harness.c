@@ -98,7 +98,6 @@ gnrc_netif_t *_find_interface_with_rpl_mcast(void) {
 void harness(void)
 {
     uint16_t dao_len;
-    __CPROVER_assume(dao_len <= 100);
     gnrc_rpl_dao_t *dao = malloc(dao_len);
     __CPROVER_assume(dao != NULL);
 
