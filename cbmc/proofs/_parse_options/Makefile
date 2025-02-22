@@ -1,11 +1,12 @@
 # Defines the root of the project.
 # Be aware of how many directories deep you go!
-ROOT = /home/tlelievr/RIOT
+ROOT ?= ../../..
 
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/sys/net/gnrc/routing/rpl/gnrc_rpl_control_messages.c $(ROOT)/sys/net/gnrc/routing/rpl/gnrc_rpl_validation.c
+LINK = $(ROOT)/sys/net/gnrc/routing/rpl/gnrc_rpl_control_messages.c \
+$(ROOT)/sys/net/gnrc/routing/rpl/gnrc_rpl_validation.c
 
 # Harness to utilize, omit the extension!
 H_ENTRY = _parse_options
@@ -13,7 +14,9 @@ H_ENTRY = _parse_options
 # Extra CBMC flags to be passed during CBMC analysis
 H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset _parse_options.16:2 --unwindset gnrc_rpl_validation_options.8:2
 
-H_DEF = -DRIOT_VERSION=1 -DMODULE_SOCK_UDP=y -DSOCK_HAS_IPV6=y -DCONFIG_GNRC_RPL_WITHOUT_VALIDATION=1 -DMODULE_GNRC_NETIF_IPV6=1 -DMODULE_GNRC_NETTYPE_IPV6=1
+H_DEF = -DRIOT_VERSION=1 -DMODULE_SOCK_UDP=y -DSOCK_HAS_IPV6=y \
+      -DCONFIG_GNRC_RPL_WITHOUT_VALIDATION=0 -DMODULE_GNRC_NETIF_IPV6=1 \
+       -DMODULE_GNRC_NETTYPE_IPV6=1
 
 H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
             -I$(ROOT)/core/lib/include/  \
@@ -25,4 +28,5 @@ H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
             -I$(ROOT)/sys/net/gnrc/routing/rpl/gnrc_rpl_internal/ \
 
 # Include our special build file
-include ../Makefile.include
+MAKE_INCLUDE_PATH ?= ..
+include $(MAKE_INCLUDE_PATH)/Makefile.include
