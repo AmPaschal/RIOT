@@ -28,8 +28,6 @@ void harness(void)
 {
     size_t data_in_size;
 
-    __CPROVER_assume(data_in_size <= 20);
-
     //Ensure data_in_size does not equal 1 to prevent potential vuln in while loop
     __CPROVER_assume(data_in_size != 1);
 
@@ -37,7 +35,6 @@ void harness(void)
     // Code checks if it's null
 
     size_t base64_out_size;
-    __CPROVER_assume(base64_out_size <= 20);
 
     char* base64_out = malloc(base64_out_size);
     // Code checks if it's null
