@@ -38,15 +38,17 @@ void harness(void)
 
     size_t str_size;
 
-    __CPROVER_assume(str_size <= 20 && str_size > 0);
+    __CPROVER_assume(str_size > 0);
     char* id = malloc(str_size);
     __CPROVER_assume(id != NULL);
-    __CPROVER_assume(id[str_size - 1] == '\0');
+    id[str_size - 1] = '\0';
 
     subs = malloc(sizeof(emcute_sub_t));
-    __CPROVER_assume(subs != NULL);
-    subs -> next = NULL;
-    subs -> cb = emcute_callback;
+    if(subs != NULL) {
+        subs -> next = NULL;
+        subs -> cb = emcute_callback;
+    }
+    
 
     emcute_run(port, id);
 }
