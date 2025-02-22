@@ -77,28 +77,28 @@ static ssize_t _skip_hostname(const uint8_t *buf, size_t len,
     const uint8_t *buflim = buf + len;
     unsigned res = 0;
 
-    if (bufpos >= buflim) {
-        /* out-of-bound */
-        DEBUG("dns_msg: bufpos is out of bounds\n");
-        return -EBADMSG;
-    }
+    // if (bufpos >= buflim) {
+    //     /* out-of-bound */
+    //     DEBUG("dns_msg: bufpos is out of bounds\n");
+    //     return -EBADMSG;
+    // }
 
     /* handle DNS Message Compression */
     if (*bufpos & 0xc0) {
         DEBUG("dns_msg: hostname is compressed\n");
-        if ((bufpos + 2) >= buflim) {
-            return -EBADMSG;
-        }
+        // if ((bufpos + 2) >= buflim) {
+        //     return -EBADMSG;
+        // }
         return 2;
     }
 
     while (bufpos[res]) {
         res += bufpos[res] + 1;
-        if ((&bufpos[res]) >= buflim) {
-            /* out-of-bound */
-            DEBUG("dns_msg: hostname out-of-bounds\n");
-            return -EBADMSG;
-        }
+        // if ((&bufpos[res]) >= buflim) {
+        //     /* out-of-bound */
+        //     DEBUG("dns_msg: hostname out-of-bounds\n");
+        //     return -EBADMSG;
+        // }
     }
     return res + 1;
 }
@@ -147,9 +147,9 @@ int dns_msg_parse_reply(const uint8_t *buf, size_t len, int family,
     /* skip all queries that are part of the reply */
     for (unsigned n = 0; n < ntohs(hdr->qdcount); n++) {
         ssize_t tmp = _skip_hostname(buf, len, bufpos);
-        if (tmp < 0) {
-            return tmp;
-        }
+        // if (tmp < 0) {
+        //     return tmp;
+        // }
         bufpos += tmp;
         /* skip type and class of query */
         bufpos += (RR_TYPE_LENGTH + RR_CLASS_LENGTH);
@@ -161,11 +161,11 @@ int dns_msg_parse_reply(const uint8_t *buf, size_t len, int family,
             return tmp;
         }
         bufpos += tmp;
-        if ((bufpos + RR_TYPE_LENGTH + RR_CLASS_LENGTH +
-             RR_TTL_LENGTH + sizeof(uint16_t)) >= buflim) {
-            DEBUG("dns_msg: record beyond buf limit");
-            return -EBADMSG;
-        }
+        // if ((bufpos + RR_TYPE_LENGTH + RR_CLASS_LENGTH +
+        //      RR_TTL_LENGTH + sizeof(uint16_t)) >= buflim) {
+        //     DEBUG("dns_msg: record beyond buf limit");
+        //     return -EBADMSG;
+        // }
         uint16_t _type = ntohs(_get_short(bufpos));
         bufpos += RR_TYPE_LENGTH;
         uint16_t class = ntohs(_get_short(bufpos));
