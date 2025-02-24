@@ -21,6 +21,7 @@
  * 
  */
 
+#include <stddef.h>
 #include <stdlib.h>
 #include "net/asymcute.h"
 
@@ -34,17 +35,24 @@ void harness(void)
     __CPROVER_assume(con != NULL);
     con -> user_cb = user_cb;
 
+    uint8_t size;
+
+    __CPROVER_assume(size > sizeof(asymcute_topic_t));
+
+    asymcute_topic_t* topic = malloc(size);
+
     asymcute_req_t *pending = malloc(sizeof(asymcute_req_t ));
-    __CPROVER_assume(pending != NULL);
-    pending -> next = NULL;
-
-    asymcute_topic_t* topic = malloc(sizeof(asymcute_topic_t));
-
-    // This is a void pointer that is cast to asymcute_topic_t
-    // On paper this could cause an OOB read after the cast
-    // But I'm fairly certain this struct is program-controlled
-    pending -> arg = topic;
-
+    asymcute_req_t *next_pending = malloc(sizeof(asymcute_req_t ));
+    if (next_pending != NULL) {
+        next_pending->next = NULL;
+        next_pending -> arg = topic;
+    }
+    if (pending != NULL) {
+        pending -> next = next_pending;
+        pending -> arg = topic;
+    
+    }
+    
     con -> pending = pending;
 
     asymcute_sub_t *subscriptions = malloc(sizeof(asymcute_req_t));
@@ -53,7 +61,7 @@ void harness(void)
     con -> subscriptions = subscriptions;
 
     size_t len;
-    __CPROVER_assume(len <= 100);
+  
     uint8_t* data = malloc(len);
     __CPROVER_assume(data != NULL);
 

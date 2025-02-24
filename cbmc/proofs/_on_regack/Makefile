@@ -1,11 +1,11 @@
 # Defines the root of the project.
 # Be aware of how many directories deep you go!
-ROOT = /home/tlelievr/RIOT
+ROOT ?= ../../..
 
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/sys/net/application_layer/asymcute/asymcute.c $(ROOT)/sys/event/timeout_ztimer.c
+LINK = $(ROOT)/sys/net/application_layer/asymcute/asymcute.c #$(ROOT)/sys/event/timeout_ztimer.c
 
 # Harness to utilize, omit the extension!
 H_ENTRY = _on_regack
@@ -24,4 +24,5 @@ H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
             -I$(ROOT)/sys/net/gnrc/sock/include \            
 
 # Include our special build file
-include ../Makefile.include
+MAKE_INCLUDE_PATH ?= ..
+include $(MAKE_INCLUDE_PATH)/Makefile.include
