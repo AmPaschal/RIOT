@@ -47,7 +47,6 @@ gnrc_pktsnip_t *gnrc_pktbuf_start_write(gnrc_pktsnip_t *pkt)
     }
 
     size_t size;
-    __CPROVER_assume(size <= 100);
     uint8_t* data = malloc(size);
     __CPROVER_assume(data != NULL);
 
@@ -84,7 +83,6 @@ gnrc_pktsnip_t *gnrc_pktsnip_search_type(gnrc_pktsnip_t *pkt,
     }
 
     size_t size;
-    __CPROVER_assume(size <= 100);
     uint8_t* data = malloc(size);
     __CPROVER_assume(data != NULL);
 
@@ -103,7 +101,6 @@ void harness(void)
     __CPROVER_assume(pkt != NULL);
 
     size_t size;
-    __CPROVER_assume(size <= 100);
     uint8_t* data = malloc(size);
     __CPROVER_assume(data != NULL);
 
