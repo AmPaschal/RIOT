@@ -102,7 +102,7 @@ gnrc_pktsnip_t *gnrc_pktbuf_mark(gnrc_pktsnip_t *pkt, size_t size, gnrc_nettype_
     //Original function can change pkt data and size
 
     // This exposes CVE-2023-24825 but makes the run time far longer so I'm leaving it commented
-    // __CPROVER_havoc_object(pkt);
+    __CPROVER_havoc_object(pkt);
 
     gnrc_pktsnip_t *new_pkt = malloc(sizeof(gnrc_pktsnip_t));
     //Based on the original function this can return null
