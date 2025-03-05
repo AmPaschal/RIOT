@@ -46,7 +46,7 @@ void harness(void)
 
     //Don't add a NULL byte to a string of length 0
     if (str_len != 0) {
-        str[str_len - 1] = '\0'
+        str[str_len - 1] = '\0';
     }
 
 
