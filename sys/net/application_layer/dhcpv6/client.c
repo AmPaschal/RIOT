@@ -602,7 +602,10 @@ static bool _check_cid_opt(dhcpv6_opt_duid_t *cid)
         }
     }
 
-    return ((byteorder_ntohs(cid->len) == duid_len) &&
+    // return ((byteorder_ntohs(cid->len) == duid_len) &&
+    //         (memcmp(cid->duid, duid, duid_len) == 0));
+
+    return ((byteorder_ntohs(cid->len) == duid_len) && duid_len <= DHCPV6_CLIENT_DUID_LEN &&
             (memcmp(cid->duid, duid, duid_len) == 0));
 }
 
@@ -632,7 +635,7 @@ static void _flush_stale_replies(sock_udp_t *sock)
     }
 }
 
-static int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf)
+int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf)
 {
     dhcpv6_opt_duid_t *cid = NULL, *sid = NULL;
     dhcpv6_opt_pref_t *pref = NULL;
@@ -641,13 +644,13 @@ static int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf)
     uint8_t pref_val = 0;
 
     DEBUG("DHCPv6 client: received ADVERTISE\n");
-    if ((len < sizeof(dhcpv6_msg_t)) || !_is_tid((dhcpv6_msg_t *)adv)) {
+    if (0 || !_is_tid((dhcpv6_msg_t *)adv)) {  // NEW VULNERABILITY: Allow enough space for first option
         DEBUG("DHCPv6 client: packet too small or transaction ID wrong\n");
         return -1;
     }
     len -= sizeof(dhcpv6_msg_t);
     for (dhcpv6_opt_t *opt = (dhcpv6_opt_t *)(&adv[sizeof(dhcpv6_msg_t)]);
-         len > 0; len -= _opt_len(opt), opt = _opt_next(opt)) {
+         len > sizeof(dhcpv6_opt_t); len -= _opt_len(opt), opt = _opt_next(opt)) {  // NEW VULNERABILITY: Ensure we have enough size for cast
         if (len > orig_len) {
             DEBUG("DHCPv6 client: ADVERTISE options overflow packet boundaries\n");
             return -1;
@@ -693,6 +696,7 @@ static int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf)
         pref_val = pref->value;
     }
     if ((server.duid_len == 0) || (pref_val > server.pref)) {
+
         memcpy(best_adv, recv_buf, orig_len);
         if (buf != NULL) {
             *buf = best_adv;
@@ -784,7 +788,7 @@ static void _update_prefix_lease(const dhcpv6_opt_iapfx_t *iapfx, pfx_lease_t *l
     }
 }
 
-static void _parse_advertise(uint8_t *adv, size_t len)
+void _parse_advertise(uint8_t *adv, size_t len)
 {
     dhcpv6_opt_smr_t *smr = NULL;
 
@@ -798,11 +802,14 @@ static void _parse_advertise(uint8_t *adv, size_t len)
     }
     DEBUG("DHCPv6 client: scheduling REQUEST\n");
     event_post(event_queue, &request);
+    size_t lastlen = len;
+    len -= sizeof(dhcpv6_msg_t);
     for (dhcpv6_opt_t *opt = (dhcpv6_opt_t *)(&adv[sizeof(dhcpv6_msg_t)]);
-         len > 0; len -= _opt_len(opt), opt = _opt_next(opt)) {
-        switch (byteorder_ntohs(opt->type)) {
+         len > sizeof(dhcpv6_opt_t) && len < lastlen; len -= _opt_len(opt), opt = _opt_next(opt)) {  // NEW VULNERABILITY: Ensure enough space for cast
+        lastlen = len;
+            switch (byteorder_ntohs(opt->type)) {
             case DHCPV6_OPT_IA_PD:
-                if (_opt_len(opt) < sizeof(dhcpv6_opt_ia_pd_t)) {
+                if (len < sizeof(dhcpv6_opt_ia_pd_t)) {
                     DEBUG("DHCPv6 client: IA_PD option underflow minimum size\n");
                     return;
                 }
@@ -847,7 +854,7 @@ static void _parse_advertise(uint8_t *adv, size_t len)
                 }
                 break;
             case DHCPV6_OPT_IA_NA:
-                if (_opt_len(opt) < sizeof(dhcpv6_opt_ia_na_t)) {
+                if (len < sizeof(dhcpv6_opt_ia_na_t)) {
                     DEBUG("DHCPv6 client: IA_NA option underflows minimum size\n");
                     return;
                 }
@@ -893,7 +900,7 @@ static void _parse_advertise(uint8_t *adv, size_t len)
                 }
                 break;
             case DHCPV6_OPT_SMR:
-                if (_opt_len(opt) < sizeof(dhcpv6_opt_smr_t)) {
+                if (len < sizeof(dhcpv6_opt_smr_t)) {
                     DEBUG("DHCPv6 client: SMR option underflows minimum size\n");
                     return;
                 }

@@ -503,7 +503,7 @@ static inline network_uint64_t byteorder_htonll(uint64_t v)
     return result;
 }
 
-static inline uint16_t byteorder_ntohs(network_uint16_t v)
+uint16_t byteorder_ntohs(network_uint16_t v)
 {
     return be16toh(v.u16);
 }
