@@ -66,7 +66,8 @@ bool gnrc_rpl_validation_options(int msg_type, gnrc_rpl_instance_t *inst,
                     return false;
                 }
 
-                if (opt->length > GNRC_RPL_OPT_TARGET_LEN) {
+                if (opt->length != GNRC_RPL_OPT_TARGET_LEN) { // Fix for CVE-2021-27698
+                // if (opt->length > GNRC_RPL_OPT_TARGET_LEN) {
                     DEBUG("RPL: wrong DAO option (RPL TARGET) len: %d, expected (max): %d\n",
                            opt->length, GNRC_RPL_OPT_TARGET_LEN);
                     return false;

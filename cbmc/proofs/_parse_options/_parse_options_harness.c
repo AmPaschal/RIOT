@@ -29,18 +29,6 @@
 
 #include "sys/net/gnrc/routing/rpl/gnrc_rpl_control_messages.c"
 
-void gnrc_ipv6_nib_ft_del(const ipv6_addr_t *dst, unsigned dst_len)
-{
-    return;
-}
-
-int gnrc_ipv6_nib_ft_add(const ipv6_addr_t *dst, unsigned dst_len,
-                         const ipv6_addr_t *next_hop, unsigned iface,
-                         uint32_t ltime)
-{
-    return;
-}
-
 gnrc_netif_t *gnrc_netif_get_by_pid(kernel_pid_t pid) {
     //Normally this function can return NULL
     //But _parse_options has an assert that checks for this
@@ -58,15 +46,15 @@ void harness(void)
     gnrc_rpl_instance_t inst; //No fields to alloc, pass in by address
 
     uint16_t opt_len; //Length of the options PDU
-    __CPROVER_assume(opt_len <= 100);
+    __CPROVER_assume(opt_len > sizeof(gnrc_rpl_opt_t));
 
     //Options length doesn't include first 2 bytes in the struct
-    gnrc_rpl_opt_t* opt = malloc(sizeof(gnrc_rpl_opt_t) + opt_len);
+    gnrc_rpl_opt_t* opt = malloc(opt_len);
     __CPROVER_assume(opt != NULL);
 
     //I believe this field represents the length of the data for this option stored in the buffer
     //Rather than the length of the entire buffer (which stores several options)
-    __CPROVER_assume(opt -> length <= opt_len);
+    __CPROVER_assume(opt -> length <= opt_len - sizeof(gnrc_rpl_opt_t));
 
 
     ipv6_addr_t src; 
