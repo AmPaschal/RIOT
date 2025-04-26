@@ -86,7 +86,7 @@ static void encode_three_bytes(uint8_t *dest,
     dest[3] = getsymbol(b3 & 0x3f, urlsafe);
 }
 
-static int base64_encode_base(const void *data_in, size_t data_in_size,
+int base64_encode_base(const void *data_in, size_t data_in_size,
                               void *base64_out, size_t *base64_out_size,
                               bool urlsafe)
 {
@@ -116,6 +116,10 @@ static int base64_encode_base(const void *data_in, size_t data_in_size,
 
     *base64_out_size = required_size;
 
+
+    // ****** POTENTIAL VULN ************
+    // If data_in_size = 1, then this can lead to end pointing outside the buffer
+    // In my harness it seems like this led to an infinite loop (although I'm not sure why)
     while (in < end - 2) {
         encode_three_bytes(out, in[0], in[1], in[2], urlsafe);
         out += 4;

@@ -53,7 +53,7 @@ static inline size_t base64_estimate_decode_size(size_t base64_in_size)
  */
 static inline size_t base64_estimate_encode_size(size_t data_in_size)
 {
-    return (4 * ((data_in_size + 2) / 3));
+    return (((data_in_size + 3) / 4) * 3);
 }
 
 /**

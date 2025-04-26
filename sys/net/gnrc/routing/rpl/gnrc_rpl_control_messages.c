@@ -118,14 +118,12 @@ static inline bool gnrc_rpl_validation_DAO(gnrc_rpl_dao_t *dao, uint16_t len)
 {
     uint16_t expected_len = sizeof(*dao) + sizeof(icmpv6_hdr_t);
 
-    if (expected_len <= len) {
-        if ((dao->k_d_flags & GNRC_RPL_DAO_D_BIT)) {
-            expected_len += sizeof(ipv6_addr_t);
-        }
+    if ((dao->k_d_flags & GNRC_RPL_DAO_D_BIT)) {
+        expected_len += sizeof(ipv6_addr_t);
+    }
 
-        if (expected_len <= len) {
-            return true;
-        }
+    if (expected_len <= len) {
+        return true;
     }
 
     DEBUG("RPL: wrong DAO len: %d, expected: %d\n", len, expected_len);
@@ -169,7 +167,7 @@ static inline bool gnrc_rpl_validation_DAO_ACK(gnrc_rpl_dao_ack_t *dao_ack,
     return false;
 }
 
-static gnrc_netif_t *_find_interface_with_rpl_mcast(void)
+gnrc_netif_t *_find_interface_with_rpl_mcast(void)
 {
     gnrc_netif_t *netif = NULL;
 
@@ -512,7 +510,7 @@ static inline uint32_t _sec_to_ms(uint32_t sec)
 }
 
 /** @todo allow target prefixes in target options to be of variable length */
-static bool _parse_options(int msg_type, gnrc_rpl_instance_t *inst, gnrc_rpl_opt_t *opt,
+bool _parse_options(int msg_type, gnrc_rpl_instance_t *inst, gnrc_rpl_opt_t *opt,
                            uint16_t len,
                            ipv6_addr_t *src, uint32_t *included_opts)
 {
@@ -563,7 +561,13 @@ static bool _parse_options(int msg_type, gnrc_rpl_instance_t *inst, gnrc_rpl_opt
             inst->min_hop_rank_inc = byteorder_ntohs(dc->min_hop_rank_inc);
             dodag->default_lifetime = dc->default_lifetime;
             dodag->lifetime_unit = byteorder_ntohs(dc->lifetime_unit);
-            dodag->trickle.Imin = (1 << dodag->dio_min);
+
+            //******* POTENTIAL VULNERABILITY *******/
+            // There can be an arithmatic overflow here if dodag->dio_min >= 32
+            // dodag->dio_min is assigned just above here, and comes from the input options
+            // Which I believe is user controlled
+            // I'll change this line to use a max of 31 to remove the error
+            dodag->trickle.Imin = (1 << (dodag->dio_min >= 31 ? 30 : dodag->dio_min));
             dodag->trickle.Imax = dodag->dio_interval_doubl;
             dodag->trickle.k = dodag->dio_redun;
             break;
