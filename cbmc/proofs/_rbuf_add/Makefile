@@ -13,7 +13,9 @@ LINK = $(ROOT)/sys/net/gnrc/network_layer/sixlowpan/frag/rb/gnrc_sixlowpan_frag_
 H_ENTRY = _rbuf_add
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset gnrc_sixlowpan_frag_rb_gc.2:2 --unwindset _check_fragments.1:2 -unwindset memcmp.0:9 --unwindset gnrc_pkt_delete.0:2
+H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset gnrc_sixlowpan_frag_rb_gc.2:2 \
+       --unwindset _rbuf_int_get_free.0:2 \
+       --unwindset _check_fragments.1:2 --unwindset gnrc_pkt_delete.0:2
 
 
 H_DEF = -DMODULE_GNRC_NETTYPE_SIXLOWPAN=1 -DMODULE_GNRC_SIXLOWPAN_FRAG_SFR=1 -DMODULE_GNRC_SIXLOWPAN_FRAG=1 -DMODULE_GNRC_SIXLOWPAN_FRAG_MINFWD=1 -DMODULE_GNRC_SIXLOWPAN_IPHC=1 -DCONFIG_GNRC_SIXLOWPAN_FRAG_RBUF_SIZE=1 -DMODULE_GNRC_IPV6=1 -DMODULE_GNRC_NETTYPE_IPV6=1
@@ -34,4 +36,5 @@ H_INC = -I$(ROOT) -I$(ROOT)/sys/include/  \
 
 
 # Include our special build file
-include ../Makefile.include
+MAKE_INCLUDE_PATH ?= ..
+include $(MAKE_INCLUDE_PATH)/Makefile.include
