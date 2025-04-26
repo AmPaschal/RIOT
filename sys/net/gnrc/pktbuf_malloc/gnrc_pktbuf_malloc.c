@@ -226,6 +226,7 @@ gnrc_pktsnip_t *gnrc_pktbuf_start_write(gnrc_pktsnip_t *pkt)
     }
     if (pkt->users > 1) {
         gnrc_pktsnip_t *new;
+
         new = _create_snip(pkt->next, pkt->data, pkt->size, pkt->type);
         if (new != NULL) {
             pkt->users--;
@@ -277,7 +278,7 @@ static gnrc_pktsnip_t *_create_snip(gnrc_pktsnip_t *next, const void *data, size
         }
     }
     _set_pktsnip(pkt, next, _data, size, type);
-    if (data != NULL) {
+    if (data != NULL && _data != NULL) {  //  NEW VULNERABILITY: Do not continue if _data is NULL
         memcpy(_data, data, size);
     }
     return pkt;

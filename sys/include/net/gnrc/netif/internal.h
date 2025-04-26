@@ -640,19 +640,7 @@ static inline int gnrc_netif_ipv6_iid_to_addr(const gnrc_netif_t *netif,
  * @return  `-EINVAL`, when gnrc_netif_t::l2addr_len of @p netif is invalid for
  *          the gnrc_netif_t::device_type of @p netif.
  */
-static inline int gnrc_netif_ipv6_get_iid(gnrc_netif_t *netif, eui64_t *iid)
-{
-#if GNRC_NETIF_L2ADDR_MAXLEN > 0
-    if (netif->flags & GNRC_NETIF_FLAGS_HAS_L2ADDR) {
-        return gnrc_netif_ipv6_iid_from_addr(netif,
-                                             netif->l2addr, netif->l2addr_len,
-                                             iid);
-    }
-#endif /* GNRC_NETIF_L2ADDR_MAXLEN > 0 */
-    (void)netif;
-    (void)iid;
-    return -ENOTSUP;
-}
+int gnrc_netif_ipv6_get_iid(gnrc_netif_t *netif, eui64_t *iid);
 
 /**
  * @brief   Derives the length of the link-layer address in an NDP link-layer

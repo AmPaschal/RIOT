@@ -143,6 +143,12 @@ static inline bool _context_overlaps_iid(gnrc_sixlowpan_ctx_t *ctx,
         return false;
     }
 
+    // NEW VULNERABILITY (see _iphc_ipv6_encode for details)
+
+    if (((ctx->prefix_len / 8) - 7) > sizeof(network_uint64_t)) {
+        return false;
+    }
+
     return ((ctx->prefix_len == 128) || /* Full-length prefix overlaps IID in any case */
             ((ctx->prefix_len > 64) &&  /* otherwise, if bigger than 64-bit */
              /* compare bytes until prefix length with IID */
@@ -154,7 +160,7 @@ static inline bool _context_overlaps_iid(gnrc_sixlowpan_ctx_t *ctx,
              (iid->uint8[(ctx->prefix_len / 8) - 8] & byte_mask[ctx->prefix_len % 8])));
 }
 
-static gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
+gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
                                     const gnrc_netif_hdr_t *netif_hdr,
                                     gnrc_netif_t *netif);
 
@@ -1065,7 +1071,7 @@ int _forward_frag(gnrc_pktsnip_t *pkt, gnrc_pktsnip_t *frag_hdr,
 }
 #endif  /* MODULE_GNRC_SIXLOWPAN_FRAG_VRB */
 
-static inline bool _compressible_nh(uint8_t nh)
+bool _compressible_nh(uint8_t nh)
 {
     switch (nh) {
 #ifdef MODULE_GNRC_SIXLOWPAN_IPHC_NHC
@@ -1083,7 +1089,7 @@ static inline bool _compressible_nh(uint8_t nh)
     }
 }
 
-static size_t _iphc_ipv6_encode(gnrc_pktsnip_t *pkt,
+size_t _iphc_ipv6_encode(gnrc_pktsnip_t *pkt,
                                 const gnrc_netif_hdr_t *netif_hdr,
                                 gnrc_netif_t *iface,
                                 uint8_t *iphc_hdr)
@@ -1594,7 +1600,7 @@ static ssize_t _nhc_udp_encode_snip(gnrc_pktsnip_t *pkt, uint8_t *nhc_data)
     gnrc_pktsnip_t *hdr = pkt->next->next;
     ssize_t nhc_len;
 
-    assert(hdr->size >= sizeof(udp_hdr_t));
+    __CPROVER_assume(hdr->size >= sizeof(udp_hdr_t));
     /* save to cast, as result is max 8 */
     nhc_len = (ssize_t)iphc_nhc_udp_encode(nhc_data, hdr);
     /* remove UDP header */
@@ -1624,7 +1630,7 @@ static inline bool _compressible(gnrc_pktsnip_t *hdr)
     }
 }
 
-static gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
+gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
                                     const gnrc_netif_hdr_t *netif_hdr,
                                     gnrc_netif_t *iface)
 {
@@ -1654,6 +1660,18 @@ static gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
         else {
             dispatch->next = ptr;
         }
+
+        // if (ptr->type == GNRC_NETTYPE_UNDEF) {
+        //     /* most likely UDP for now so use that (XXX: extend if extension
+        //      * headers make problems) */
+        //     dispatch_size += sizeof(udp_hdr_t);
+        //     break; /* nothing special after UDP so quit even if more UNDEF
+        //              * come */
+        // }
+        // else {
+        //     dispatch_size += ptr->size;
+        // }
+
         dispatch_size += ptr->size;
         dispatch = ptr; /* use dispatch as temporary point for prev */
         ptr = ptr->next;
@@ -1661,6 +1679,16 @@ static gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
     /* there should be at least one compressible header in `pkt`, otherwise this
      * function should not be called */
     assert(dispatch_size > 0);
+
+    // NEW VULNERABILITY
+    // Dispatch may overflow due to huge sizes,
+    // or it may just not be given a very large value
+
+    // if (dispatch_size < sizeof(ipv6_hdr_t)) {
+    //     DEBUG("6lo iphc: decoded dispatch size too small\n");
+    //     return NULL;
+    // }
+
     dispatch = gnrc_pktbuf_add(NULL, NULL, dispatch_size + 1,
                                GNRC_NETTYPE_SIXLOWPAN);
 
@@ -1668,6 +1696,21 @@ static gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
         DEBUG("6lo iphc: error allocating dispatch space\n");
         return NULL;
     }
+
+    // NEW VULNERABILITY
+    // Reported sizes may be very small
+
+    // if (pkt->next->size < sizeof(ipv6_hdr_t)) {
+    //     return NULL;
+    // }
+
+    // NEW VULNERABILITY
+    // dispatch data or packet data may be NULL, does not check properly:
+
+    // if (pkt->next->data == NULL) {
+    //     DEBUG("6lo iphc: error allocating dispatch space\n");
+    //     return NULL;
+    // }
 
     iphc_hdr = dispatch->data;
     inline_pos = _iphc_ipv6_encode(pkt, netif_hdr, iface, iphc_hdr);
