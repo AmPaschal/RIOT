@@ -26,20 +26,6 @@
 
 #include "uri_parser.h"
 
-// Stubbing this to help runtime and avoid loop
-// const char *_strchrb(char *start, const char *stop, char c)
-// {   
-
-//     bool rand;
-//     if(rand) {
-//         return NULL;
-//     }
-//     size_t offset;
-//     //Keep within str bounds without risk of an overflow
-//     __CPROVER_assume(offset < stop - start);
-//     start[offset] = c;
-//     return start + offset;
-// }
 
 void harness(void)
 {
