@@ -68,8 +68,8 @@ typedef struct {
     const char *zoneid;
 
     const char *port_str;           /**< port as str */
-    const char *path;               /**< path */
-    const char *query;              /**< query */
+    char *path;               /**< path */
+    char *query;              /**< query */
     uint16_t port;                  /**< port as uint16_t */
     uint16_t scheme_len;            /**< length of @ref scheme */
     uint16_t userinfo_len;          /**< length of @ref userinfo */

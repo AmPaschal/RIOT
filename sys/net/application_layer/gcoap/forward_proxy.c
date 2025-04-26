@@ -351,7 +351,7 @@ static int _gcoap_forward_proxy_add_uri_path(coap_pkt_t *pkt,
     return 0;
 }
 
-static int _gcoap_forward_proxy_copy_options(coap_pkt_t *pkt,
+int _gcoap_forward_proxy_copy_options(coap_pkt_t *pkt,
                                              coap_pkt_t *client_pkt,
                                              client_ep_t *cep,
                                              uri_parser_result_t *urip)
@@ -364,6 +364,7 @@ static int _gcoap_forward_proxy_copy_options(coap_pkt_t *pkt,
 
     for (uint16_t i = 0; i < client_pkt->options_len; i++) {
         ssize_t optlen = coap_opt_get_next(client_pkt, &opt, &value, !i);
+
         /* wrt to ETag option slack: we always have at least the Proxy-URI option in the client_pkt,
          * so we should hit at least once (and it's opt_num is also >= COAP_OPT_ETAG) */
         if (optlen >= 0) {
@@ -578,6 +579,7 @@ static void _cep_set_req_etag(client_ep_t *cep, const void *etag,
     (void)etag;
     (void)etag_len;
 #if MODULE_NANOCOAP_CACHE
+    // if (1) {
     if (etag_len <= COAP_ETAG_LENGTH_MAX) {
         cep->flags &= ~CLIENT_EP_FLAGS_ETAG_LEN_MASK;
         cep->flags |= (etag_len << CLIENT_EP_FLAGS_ETAG_LEN_POS)

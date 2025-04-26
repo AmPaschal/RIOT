@@ -71,7 +71,8 @@
         "buffer": "c",
         "internet": "c",
         "socket": "c",
-        "gnrc_tcp_common.h": "c"
+        "gnrc_tcp_common.h": "c",
+        "system_error": "c",
     },
     "[shellscript][c][cpp]": {
         "editor.tabSize": 4,
