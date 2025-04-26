@@ -317,7 +317,8 @@ ssize_t gcoap_dns_server_proxy_get(char *proxy, size_t proxy_len)
     ssize_t res = 0;
     mutex_lock(&_client_mutex);
     if (_dns_server_uri_isset()) {
-        res = strlen(_uri); // VULN: typo, should be strlen(_proxy)
+        // res = strlen(_uri); // VULN: typo, should be strlen(_proxy)
+        res = strlen(_proxy);
         if (((size_t)res + 1) > proxy_len) {
             /* account for trailing \0 */
             res = -ENOBUFS;

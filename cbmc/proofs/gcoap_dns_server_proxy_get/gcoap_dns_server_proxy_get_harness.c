@@ -40,19 +40,15 @@ void harness(void)
     _uri[uri_null_byte] = '\0';
 
     size_t str_len;
-    // __CPROVER_assume(str_len <= 20);
 
     char* str = malloc(str_len);
     __CPROVER_assume(str != NULL);
 
     //Don't add a NULL byte to a string of length 0
     if (str_len != 0) {
-        __CPROVER_assume(str[str_len - 1] == '\0');
+        str[str_len - 1] = '\0';
     }
 
 
     gcoap_dns_server_proxy_get(str, str_len);
-  /* Insert argument declarations */
-
-
 }
