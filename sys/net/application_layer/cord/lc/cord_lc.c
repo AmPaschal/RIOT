@@ -62,7 +62,7 @@ static int _sync(void);
 static void _on_lookup(const gcoap_request_memo_t *memo, coap_pkt_t *pdu,
                        const sock_udp_ep_t *remote);
 /* callback for _send_rd_init_req() */
-static void _on_rd_init(const gcoap_request_memo_t *memo, coap_pkt_t *pdu,
+void _on_rd_init(const gcoap_request_memo_t *memo, coap_pkt_t *pdu,
                         const sock_udp_ep_t *remote);
 static ssize_t _add_filters_to_lookup(coap_pkt_t *pkt, cord_lc_filter_t *filters);
 static int _send_rd_init_req(coap_pkt_t *pkt, const sock_udp_ep_t *remote,
@@ -72,8 +72,8 @@ static ssize_t _lookup_raw(const cord_lc_rd_t *rd, unsigned content_format,
                            unsigned lookup_type, cord_lc_filter_t *filters,
                            void *result, size_t maxlen);
 
-static char *_result_buf;
-static size_t _result_buf_len;
+char *_result_buf;
+size_t _result_buf_len;
 static uint8_t reqbuf[CONFIG_GCOAP_PDU_BUF_SIZE] = {0};
 
 static mutex_t _mutex = MUTEX_INIT;
@@ -199,7 +199,7 @@ static ssize_t _lookup_raw(const cord_lc_rd_t *rd, unsigned content_format,
     return (retval == CORD_LC_OK) ? (int)_result_buf_len : retval;
 }
 
-static void _on_rd_init(const gcoap_request_memo_t *memo, coap_pkt_t *pdu,
+void _on_rd_init(const gcoap_request_memo_t *memo, coap_pkt_t *pdu,
                        const sock_udp_ep_t *remote)
 {
     (void)remote;
@@ -220,6 +220,7 @@ static void _on_rd_init(const gcoap_request_memo_t *memo, coap_pkt_t *pdu,
             DEBUG("cord_lc: error empty payload\n");
             goto end;
         }
+        // if (0) { // Uncomment to expose CVE-2024-31225
         if (size >= full_buf_len) {
             DEBUG("cord_lc: truncating response from %" PRIuSIZE " to %" PRIuSIZE "\n", size, full_buf_len);
             /* Not setting FLAG_OVERFLOW: There can still be valid
@@ -238,7 +239,9 @@ static void _on_rd_init(const gcoap_request_memo_t *memo, coap_pkt_t *pdu,
     }
 
 end:
-    thread_flags_set(_waiter, flag);
+
+    // thread_flags_set(_waiter, flag);
+    return;
 }
 
 static int _send_rd_init_req(coap_pkt_t *pkt, const sock_udp_ep_t *remote,
