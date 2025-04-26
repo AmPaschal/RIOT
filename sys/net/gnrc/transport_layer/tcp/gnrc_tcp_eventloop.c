@@ -115,7 +115,7 @@ static int _send(gnrc_pktsnip_t *pkt)
  *            -EINVAL if checksum was invalid.
  *            -ENOTCONN if no TCB is interested in @p pkt.
  */
-static int _receive(gnrc_pktsnip_t *pkt)
+int _receive(gnrc_pktsnip_t *pkt)
 {
     TCP_DEBUG_ENTER;
     /* NOTE: In receiving direction: pkt = payload, payload->next = tcp, tcp->next = nw */
@@ -263,7 +263,7 @@ static int _receive(gnrc_pktsnip_t *pkt)
                 TCP_DEBUG_ERROR("Can't dispatch to network layer.");
             }
         }
-        gnrc_pktbuf_release(pkt);
+        // gnrc_pktbuf_release(pkt);
         TCP_DEBUG_ERROR("-ENOTCONN: Unable to find matching TCB.");
         TCP_DEBUG_LEAVE;
         return -ENOTCONN;

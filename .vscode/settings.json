@@ -70,7 +70,8 @@
         "evtimer_msg.h": "c",
         "buffer": "c",
         "internet": "c",
-        "socket": "c"
+        "socket": "c",
+        "gnrc_tcp_common.h": "c"
     },
     "[shellscript][c][cpp]": {
         "editor.tabSize": 4,
