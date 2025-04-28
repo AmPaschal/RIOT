@@ -309,7 +309,29 @@ static inline int mutex_trylock(mutex_t *mutex)
  *
  * @post    The mutex @p is locked and held by the calling thread.
  */
-void mutex_lock(mutex_t *mutex);
+inline void mutex_lock(mutex_t *mutex)
+{
+#if (MAXTHREADS > 1)
+    mutex_lock_internal(mutex, true);
+#else
+    /* dummy implementation for when no scheduler is used */
+    /* (ab)use next pointer as lock variable */
+    volatile uintptr_t *lock = (void *)&mutex->queue.next;
+
+    /* spin until lock is released (e.g. by interrupt).
+     *
+     * Note: since only the numbers 0 and 1 are ever stored in lock, this
+     * read does not need to be atomic here - even while a concurrent write
+     * is performed on lock, a read will still either yield 0 or 1 (so the old
+     * or new value, which both is fine), even if the lock is read out byte-wise
+     * (e.g. on AVR).
+     */
+    while (*lock) {}
+
+    /* set lock variable */
+    *lock = 1;
+#endif
+}
 
 /**
  * @brief   Locks a mutex, blocking. This function can be canceled.
