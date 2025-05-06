@@ -31,21 +31,21 @@ extern char _uri[CONFIG_GCOAP_DNS_SERVER_URI_LEN];
 void harness(void)
 {
 
-    uint8_t src_null_byte;
-    __CPROVER_assume(src_null_byte < CONFIG_GCOAP_DNS_SERVER_URI_LEN);
-    _proxy[src_null_byte] = '\0';
+    // uint8_t src_null_byte;
+    // __CPROVER_assume(src_null_byte < CONFIG_GCOAP_DNS_SERVER_URI_LEN);
+    // _proxy[src_null_byte] = '\0';
 
-    uint8_t uri_null_byte;
-    __CPROVER_assume(uri_null_byte < CONFIG_GCOAP_DNS_SERVER_URI_LEN);
-    _uri[uri_null_byte] = '\0';
+    // uint8_t uri_null_byte;
+    // __CPROVER_assume(uri_null_byte < CONFIG_GCOAP_DNS_SERVER_URI_LEN);
+    // _uri[uri_null_byte] = '\0';
 
     size_t str_len;
 
     char* str = malloc(str_len);
-    // __CPROVER_assume(str != NULL);
+    __CPROVER_assume(str != NULL);
 
     //Don't add a NULL byte to a string of length 0
-    if (str_len != 0 && str != NULL) {
+    if (str_len != 0) {
         str[str_len - 1] = '\0';
     }
 
