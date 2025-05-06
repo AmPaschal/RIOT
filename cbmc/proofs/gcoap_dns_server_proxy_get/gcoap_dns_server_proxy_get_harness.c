@@ -42,10 +42,10 @@ void harness(void)
     size_t str_len;
 
     char* str = malloc(str_len);
-    __CPROVER_assume(str != NULL);
+    // __CPROVER_assume(str != NULL);
 
     //Don't add a NULL byte to a string of length 0
-    if (str_len != 0) {
+    if (str_len != 0 && str != NULL) {
         str[str_len - 1] = '\0';
     }
 
