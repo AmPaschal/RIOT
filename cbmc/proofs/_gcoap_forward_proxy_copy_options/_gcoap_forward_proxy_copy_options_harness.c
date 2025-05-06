@@ -121,7 +121,7 @@ void harness(void)
     coap_pkt_t *client_pkt = alloc_coap_client_pkt();
 
     // Added this clause as client_pkt->payload is copied into pkt->payload without len checks.
-    __CPROVER_assume(client_pkt->payload_len <= pkt->payload_len - 1);
+    // __CPROVER_assume(client_pkt->payload_len <= pkt->payload_len - 1);
 
     client_ep_t cep; //No pointers in this so I'm not going to alloc it
 
