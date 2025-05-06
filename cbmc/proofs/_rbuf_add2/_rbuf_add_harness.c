@@ -103,8 +103,8 @@ void harness(void)
     __CPROVER_assume(pkt != NULL);
 
     uint8_t size;
-    // uint8_t minSize = MAX(sizeof(sixlowpan_frag_t), MAX(sizeof(sixlowpan_frag_n_t), sizeof(sixlowpan_sfr_rfrag_t)));
-    // __CPROVER_assume(size > minSize);
+    uint8_t minSize = MAX(sizeof(sixlowpan_frag_t), MAX(sizeof(sixlowpan_frag_n_t), sizeof(sixlowpan_sfr_rfrag_t)));
+    __CPROVER_assume(size > minSize);
     uint8_t *data = malloc(size);
     __CPROVER_assume(data != NULL);
     pkt->data = data;
@@ -125,7 +125,7 @@ void harness(void)
     uint8_t entry_size;
     __CPROVER_assume(entry_size > 0);
     entry.pkt->data = malloc(entry_size);
-    __CPROVER_assume(entry.pkt->data != NULL);
+    // __CPROVER_assume(entry.pkt->data != NULL);
     entry.pkt->size = entry_size;
     entry.pkt->next = NULL;
     uint16_t datagram_size;
