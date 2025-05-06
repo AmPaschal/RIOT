@@ -115,7 +115,7 @@ void harness(void)
     __CPROVER_assume(offset < 1000);
     // Adding this check to ensure consistency and remove an error.
     // We need to check if it is possible for a caller to violate this condition. If it is, it is a bug.
-    __CPROVER_assume(offset != 0 || sixlowpan_frag_1_is(pkt->data) || sixlowpan_sfr_rfrag_is(data));
+    // __CPROVER_assume(offset != 0 || sixlowpan_frag_1_is(pkt->data) || sixlowpan_sfr_rfrag_is(data));
     unsigned page;
 
     // Modeling rbuf

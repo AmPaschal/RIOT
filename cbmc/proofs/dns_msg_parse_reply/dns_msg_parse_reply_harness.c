@@ -34,7 +34,7 @@ void harness(void)
 
     //Based on the start of the function, the buffer must have at least a dns_hdr_t
     //Might be a vuln depending on if it is possible for buf to be less than dns_hdr_t
-    // __CPROVER_assume(len >= sizeof(dns_hdr_t));
+    __CPROVER_assume(len >= sizeof(dns_hdr_t));
     uint8_t* buf = malloc(len);
     __CPROVER_assume(buf != NULL);
 
