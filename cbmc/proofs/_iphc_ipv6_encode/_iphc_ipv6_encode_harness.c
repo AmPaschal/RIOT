@@ -75,7 +75,7 @@ void harness(void)
 
     // Data will NOT be NULL:
 
-    // __CPROVER_assume(data != NULL);
+    __CPROVER_assume(data != NULL);
 
     size_t size = _iphc_ipv6_encode(&pkt, &netif_hdr, &iface, data);
 }
