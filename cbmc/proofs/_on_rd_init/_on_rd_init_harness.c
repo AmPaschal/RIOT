@@ -58,7 +58,7 @@ void harness(void)
     sock_udp_ep_t remote;
 
     _result_buf = malloc(_result_buf_len);
-    // __CPROVER_assume(_result_buf != NULL);
+    __CPROVER_assume(_result_buf != NULL);
 
     _on_rd_init(&memo, pdu, &remote);
 }

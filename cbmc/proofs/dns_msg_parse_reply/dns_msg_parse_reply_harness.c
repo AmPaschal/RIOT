@@ -40,7 +40,7 @@ void harness(void)
 
     int family;
     // Family must be one of these 3 values
-    __CPROVER_assume(family == AF_UNSPEC || family == AF_INET || family == AF_INET6);
+    // __CPROVER_assume(family == AF_UNSPEC || family == AF_INET || family == AF_INET6);
 
     //Addr_out is a place where the IP addr can be writen to
     //Don't think it's user controlled, so I'm going to assume it can fit ipv6
