@@ -129,11 +129,11 @@ void harness(void)
     entry.pkt->size = entry_size;
     entry.pkt->next = NULL;
     uint16_t datagram_size;
-    __CPROVER_assume(datagram_size <= entry_size);
+    // __CPROVER_assume(datagram_size <= entry_size);
     entry.super.datagram_size = datagram_size;
     // Added this to fix a bug. Not sure how best to model it
     int8_t offset_diff;
-    // __CPROVER_assume(offset_diff >= 0); // Basically, offset diff should not be negative that it overflows.
+    __CPROVER_assume(offset_diff >= 0); // Basically, offset diff should not be negative that it overflows.
     entry.offset_diff = offset_diff;
 
     entry.super.ints = malloc(sizeof(gnrc_sixlowpan_frag_rb_int_t));
