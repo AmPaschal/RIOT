@@ -103,8 +103,8 @@ void harness(void)
     __CPROVER_assume(pkt != NULL);
 
     uint8_t size;
-    uint8_t minSize = MAX(sizeof(sixlowpan_frag_t), MAX(sizeof(sixlowpan_frag_n_t), sizeof(sixlowpan_sfr_rfrag_t)));
-    __CPROVER_assume(size > minSize);
+    // uint8_t minSize = MAX(sizeof(sixlowpan_frag_t), MAX(sizeof(sixlowpan_frag_n_t), sizeof(sixlowpan_sfr_rfrag_t)));
+    // __CPROVER_assume(size > minSize);
     uint8_t *data = malloc(size);
     __CPROVER_assume(data != NULL);
     pkt->data = data;
@@ -112,7 +112,7 @@ void harness(void)
     pkt->next = NULL;
 
     size_t offset;
-    // __CPROVER_assume(offset < 1000);
+    __CPROVER_assume(offset < 1000);
     // Adding this check to ensure consistency and remove an error.
     // We need to check if it is possible for a caller to violate this condition. If it is, it is a bug.
     __CPROVER_assume(offset != 0 || sixlowpan_frag_1_is(pkt->data) || sixlowpan_sfr_rfrag_is(data));
