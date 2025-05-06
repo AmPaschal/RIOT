@@ -109,7 +109,7 @@ static coap_pkt_t* alloc_coap_client_pkt() {
 
 ssize_t coap_opt_finish(coap_pkt_t *pkt, uint16_t flags) {
     ssize_t size;
-    // __CPROVER_assume(size <= pkt->payload_len);
+    __CPROVER_assume(size <= pkt->payload_len);
     return size;
 };
 

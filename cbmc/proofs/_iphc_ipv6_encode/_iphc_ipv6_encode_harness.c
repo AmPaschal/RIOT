@@ -69,7 +69,7 @@ void harness(void)
 
     size_t len;
 
-    __CPROVER_assume(len >= 41);
+    // __CPROVER_assume(len >= 41);
 
     uint8_t *data = (uint8_t*)malloc(sizeof(uint8_t) * len);
 
