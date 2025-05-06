@@ -112,7 +112,7 @@ void harness(void)
     pkt->next = NULL;
 
     size_t offset;
-    __CPROVER_assume(offset < 1000);
+    // __CPROVER_assume(offset < 1000);
     // Adding this check to ensure consistency and remove an error.
     // We need to check if it is possible for a caller to violate this condition. If it is, it is a bug.
     __CPROVER_assume(offset != 0 || sixlowpan_frag_1_is(pkt->data) || sixlowpan_sfr_rfrag_is(data));
@@ -129,7 +129,7 @@ void harness(void)
     entry.pkt->size = entry_size;
     entry.pkt->next = NULL;
     uint16_t datagram_size;
-    // __CPROVER_assume(datagram_size <= entry_size);
+    __CPROVER_assume(datagram_size <= entry_size);
     entry.super.datagram_size = datagram_size;
     // Added this to fix a bug. Not sure how best to model it
     int8_t offset_diff;
