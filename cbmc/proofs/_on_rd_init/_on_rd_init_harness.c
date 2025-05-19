@@ -39,10 +39,10 @@ void harness(void)
     uint8_t pkt_size;
     __CPROVER_assume(pkt_size > sizeof(coap_hdr_t));
     uint8_t *hdr = malloc(pkt_size);
-    // __CPROVER_assume(hdr != NULL);
+    __CPROVER_assume(hdr != NULL);
     pkt->hdr = hdr;
     uint8_t payload_offset;
-    __CPROVER_assume(payload_offset >= sizeof(coap_hdr_t) && payload_offset <= pkt_size);
+    __CPROVER_assume(payload_offset >= sizeof(coap_hdr_t));
     pkt->payload = hdr + payload_offset;
     pkt->payload_len = pkt_size - payload_offset;
 
