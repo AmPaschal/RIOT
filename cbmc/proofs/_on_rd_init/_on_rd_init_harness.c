@@ -29,8 +29,10 @@
 extern char* _result_buf;
 extern size_t _result_buf_len;
 
-static coap_pkt_t* alloc_coap_pkt() {
-    //Paschal's implementation
+void harness(void)
+{
+    
+    gcoap_request_memo_t memo;
 
     coap_pkt_t* pkt = malloc(sizeof(coap_pkt_t));
     __CPROVER_assume(pkt != NULL);
@@ -44,21 +46,10 @@ static coap_pkt_t* alloc_coap_pkt() {
     pkt->payload = hdr + payload_offset;
     pkt->payload_len = pkt_size - payload_offset;
 
-    return pkt;
-}
-
-
-void harness(void)
-{
-    
-    gcoap_request_memo_t memo;
-
-    coap_pkt_t *pdu = alloc_coap_pkt();
-
     sock_udp_ep_t remote;
 
     _result_buf = malloc(_result_buf_len);
     __CPROVER_assume(_result_buf != NULL);
 
-    _on_rd_init(&memo, pdu, &remote);
+    _on_rd_init(&memo, pkt, &remote);
 }
