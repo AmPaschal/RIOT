@@ -41,7 +41,7 @@ void harness(void)
     __CPROVER_assume(str_size > 0);
     char* id = malloc(str_size);
     __CPROVER_assume(id != NULL);
-    id[str_size - 1] = '\0';
+    __CPROVER_assume(id[str_size - 1] == '\0');
 
     subs = malloc(sizeof(emcute_sub_t));
     if(subs != NULL) {

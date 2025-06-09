@@ -43,11 +43,7 @@ void harness(void)
 
     char* str = malloc(str_len);
     __CPROVER_assume(str != NULL);
-
-    //Don't add a NULL byte to a string of length 0
-    if (str_len != 0) {
-        str[str_len - 1] = '\0';
-    }
+    __CPROVER_assume(str[str_len - 1] == '\0');
 
 
     gcoap_dns_server_proxy_get(str, str_len);
