@@ -7,16 +7,17 @@ ROOT ?= ../../..
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/sys/net/application_layer/cord/lc/cord_lc.c
+LINK = $(ROOT)/sys/net/application_layer/dhcpv6/client.c
 
 # Harness to utilize, omit the extension!
-H_ENTRY = _on_rd_init
+H_ENTRY = _parse_advertise
 
 # Extra CBMC flags to be passed during CBMC analysis
 H_CBMCFLAGS = --nondet-static --unwind 1 # Rest to be filled in by LLM
 
 # Env vars, filled in by LLM
-H_DEF = -DCONFIG_GCOAP_PDU_BUF_SIZE=128
+# Enable IPv6 support in sock API so addr.ipv6 exists
+H_DEF = -DSOCK_HAS_IPV6=1
 
 # LLM should add more to this
 H_INC = -I$(ROOT) \
@@ -24,7 +25,9 @@ H_INC = -I$(ROOT) \
         -I$(ROOT)/core/lib/include/  \
         -I$(ROOT)/core/include/  \
         -I$(ROOT)/cpu/native/include/  \
-        -I$(ROOT)/drivers/include/ \
+        -I$(ROOT)/drivers/include/  \
+        -I$(ROOT)/boards/native/include/ \
+        -I$(ROOT)/sys/net/application_layer/dhcpv6/ \
         -I$(ROOT)/sys/net/gnrc/sock/include
 
 # Include our special build file

@@ -7,16 +7,19 @@ ROOT ?= ../../..
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/sys/net/application_layer/cord/lc/cord_lc.c
+LINK = $(ROOT)/sys/net/gnrc/routing/rpl/gnrc_rpl_control_messages.c
 
 # Harness to utilize, omit the extension!
-H_ENTRY = _on_rd_init
+H_ENTRY = _parse_options
 
 # Extra CBMC flags to be passed during CBMC analysis
 H_CBMCFLAGS = --nondet-static --unwind 1 # Rest to be filled in by LLM
 
 # Env vars, filled in by LLM
-H_DEF = -DCONFIG_GCOAP_PDU_BUF_SIZE=128
+# Map evtimer_msg_t to evtimer_t to satisfy globals.h without editing headers
+H_DEF = -DMODULE_XTIMER_ON_ZTIMER=1 -Devtimer_msg_t=evtimer_t \
+        -DMODULE_GNRC_NETIF_IPV6=1 -DMODULE_GNRC_IPV6=1 -DMODULE_GNRC_RPL=1 \
+        -DMODULE_GNRC_NETTYPE_IPV6=1
 
 # LLM should add more to this
 H_INC = -I$(ROOT) \
@@ -25,7 +28,7 @@ H_INC = -I$(ROOT) \
         -I$(ROOT)/core/include/  \
         -I$(ROOT)/cpu/native/include/  \
         -I$(ROOT)/drivers/include/ \
-        -I$(ROOT)/sys/net/gnrc/sock/include
+        -I$(ROOT)/boards/native/include/
 
 # Include our special build file
 MAKE_INCLUDE_PATH ?= ..

@@ -7,25 +7,30 @@ ROOT ?= ../../..
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/sys/net/application_layer/cord/lc/cord_lc.c
+LINK = $(ROOT)/sys/net/application_layer/gcoap/forward_proxy.c
 
 # Harness to utilize, omit the extension!
-H_ENTRY = _on_rd_init
+H_ENTRY = _gcoap_forward_proxy_copy_options
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1 # Rest to be filled in by LLM
+H_CBMCFLAGS = --nondet-static --unwind 1
 
 # Env vars, filled in by LLM
-H_DEF = -DCONFIG_GCOAP_PDU_BUF_SIZE=128
+# Define IPv6 support so sock endpoint struct contains the IPv6 field used
+# Define RIOT_VERSION so nanocoap.h includes RIOT headers (e.g., iolist.h)
+# Define MODULE_SOCK_UDP so nanocoap.h includes net/sock/udp.h and does not typedef sock_udp_ep_t as void
+H_DEF = -DSOCK_HAS_IPV6 -DRIOT_VERSION=1 -DMODULE_SOCK_UDP
 
-# LLM should add more to this
+# Include paths
 H_INC = -I$(ROOT) \
+        -I$(ROOT)/sys \
         -I$(ROOT)/sys/include/  \
         -I$(ROOT)/core/lib/include/  \
         -I$(ROOT)/core/include/  \
         -I$(ROOT)/cpu/native/include/  \
         -I$(ROOT)/drivers/include/ \
-        -I$(ROOT)/sys/net/gnrc/sock/include
+        -I$(ROOT)/sys/net/gnrc/sock/include \
+        -I$(ROOT)/sys/net/application_layer/gcoap/include
 
 # Include our special build file
 MAKE_INCLUDE_PATH ?= ..

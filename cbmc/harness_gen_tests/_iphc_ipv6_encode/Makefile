@@ -7,25 +7,28 @@ ROOT ?= ../../..
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/sys/net/application_layer/cord/lc/cord_lc.c
+LINK = $(ROOT)/sys/net/gnrc/network_layer/sixlowpan/iphc/gnrc_sixlowpan_iphc.c
 
 # Harness to utilize, omit the extension!
-H_ENTRY = _on_rd_init
+H_ENTRY = _iphc_ipv6_encode
 
 # Extra CBMC flags to be passed during CBMC analysis
 H_CBMCFLAGS = --nondet-static --unwind 1 # Rest to be filled in by LLM
 
-# Env vars, filled in by LLM
-H_DEF = -DCONFIG_GCOAP_PDU_BUF_SIZE=128
+# Env vars
+# Define GNRC IPv6 so gnrc_netif_hdr_ipv6_iid_from_{src,dst} are real functions,
+# not macros with embedded semicolons that break parsing.
+# Also enable the SIXLOWPAN nettype so GNRC_NETTYPE_SIXLOWPAN is declared.
+H_DEF = -DMODULE_GNRC_IPV6=1 -DMODULE_GNRC_SIXLOWPAN_IPHC=1 -DMODULE_GNRC_NETTYPE_IPV6=1 \
+       -DMODULE_GNRC_NETTYPE_SIXLOWPAN=1
 
-# LLM should add more to this
+# Include paths (no additions needed for this error)
 H_INC = -I$(ROOT) \
         -I$(ROOT)/sys/include/  \
         -I$(ROOT)/core/lib/include/  \
         -I$(ROOT)/core/include/  \
         -I$(ROOT)/cpu/native/include/  \
-        -I$(ROOT)/drivers/include/ \
-        -I$(ROOT)/sys/net/gnrc/sock/include
+        -I$(ROOT)/drivers/include/
 
 # Include our special build file
 MAKE_INCLUDE_PATH ?= ..

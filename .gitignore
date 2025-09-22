@@ -99,3 +99,7 @@ keys/
 .venv
 venv/
 .vscode/settings.json
+
+
+# Exclude all build directories
+**/build/

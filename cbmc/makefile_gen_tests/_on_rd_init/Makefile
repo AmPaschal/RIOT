@@ -16,7 +16,7 @@ H_ENTRY = _on_rd_init
 H_CBMCFLAGS = --nondet-static --unwind 1 # Rest to be filled in by LLM
 
 # Env vars, filled in by LLM
-H_DEF = -DCONFIG_GCOAP_PDU_BUF_SIZE=128
+H_DEF = -DRIOT_VERSION=1 -DMODULE_SOCK_UDP=1
 
 # LLM should add more to this
 H_INC = -I$(ROOT) \
@@ -25,7 +25,8 @@ H_INC = -I$(ROOT) \
         -I$(ROOT)/core/include/  \
         -I$(ROOT)/cpu/native/include/  \
         -I$(ROOT)/drivers/include/ \
-        -I$(ROOT)/sys/net/gnrc/sock/include
+        -I$(ROOT)/sys/net/gnrc/sock/include/ \
+        -I$(ROOT)/sys/clif/include
 
 # Include our special build file
 MAKE_INCLUDE_PATH ?= ..
