@@ -73,6 +73,7 @@
         "socket": "c",
         "gnrc_tcp_common.h": "c",
         "system_error": "c",
+        "forward_proxy_internal.h": "c"
     },
     "[shellscript][c][cpp]": {
         "editor.tabSize": 4,
