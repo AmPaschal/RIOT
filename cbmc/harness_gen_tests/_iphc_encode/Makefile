@@ -13,13 +13,15 @@ LINK = $(ROOT)/sys/net/gnrc/network_layer/sixlowpan/iphc/gnrc_sixlowpan_iphc.c
 H_ENTRY = _iphc_encode
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1 # Rest to be filled in by LLM
+H_CBMCFLAGS = --nondet-static --unwind 2 # Rest to be filled in by LLM
 
 # Env vars
 # Enable GNRC_NETTYPE_IPV6 so GNRC_NETTYPE_IPV6 is defined in nettype.h
 H_DEF = -DMODULE_GNRC_NETTYPE_IPV6=1 \
-       -DMODULE_GNRC_IPV6=1 \
-       -DMODULE_GNRC_NETTYPE_SIXLOWPAN=1
+        -DMODULE_GNRC_IPV6=1 \
+        -DMODULE_GNRC_NETTYPE_SIXLOWPAN=1 \
+        -DSIXLOWPAN_IPHC1_NH=4 \
+        -DIPHC_SAC_SAM_UNSPEC=4 
 
 # Include paths
 H_INC = -I$(ROOT) \

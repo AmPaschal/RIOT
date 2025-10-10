@@ -13,11 +13,11 @@ LINK = $(ROOT)/sys/net/application_layer/dhcpv6/client.c
 H_ENTRY = _parse_advertise
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1 # Rest to be filled in by LLM
+H_CBMCFLAGS = --nondet-static --unwind 1 --unwindset _preparse_advertise.3:4 # Rest to be filled in by LLM
 
 # Env vars, filled in by LLM
 # Enable IPv6 member in sock endpoint address union
-H_DEF = -DSOCK_HAS_IPV6=1
+H_DEF = -DSOCK_HAS_IPV6=1 -DMODULE_DHCPV6_CLIENT_IA_PD=1 -DMODULE_DHCPV6_CLIENT_IA_NA=1
 
 # LLM should add more to this
 H_INC = -I$(ROOT) \

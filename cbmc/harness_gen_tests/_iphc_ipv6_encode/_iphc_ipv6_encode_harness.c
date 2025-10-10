@@ -7,11 +7,22 @@
 #include "net/ipv6/hdr.h"
 #include "net/gnrc/sixlowpan/iphc.h"
 
+#include "net/gnrc/sixlowpan.h"
+
 /* Prototype of the function under test */
 extern size_t _iphc_ipv6_encode(gnrc_pktsnip_t *pkt,
                                 const gnrc_netif_hdr_t *netif_hdr,
                                 gnrc_netif_t *iface,
                                 uint8_t *iphc_hdr);
+
+
+/*Copy of undefined function to improve coverage*/
+void gnrc_netif_release(gnrc_netif_t *netif)
+{
+    if (netif && (netif->ops)) {
+        rmutex_unlock(&netif->mutex);
+    }
+}
 
 void harness(void)
 {

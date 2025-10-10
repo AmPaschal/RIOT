@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
+
 /* Prototype for the function under test */
 extern void _parse_advertise(uint8_t *adv, size_t len);
 

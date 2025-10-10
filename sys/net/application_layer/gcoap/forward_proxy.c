@@ -368,6 +368,7 @@ int _gcoap_forward_proxy_copy_options(coap_pkt_t *pkt,
         /* wrt to ETag option slack: we always have at least the Proxy-URI option in the client_pkt,
          * so we should hit at least once (and it's opt_num is also >= COAP_OPT_ETAG) */
         if (optlen >= 0) {
+            // __CPROVER_assert((IS_USED(MODULE_NANOCOAP_CACHE) && opt.opt_num >= COAP_OPT_ETAG && !etag_added), "");
             if (IS_USED(MODULE_NANOCOAP_CACHE) && !etag_added && (opt.opt_num >= COAP_OPT_ETAG)) {
                 static const uint8_t tmp[COAP_ETAG_LENGTH_MAX] = { 0 };
                 /* add slack to maybe add an ETag on stale cache hit later, as is done in

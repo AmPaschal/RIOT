@@ -13,6 +13,19 @@ extern gnrc_pktsnip_t *_iphc_encode(gnrc_pktsnip_t *pkt,
                                     const gnrc_netif_hdr_t *netif_hdr,
                                     gnrc_netif_t *netif);
 
+gnrc_pktsnip_t * gnrc_pktbuf_start_write(gnrc_pktsnip_t *ptr){
+    gnrc_pktsnip_t *ret = malloc(sizeof(gnrc_pktsnip_t));
+    return ret;
+}
+
+/*Copy of undefined function to improve coverage*/
+void gnrc_netif_release(gnrc_netif_t *netif)
+{
+    if (netif && (netif->ops)) {
+        rmutex_unlock(&netif->mutex);
+    }
+}
+
 void harness()
 {
     /* Parameters as in the signature */
@@ -26,7 +39,7 @@ void harness()
 
     /* Allocate the head pktsnip (NETIF header snip) */
     pkt = (gnrc_pktsnip_t *)malloc(sizeof(gnrc_pktsnip_t));
-    __CPROVER_assume(pkt != NULL);
+    //__CPROVER_assume(pkt != NULL);
 
     /* Allocate and initialize a gnrc_netif_hdr_t and point pkt->data to it */
     gnrc_netif_hdr_t *hdr = (gnrc_netif_hdr_t *)malloc(sizeof(gnrc_netif_hdr_t));
@@ -35,7 +48,7 @@ void harness()
     pkt->size = 0; /* size is not used in _iphc_encode for the NETIF snip */
     pkt->type = GNRC_NETTYPE_NETIF;
     pkt->users = 0;
-    pkt->next = NULL; /* will set below */
+    //pkt->next = NULL; /* will set below */
 
     /* Prepare the IPv6 snip as pkt->next */
     gnrc_pktsnip_t *ipv6_snip = (gnrc_pktsnip_t *)malloc(sizeof(gnrc_pktsnip_t));
@@ -45,7 +58,7 @@ void harness()
     __CPROVER_assume(ip6 != NULL);
 
     /* Set next header to a non-compressible value to avoid requiring further snips */
-    ip6->nh = PROTNUM_RESERVED;
+    ip6->nh = PROTNUM_UDP;
 
     ipv6_snip->data = (void *)ip6;
     ipv6_snip->size = sizeof(ipv6_hdr_t);
@@ -66,7 +79,7 @@ void harness()
 
     /* Additional preconditions for pointers used without explicit NULL checks */
     __CPROVER_assume(pkt != NULL);
-    __CPROVER_assume(pkt->next != NULL);
+    //__CPROVER_assume(pkt->next != NULL);
     __CPROVER_assume(pkt->next->data != NULL);
     __CPROVER_assume(netif_hdr != NULL);
     __CPROVER_assume(netif != NULL);

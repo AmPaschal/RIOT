@@ -19,7 +19,8 @@ H_CBMCFLAGS = --nondet-static --unwind 1
 # Define IPv6 support so sock endpoint struct contains the IPv6 field used
 # Define RIOT_VERSION so nanocoap.h includes RIOT headers (e.g., iolist.h)
 # Define MODULE_SOCK_UDP so nanocoap.h includes net/sock/udp.h and does not typedef sock_udp_ep_t as void
-H_DEF = -DSOCK_HAS_IPV6 -DRIOT_VERSION=1 -DMODULE_SOCK_UDP
+H_DEF = -DSOCK_HAS_IPV6 -DRIOT_VERSION=1 -DMODULE_SOCK_UDP -DMODULE_NANOCOAP_CACHE=1
+       
 
 # Include paths
 H_INC = -I$(ROOT) \

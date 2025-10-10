@@ -20,7 +20,11 @@ H_CBMCFLAGS = --nondet-static --unwind 1 # Rest to be filled in by LLM
 # not macros with embedded semicolons that break parsing.
 # Also enable the SIXLOWPAN nettype so GNRC_NETTYPE_SIXLOWPAN is declared.
 H_DEF = -DMODULE_GNRC_IPV6=1 -DMODULE_GNRC_SIXLOWPAN_IPHC=1 -DMODULE_GNRC_NETTYPE_IPV6=1 \
-       -DMODULE_GNRC_NETTYPE_SIXLOWPAN=1
+       -DMODULE_GNRC_NETTYPE_SIXLOWPAN=1 \
+       -DSIXLOWPAN_IPHC1_NH=0x04 \
+       -IPHC_SAC_SAM_UNSPEC=0x04 
+
+
 
 # Include paths (no additions needed for this error)
 H_INC = -I$(ROOT) \
