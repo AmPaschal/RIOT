@@ -13,21 +13,20 @@ LINK = $(ROOT)/sys/net/application_layer/asymcute/asymcute.c
 H_ENTRY = _on_regack
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1 # Rest to be filled in by LLM
+H_CBMCFLAGS = --nondet-static --unwind 1
 
 # Env vars
-# Enable async sock typedefs and UDP async API declarations
-H_DEF = -DSOCK_HAS_ASYNC=1 -DMODULE_SOCK_UDP=1 -DMODULE_GNRC_NETAPI_CALLBACKS=1 \
-       -DSOCK_HAS_IPV6=1
+# Add IPv6 support macro so SOCK_IPV6_EP_ANY is defined
+H_DEF = -DSOCK_HAS_ASYNC=1 -DMODULE_SOCK_UDP=1 -DMODULE_GNRC_NETAPI_CALLBACKS=1 -DSOCK_HAS_IPV6=1
 
-# Includes
+# Include paths
 H_INC = -I$(ROOT) \
         -I$(ROOT)/sys/include/  \
         -I$(ROOT)/core/lib/include/  \
         -I$(ROOT)/core/include/  \
         -I$(ROOT)/cpu/native/include/  \
         -I$(ROOT)/drivers/include/ \
-        -I$(ROOT)/sys/net/gnrc/sock/include/
+        -I$(ROOT)/sys/net/gnrc/sock/include
 
 # Include our special build file
 MAKE_INCLUDE_PATH ?= ..

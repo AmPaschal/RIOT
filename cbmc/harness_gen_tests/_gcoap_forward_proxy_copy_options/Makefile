@@ -13,24 +13,20 @@ LINK = $(ROOT)/sys/net/application_layer/gcoap/forward_proxy.c
 H_ENTRY = _gcoap_forward_proxy_copy_options
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1
+H_CBMCFLAGS = --nondet-static --unwind 1 # Rest to be filled in by LLM
 
-# Env vars, filled in by LLM
-# Define IPv6 support so sock endpoint struct contains the IPv6 field used
-# Define RIOT_VERSION so nanocoap.h includes RIOT headers (e.g., iolist.h)
-# Define MODULE_SOCK_UDP so nanocoap.h includes net/sock/udp.h and does not typedef sock_udp_ep_t as void
-H_DEF = -DSOCK_HAS_IPV6 -DRIOT_VERSION=1 -DMODULE_SOCK_UDP
+# Env vars
+H_DEF = 
 
 # Include paths
 H_INC = -I$(ROOT) \
-        -I$(ROOT)/sys \
         -I$(ROOT)/sys/include/  \
         -I$(ROOT)/core/lib/include/  \
         -I$(ROOT)/core/include/  \
         -I$(ROOT)/cpu/native/include/  \
         -I$(ROOT)/drivers/include/ \
-        -I$(ROOT)/sys/net/gnrc/sock/include \
-        -I$(ROOT)/sys/net/application_layer/gcoap/include
+        -I$(ROOT)/sys/net/gnrc/sock/include/ \
+        -I$(ROOT)/sys/net/application_layer/gcoap/include/
 
 # Include our special build file
 MAKE_INCLUDE_PATH ?= ..

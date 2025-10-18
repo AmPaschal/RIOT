@@ -13,15 +13,15 @@ LINK = $(ROOT)/sys/net/gnrc/routing/rpl/gnrc_rpl_control_messages.c
 H_ENTRY = _parse_options
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1 # Rest to be filled in by LLM
+H_CBMCFLAGS = --nondet-static --unwind 1
 
-# Env vars, filled in by LLM
-# Map evtimer_msg_t to evtimer_t to satisfy globals.h without editing headers
-H_DEF = -DMODULE_XTIMER_ON_ZTIMER=1 -Devtimer_msg_t=evtimer_t \
-        -DMODULE_GNRC_NETIF_IPV6=1 -DMODULE_GNRC_IPV6=1 -DMODULE_GNRC_RPL=1 \
-        -DMODULE_GNRC_NETTYPE_IPV6=1
+# Env vars
+# Map evtimer_msg_t to evtimer_t since globals.h only includes evtimer.h
+# Enable IPv6 component in gnrc_netif_t so netif->ipv6 exists
+# Enable GNRC IPv6 nettype so GNRC_NETTYPE_IPV6 is defined in nettype.h
+H_DEF = -Devtimer_msg_t=evtimer_t -DMODULE_GNRC_NETIF_IPV6=1 -DMODULE_GNRC_NETTYPE_IPV6=1
 
-# LLM should add more to this
+# Include paths (add board-specific include for native to resolve board.h)
 H_INC = -I$(ROOT) \
         -I$(ROOT)/sys/include/  \
         -I$(ROOT)/core/lib/include/  \

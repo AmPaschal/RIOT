@@ -16,10 +16,13 @@ H_ENTRY = _iphc_encode
 H_CBMCFLAGS = --nondet-static --unwind 1 # Rest to be filled in by LLM
 
 # Env vars
-# Enable GNRC_NETTYPE_IPV6 so GNRC_NETTYPE_IPV6 is defined in nettype.h
-H_DEF = -DMODULE_GNRC_NETTYPE_IPV6=1 \
-       -DMODULE_GNRC_IPV6=1 \
-       -DMODULE_GNRC_NETTYPE_SIXLOWPAN=1
+# Define GNRC IPv6 module to avoid macro fallback that introduces a stray semicolon
+# Also enable GNRC_NETTYPE_* entries used by the source file
+H_DEF = -DMODULE_GNRC_IPV6=1 \
+       -DMODULE_GNRC_NETTYPE_IPV6=1 \
+       -DMODULE_GNRC_NETTYPE_IPV6_EXT=1 \
+       -DMODULE_GNRC_NETTYPE_SIXLOWPAN=1 \
+       -DMODULE_GNRC_NETTYPE_UDP=1
 
 # Include paths
 H_INC = -I$(ROOT) \

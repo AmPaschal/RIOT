@@ -309,7 +309,6 @@ int _rbuf_add(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
     uint16_t datagram_tag;
 
     /* check if provided offset is the same as in fragment */
-    __CPROVER_assume(_valid_offset(pkt, offset));
     if (IS_USED(MODULE_GNRC_SIXLOWPAN_FRAG) && sixlowpan_frag_is(pkt->data)) {
         data = _6lo_frag_payload(pkt);
         frag_size = _6lo_frag_size(pkt, offset, data);

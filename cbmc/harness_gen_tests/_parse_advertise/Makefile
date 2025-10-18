@@ -16,8 +16,9 @@ H_ENTRY = _parse_advertise
 H_CBMCFLAGS = --nondet-static --unwind 1 # Rest to be filled in by LLM
 
 # Env vars, filled in by LLM
-# Enable IPv6 member in sock endpoint address union
-H_DEF = -DSOCK_HAS_IPV6=1
+# Define to avoid including periph_conf.h from xtimer on native
+H_DEF = -DMODULE_XTIMER_ON_ZTIMER=1 \
+        -DSOCK_HAS_IPV6=1
 
 # LLM should add more to this
 H_INC = -I$(ROOT) \

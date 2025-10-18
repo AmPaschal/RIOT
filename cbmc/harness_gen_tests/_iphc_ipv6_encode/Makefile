@@ -16,19 +16,23 @@ H_ENTRY = _iphc_ipv6_encode
 H_CBMCFLAGS = --nondet-static --unwind 1 # Rest to be filled in by LLM
 
 # Env vars
-# Define GNRC IPv6 so gnrc_netif_hdr_ipv6_iid_from_{src,dst} are real functions,
-# not macros with embedded semicolons that break parsing.
-# Also enable the SIXLOWPAN nettype so GNRC_NETTYPE_SIXLOWPAN is declared.
-H_DEF = -DMODULE_GNRC_IPV6=1 -DMODULE_GNRC_SIXLOWPAN_IPHC=1 -DMODULE_GNRC_NETTYPE_IPV6=1 \
-       -DMODULE_GNRC_NETTYPE_SIXLOWPAN=1
+# Enable IPv6 and the required GNRC nettype modules used in gnrc_sixlowpan_iphc.c
+H_DEF = -DMODULE_GNRC_IPV6=1 \
+       -DMODULE_GNRC_SIXLOWPAN_IPHC=1 \
+       -DMODULE_GNRC_NETTYPE_IPV6=1 \
+       -DMODULE_GNRC_NETTYPE_SIXLOWPAN=1 \
+       -DMODULE_GNRC_NETTYPE_IPV6_EXT=1 \
+       -DMODULE_GNRC_NETTYPE_UDP=1
 
-# Include paths (no additions needed for this error)
+# Includes
 H_INC = -I$(ROOT) \
         -I$(ROOT)/sys/include/  \
         -I$(ROOT)/core/lib/include/  \
         -I$(ROOT)/core/include/  \
         -I$(ROOT)/cpu/native/include/  \
-        -I$(ROOT)/drivers/include/
+        -I$(ROOT)/drivers/include/ \
+        -I$(ROOT)/sys/net/gnrc/pktbuf/include/ \
+        -I$(ROOT)/sys/net/gnrc/pktbuf_static/include/
 
 # Include our special build file
 MAKE_INCLUDE_PATH ?= ..

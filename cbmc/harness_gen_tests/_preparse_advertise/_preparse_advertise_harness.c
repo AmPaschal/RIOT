@@ -1,29 +1,28 @@
 #include <stdint.h>
+#include <stddef.h>
 #include <stdlib.h>
 
-/* If the build system does not provide a prototype through headers, keep this extern. */
-extern int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf);
+/* Forward declaration of the target function */
+int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf);
 
-void harness(void)
-{
-    /* Declare function parameters exactly as in the signature */
-    uint8_t *adv;
+void harness(void) {
+    /* Allocate and initialize parameters exactly as in the signature */
+
+    /* adv: pointer to primitive type (uint8_t) */
+    size_t adv_len;
+    uint8_t *adv = (uint8_t *)malloc(sizeof(uint8_t) * adv_len);
+
+    /* len: size_t */
     size_t len;
-    uint8_t **buf;
 
-    /* Constrain len to avoid under-sized packet access in the function. */
-    /* If desired, include net/dhcpv6.h and use:
-       __CPROVER_assume(len >= sizeof(dhcpv6_msg_t) + sizeof(dhcpv6_opt_t));
-    */
-    __CPROVER_assume(len > 0);
-
-    /* Allocate adv with size `len` and assume non-NULL */
-    adv = (uint8_t *)malloc(sizeof(uint8_t) * len);
-    __CPROVER_assume(adv != NULL);
-
-    /* Prepare a buffer pointer to receive best_adv if the function sets it */
-    uint8_t *tmp_buf = NULL;
-    buf = &tmp_buf; /* Non-NULL to exercise the assignment path; function also handles NULL */
+    /* buf: pointer to pointer to primitive type (uint8_t **) */
+    uint8_t **buf = (uint8_t **)malloc(sizeof(uint8_t *));
+    if (buf != NULL) {
+        size_t buf_data_len;
+        uint8_t *buf_data = (uint8_t *)malloc(sizeof(uint8_t) * buf_data_len);
+        /* Assign allocated data to *buf (can be NULL if malloc failed) */
+        *buf = buf_data;
+    }
 
     /* Call the function under test */
     (void)_preparse_advertise(adv, len, buf);

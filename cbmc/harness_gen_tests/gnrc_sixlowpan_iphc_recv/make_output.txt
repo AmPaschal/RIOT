@@ -1,0 +1,32 @@
+nohup: ignoring input
+mkdir -p build/cbmc
+mkdir -p build/gotos
+mkdir -p build/reports
+goto-cc -c  -o build/gnrc_sixlowpan_iphc_recv_harness.goto    -I../../.. -I../../../sys/include/ -I../../../core/lib/include/ -I../../../core/include/ -I../../../cpu/native/include/ -I../../../drivers/include/ -I../../../boards/native/include/ -I../../../sys/net/gnrc/pktbuf/include/ -I../../../sys/net/gnrc/pktbuf_static/include/    -DMODULE_GNRC_IPV6=1 -DMODULE_GNRC_SIXLOWPAN_IPHC=1 -DMODULE_GNRC_NETTYPE_IPV6=1 -DMODULE_GNRC_NETTYPE_SIXLOWPAN=1      -m32  gnrc_sixlowpan_iphc_recv_harness.c
+goto-cc -c -o build/gotos/gnrc_sixlowpan_iphc.goto    -I../../.. -I../../../sys/include/ -I../../../core/lib/include/ -I../../../core/include/ -I../../../cpu/native/include/ -I../../../drivers/include/ -I../../../boards/native/include/ -I../../../sys/net/gnrc/pktbuf/include/ -I../../../sys/net/gnrc/pktbuf_static/include/    -DMODULE_GNRC_IPV6=1 -DMODULE_GNRC_SIXLOWPAN_IPHC=1 -DMODULE_GNRC_NETTYPE_IPV6=1 -DMODULE_GNRC_NETTYPE_SIXLOWPAN=1      -m32  ../../../sys/net/gnrc/network_layer/sixlowpan/iphc/gnrc_sixlowpan_iphc.c
+goto-cc -o build/gnrc_sixlowpan_iphc_recv1.goto --function harness build/gnrc_sixlowpan_iphc_recv_harness.goto build/gotos/gnrc_sixlowpan_iphc.goto
+goto-instrument --add-library build/gnrc_sixlowpan_iphc_recv1.goto build/gnrc_sixlowpan_iphc_recv2.goto \
+	> build/reports/gnrc_sixlowpan_iphc_recv2.txt 2>&1
+goto-instrument --drop-unused-functions build/gnrc_sixlowpan_iphc_recv2.goto build/gnrc_sixlowpan_iphc_recv3.goto \
+	> build/reports/gnrc_sixlowpan_iphc_recv3.txt 2>&1
+goto-instrument      --slice-global-inits build/gnrc_sixlowpan_iphc_recv3.goto build/gnrc_sixlowpan_iphc_recv4.goto \
+	> build/reports/gnrc_sixlowpan_iphc_recv4.txt 2>&1
+goto-instrument --drop-unused-functions build/gnrc_sixlowpan_iphc_recv4.goto build/gnrc_sixlowpan_iphc_recv5.goto \
+	> build/reports/gnrc_sixlowpan_iphc_recv5.txt 2>&1
+cp build/gnrc_sixlowpan_iphc_recv5.goto build/gnrc_sixlowpan_iphc_recv.goto
+cbmc --flush --verbosity 9  --object-bits 8 --32   --nondet-static --unwind 1   --unwinding-assertions --trace --xml-ui build/gnrc_sixlowpan_iphc_recv.goto > build/reports/cbmc.xml 2>&1
+make: [../Makefile.include:151: cbmc.xml] Error 10 (ignored)
+cbmc --flush --verbosity 9  --object-bits 8 --32   --nondet-static --unwind 1  --unwinding-assertions --show-properties --xml-ui build/gnrc_sixlowpan_iphc_recv.goto > build/reports/property.xml 2>&1
+cbmc --flush --verbosity 9  --object-bits 8 --32   --nondet-static --unwind 1  --cover location --xml-ui build/gnrc_sixlowpan_iphc_recv.goto > build/reports/coverage.xml 2>&1
+cbmc-viewer \
+--goto build/gnrc_sixlowpan_iphc_recv.goto \
+--srcdir ../../.. \
+--reportdir build/report \
+--result build/reports/cbmc.xml \
+--property build/reports/property.xml \
+--coverage build/reports/coverage.xml
+/home/pamusuo/.local/lib/python3.12/site-packages/cbmc_viewer/report.py:10: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+WARNING: Skipping redefinition of symbol name: rmutex_t
+WARNING:   Old symbol rmutex_t: file core/lib/include/rmutex.h, line 61
+WARNING:   New symbol rmutex_t: file core/lib/include/rmutex.h, line 38

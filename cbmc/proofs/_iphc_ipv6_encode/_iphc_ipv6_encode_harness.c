@@ -63,8 +63,7 @@ void harness(void)
 
         // pkt.next->data = malloc(sizeof(ipv6_hdr_t));
         pkt.next->data = malloc(size);  // Use unconstrained size
-        __CPROVER_assume(pkt.next->data != NULL);
-        pkt.next->size = size;
+                pkt.next->size = size;
     }
 
     size_t len;

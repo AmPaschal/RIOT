@@ -16,9 +16,8 @@ H_ENTRY = _on_rd_init
 H_CBMCFLAGS = --nondet-static --unwind 1 # Rest to be filled in by LLM
 
 # Env vars
-# Define RIOT_VERSION so nanocoap.h includes RIOT headers (including bitfield.h)
-# Define MODULE_SOCK_UDP so nanocoap.h includes net/sock/udp.h (avoids redefinition of sock_udp_ep_t)
-H_DEF = -DRIOT_VERSION=1 -DMODULE_SOCK_UDP=1
+# Define MODULE_SOCK_UDP so nanocoap.h includes net/sock/udp.h and does not typedef sock_udp_ep_t
+H_DEF = -DRIOT_VERSION=1 -DMODULE_SOCK_UDP=1 -DCONFIG_GCOAP_PDU_BUF_SIZE=128
 
 # Include paths
 H_INC = -I$(ROOT) \
@@ -27,8 +26,8 @@ H_INC = -I$(ROOT) \
         -I$(ROOT)/core/include/  \
         -I$(ROOT)/cpu/native/include/  \
         -I$(ROOT)/drivers/include/ \
-        -I$(ROOT)/sys/net/gnrc/sock/include \
-        -I$(ROOT)/sys/clif/include
+        -I$(ROOT)/sys/net/gnrc/sock/include/ \
+        -I$(ROOT)/sys/clif/include/
 
 # Include our special build file
 MAKE_INCLUDE_PATH ?= ..
