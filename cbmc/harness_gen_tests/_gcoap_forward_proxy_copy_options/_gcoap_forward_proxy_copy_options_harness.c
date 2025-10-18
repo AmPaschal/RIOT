@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "net/nanocoap.h"
-#include "net/application_layer/gcoap/include/forward_proxy_internal.h"
 #include "uri_parser.h"
+#include "forward_proxy_internal.h"
 
 /* Prototype of the function under test (defined in forward_proxy.c) */
 int _gcoap_forward_proxy_copy_options(coap_pkt_t *pkt,

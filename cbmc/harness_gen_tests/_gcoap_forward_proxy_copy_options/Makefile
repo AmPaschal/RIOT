@@ -13,12 +13,13 @@ LINK = $(ROOT)/sys/net/application_layer/gcoap/forward_proxy.c
 H_ENTRY = _gcoap_forward_proxy_copy_options
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1 # Rest to be filled in by LLM
+H_CBMCFLAGS = --nondet-static --unwind 1
 
-# Env vars
-H_DEF = 
+# Env vars, filled in by LLM
+# Define IPv6 support so sock endpoint union contains the ipv6 member
+H_DEF = -DRIOT_VERSION=1 -DMODULE_SOCK_UDP=1 -DSOCK_HAS_IPV6=1
 
-# Include paths
+# LLM should add more to this
 H_INC = -I$(ROOT) \
         -I$(ROOT)/sys/include/  \
         -I$(ROOT)/core/lib/include/  \
