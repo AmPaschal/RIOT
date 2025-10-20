@@ -1,35 +1,35 @@
-#include <stdlib.h>
-#include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdlib.h>
 
-/* Forward declaration since base64_encode_base is defined in sys/base64/base64.c */
-extern int base64_encode_base(const void *data_in, size_t data_in_size,
-                              void *base64_out, size_t *base64_out_size,
-                              bool urlsafe);
+#include "base64.h"
 
-void harness(void) {
-    /* Declare parameters exactly as in the target function signature */
-    const void *data_in;
+/* Forward declaration since base64_encode_base is not in the public header */
+int base64_encode_base(const void *data_in, size_t data_in_size,
+                       void *base64_out, size_t *base64_out_size,
+                       bool urlsafe);
+
+void harness() {
+    /* Inputs */
     size_t data_in_size;
-    void *base64_out;
-    size_t *base64_out_size;
-    bool urlsafe;
+    /* Allocate input buffer as bytes and ensure non-NULL to avoid UB in pointer arithmetic */
+    uint8_t *data_in_buf = (uint8_t *)malloc(sizeof(uint8_t) * data_in_size);
+    __CPROVER_assume(data_in_buf != NULL);
+    const void *data_in = (const void *)data_in_buf;
 
-    /* For pointers to primitive types, create a size variable and allocate */
-    /* data_in: allocate data_in_size bytes */
-    data_in = malloc(data_in_size);
-
-    /* base64_out: create allocation size and allocate */
-    size_t base64_out_alloc_size;
-    base64_out = malloc(base64_out_alloc_size);
-
-    /* base64_out_size: create a length for the size_t array and allocate */
-    size_t base64_out_size_len;
-    base64_out_size = malloc(sizeof(size_t) * base64_out_size_len);
+    /* Output size pointer must be non-NULL (function dereferences it unconditionally) */
+    size_t *base64_out_size = (size_t *)malloc(sizeof(size_t));
     __CPROVER_assume(base64_out_size != NULL);
 
-    /* Call the function under test */
-    (void)base64_encode_base(data_in, data_in_size,
-                             base64_out, base64_out_size,
-                             urlsafe);
+    /* Allocate an output buffer with a nondet capacity and set *base64_out_size accordingly */
+    size_t base64_out_alloc_len;
+    uint8_t *base64_out_buf = (uint8_t *)malloc(sizeof(uint8_t) * base64_out_alloc_len);
+    void *base64_out = (void *)base64_out_buf;
+    *base64_out_size = base64_out_alloc_len;
+
+    bool urlsafe;
+
+    /* Call function under test */
+    (void)base64_encode_base(data_in, data_in_size, base64_out, base64_out_size, urlsafe);
 }

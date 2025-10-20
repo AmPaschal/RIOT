@@ -16,8 +16,9 @@ H_ENTRY = _on_regack
 H_CBMCFLAGS = --nondet-static --unwind 1 # Rest to be filled in by LLM
 
 # Env vars, filled in by LLM
-# Define necessary modules/features for sock UDP, IPv6, async, and GNRC callbacks
-H_DEF = -DRIOT_VERSION=1 -DMODULE_SOCK_UDP=1 -DSOCK_HAS_IPV6=1 -DMODULE_GNRC_NETIF_IPV6=1 -DSOCK_HAS_ASYNC=1 -DMODULE_GNRC_NETAPI_CALLBACKS=1
+# Enable async sock and netapi callbacks so gnrc_netreg_entry_cbd_t is defined
+# Also enable IPv6 support so SOCK_IPV6_EP_ANY is defined in sys/include/net/sock.h
+H_DEF = -DSOCK_HAS_ASYNC=1 -DMODULE_GNRC_NETAPI_CALLBACKS=1 -DSOCK_HAS_IPV6=1
 
 # LLM should add more to this
 H_INC = -I$(ROOT) \
@@ -25,8 +26,8 @@ H_INC = -I$(ROOT) \
         -I$(ROOT)/core/lib/include/  \
         -I$(ROOT)/core/include/  \
         -I$(ROOT)/cpu/native/include/  \
-        -I$(ROOT)/drivers/include/  \
-        -I$(ROOT)/sys/net/gnrc/sock/include
+        -I$(ROOT)/drivers/include/ \
+        -I$(ROOT)/sys/net/gnrc/sock/include/
 
 # Include our special build file
 MAKE_INCLUDE_PATH ?= ..

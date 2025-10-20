@@ -7,17 +7,24 @@ ROOT ?= ../../..
 # Defines file(s) to link to harness, MUST be a full path!
 # (We recommend $(ROOT)/os/... for defining these paths)
 # Each file is space seperated, and multiple can be defined
-LINK = $(ROOT)/sys/net/application_layer/gcoap/forward_proxy.c
+LINK = $(ROOT)/sys/net/gnrc/routing/rpl/gnrc_rpl_control_messages.c \
+       $(ROOT)/sys/net/gnrc/routing/rpl/gnrc_rpl.c
 
 # Harness to utilize, omit the extension!
-H_ENTRY = _gcoap_forward_proxy_copy_options
+H_ENTRY = gnrc_rpl_recv_DAO
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 1
+H_CBMCFLAGS = --nondet-static --unwind 2
 
 # Env vars, filled in by LLM
-# Define IPv6 support so sock endpoint union contains the ipv6 member
-H_DEF = -DRIOT_VERSION=1 -DMODULE_SOCK_UDP=1 -DSOCK_HAS_IPV6=1
+# Fix: provide alias matching typedef in evtimer_msg.h to satisfy globals.h
+# Add required modules so gnrc_netif_t contains the ipv6 member
+H_DEF = -Devtimer_msg_t=evtimer_t \
+       -DMODULE_GNRC_NETIF_IPV6=1 \
+       -DMODULE_GNRC_IPV6=1 \
+       -DMODULE_GNRC_RPL=1 \
+       -DMODULE_GNRC_NETTYPE_IPV6=1 \
+       -DMODULE_GNRC_NETTYPE_ICMPV6=1
 
 # LLM should add more to this
 H_INC = -I$(ROOT) \
@@ -26,8 +33,7 @@ H_INC = -I$(ROOT) \
         -I$(ROOT)/core/include/  \
         -I$(ROOT)/cpu/native/include/  \
         -I$(ROOT)/drivers/include/ \
-        -I$(ROOT)/sys/net/gnrc/sock/include/ \
-        -I$(ROOT)/sys/net/application_layer/gcoap/include/
+        -I$(ROOT)/boards/native/include/
 
 # Include our special build file
 MAKE_INCLUDE_PATH ?= ..

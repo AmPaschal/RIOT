@@ -16,13 +16,11 @@ H_ENTRY = nimble_scanlist_update
 H_CBMCFLAGS = --nondet-static --unwind 1
 
 # Env vars
-H_DEF = -DMODULE_NIMBLE=1 -DMODULE_NIMBLE_SCANNER=1 \
-        -DMYNEWT_VAL_BLE_MULTI_ADV_INSTANCES=0 \
-        -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_PRIVACY=0 \
-        -DMYNEWT_VAL_BLE_LL_CFG_FEAT_LL_EXT_ADV=0 \
-        -DMYNEWT_VAL_BLE_EXT_ADV=0
+# - Define ble_addr_cmp as memcmp to avoid pulling full NimBLE host utils
+H_DEF = -Dble_addr_cmp=memcmp
 
-# Include paths
+# Add NimBLE external headers (downloaded during normal RIOT builds under build/pkg/nimble/...)
+# and RIOT NimBLE shim headers used by scanlist.
 H_INC = -I$(ROOT) \
         -I$(ROOT)/sys/include/  \
         -I$(ROOT)/core/lib/include/  \
@@ -32,19 +30,19 @@ H_INC = -I$(ROOT) \
         -I$(ROOT)/pkg/nimble/scanlist/include \
         -I$(ROOT)/pkg/nimble/scanner/include \
         -I$(ROOT)/pkg/nimble/npl/include \
+        -I$(ROOT)/pkg/nimble/contrib/include \
+        -I$(ROOT)/build/pkg/nimble/include \
+        -I$(ROOT)/build/pkg/nimble \
+        -I$(ROOT)/build/pkg/nimble/mynewt-nimble \
+        -I$(ROOT)/build/pkg/nimble/mynewt-nimble/nimble/include \
+        -I$(ROOT)/build/pkg/nimble/mynewt-nimble/nimble/host/include \
+        -I$(ROOT)/build/pkg/nimble/mynewt-nimble/porting/nimble/include \
+        -I$(ROOT)/pkg/nimble/mynewt-nimble/nimble/include \
+        -I$(ROOT)/pkg/nimble/mynewt-nimble/nimble/host/include \
+        -I$(ROOT)/pkg/nimble/mynewt-nimble/porting/nimble/include \
         -I$(ROOT)/pkg/nimble/addr/include \
-        -I$(ROOT)/pkg/nimble/nimble/include \
-        -I$(ROOT)/pkg/nimble/nimble/host/include \
-        -I$(ROOT)/pkg/nimble/nimble/porting/nimble/include \
-        -I$(ROOT)/pkg/nimble/nimble/porting/npl/include \
-        -I$(ROOT)/pkg/nimble/nimble/porting/npl/riot/include \
-        -I$(ROOT)/build/pkg/nimble/nimble/include \
-        -I$(ROOT)/build/pkg/nimble/porting/nimble/include \
-        -I$(ROOT)/build/pkg/nimble/porting/npl/include \
-        -I$(ROOT)/build/pkg/nimble/porting/npl/riot/include \
-        -I$(ROOT)/build/pkg/nimble/nimble/host/include \
-        -I$(ROOT)/pkg/mynewt-core/include \
-       
+        -I$(ROOT)/pkg/nimble/include
+
 # Include our special build file
 MAKE_INCLUDE_PATH ?= ..
 include $(MAKE_INCLUDE_PATH)/Makefile.include

@@ -16,7 +16,7 @@ H_ENTRY = base64_encode_base
 H_CBMCFLAGS = --nondet-static --unwind 1
 
 # Env vars, filled in by LLM
-H_DEF =
+H_DEF = 
 
 # LLM should add more to this
 H_INC = -I$(ROOT) \
