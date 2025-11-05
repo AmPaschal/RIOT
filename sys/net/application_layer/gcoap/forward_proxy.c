@@ -378,7 +378,7 @@ int _gcoap_forward_proxy_copy_options(coap_pkt_t *pkt,
             }
             if (IS_USED(MODULE_NANOCOAP_CACHE) && opt.opt_num == COAP_OPT_ETAG) {
                 if (_cep_get_req_etag_len(cep) == 0) {
-                    /* TODO: what to do on multiple ETags? */
+                    /* TODO: what to do on multiple ETags? */›
                     _cep_set_req_etag(cep, value, optlen);
                 }
                 /* skip original ETag of request, otherwise we might accidentally fill the cache

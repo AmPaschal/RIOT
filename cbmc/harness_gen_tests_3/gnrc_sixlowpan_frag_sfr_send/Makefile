@@ -16,11 +16,12 @@ H_ENTRY = gnrc_sixlowpan_frag_sfr_send
 H_CBMCFLAGS = --nondet-static --unwind 2 # Rest to be filled in by LLM
 
 # Env vars
-# Enable SFR, its parent fragmentation module, the SIXLOWPAN nettype, and netif 6Lo support
+# Enable SFR, its parent fragmentation module, the SIXLOWPAN nettype, netif 6Lo support, and TX_SYNC
 H_DEF = -DMODULE_GNRC_SIXLOWPAN_FRAG=1 \
        -DMODULE_GNRC_SIXLOWPAN_FRAG_SFR=1 \
        -DMODULE_GNRC_NETTYPE_SIXLOWPAN=1 \
-       -DMODULE_GNRC_NETIF_6LO=1
+       -DMODULE_GNRC_NETIF_6LO=1 \
+       -DMODULE_GNRC_TX_SYNC=1
 
 # Include paths (no changes needed)
 H_INC = -I$(ROOT) \

@@ -14,7 +14,9 @@ LINK = $(ROOT)/sys/uri_parser/uri_parser.c \
 H_ENTRY = uri_parser_process
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 2
+# Keep a small global unwind but increase specific loop unwinds needed for port parsing
+H_CBMCFLAGS = --nondet-static --unwind 2 \
+              --unwindset _consume_port.0:4,_consume_port.1:5,scn_u32_dec.0:5,_strchrb.0:32
 
 # Env vars
 H_DEF = 
@@ -30,3 +32,14 @@ H_INC = -I$(ROOT) \
 # Include our special build file
 MAKE_INCLUDE_PATH ?= ..
 include $(MAKE_INCLUDE_PATH)/Makefile.include
+
+# Override the report target to avoid permission issues with build/report
+report: cbmc.xml property.xml coverage.xml
+	@rm -rf build/report_alt
+	$(VIEWER) \
+	 --goto build/$(ENTRY).goto \
+	 --srcdir $(ROOT) \
+	 --reportdir build/report_alt \
+	 --result build/reports/cbmc.xml \
+	 --property build/reports/property.xml \
+	 --coverage build/reports/coverage.xml

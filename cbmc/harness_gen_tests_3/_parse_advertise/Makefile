@@ -1,25 +1,27 @@
 # Defines the root of the project.
 # Be aware of how many directories deep you go!
 
-# The value of root changes project by project but for now I'll have it be the static RIOT path
 ROOT ?= ../../..
 
 # Defines file(s) to link to harness, MUST be a full path!
-# (We recommend $(ROOT)/os/... for defining these paths)
-# Each file is space seperated, and multiple can be defined
 LINK = $(ROOT)/sys/net/application_layer/dhcpv6/client.c
 
 # Harness to utilize, omit the extension!
 H_ENTRY = _parse_advertise
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 2 # Rest to be filled in by LLM
+H_CBMCFLAGS = --nondet-static --unwind 2 \
+              --unwindset _preparse_advertise.0:4,_preparse_advertise.1:4,_preparse_advertise.2:4,_preparse_advertise.3:4,_preparse_advertise.4:4,_preparse_advertise.5:4
 
-# Env vars, filled in by LLM
-# Enable IPv6 fields in sock endpoint structures
-H_DEF = -DSOCK_HAS_IPV6=1
+# Compile-time defines
+# Enable IPv6, IA_PD (already enabled), and IA_NA with at least one address lease
+H_DEF = -DSOCK_HAS_IPV6=1 \
+       -DMODULE_DHCPV6_CLIENT_IA_PD=1 \
+       -DCONFIG_DHCPV6_CLIENT_PFX_LEASE_MAX=1 \
+       -DMODULE_DHCPV6_CLIENT_IA_NA=1 \
+       -DCONFIG_DHCPV6_CLIENT_ADDR_LEASE_MAX=1
 
-# LLM should add more to this
+# Include paths
 H_INC = -I$(ROOT) \
         -I$(ROOT)/sys/include/  \
         -I$(ROOT)/core/lib/include/  \

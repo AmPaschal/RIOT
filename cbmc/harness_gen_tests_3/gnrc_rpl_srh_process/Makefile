@@ -13,7 +13,8 @@ LINK = $(ROOT)/sys/net/gnrc/routing/rpl/srh/gnrc_rpl_srh.c
 H_ENTRY = gnrc_rpl_srh_process
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 2
+# Increase unwinding specifically for the loop in _contains_multiple_of_my_addr
+H_CBMCFLAGS = --nondet-static --unwind 2 --unwindset _contains_multiple_of_my_addr.1:3
 
 # Env vars, filled in by LLM
 # Ensure gnrc_netif_get_by_ipv6_addr prototype is visible in netif/internal.h
@@ -30,3 +31,13 @@ H_INC = -I$(ROOT) \
 # Include our special build file
 MAKE_INCLUDE_PATH ?= ..
 include $(MAKE_INCLUDE_PATH)/Makefile.include
+
+# Override the report target to avoid permission issues when writing traces
+report: cbmc.xml property.xml coverage.xml
+	$(VIEWER) \
+	--goto build/$(ENTRY).goto \
+	--srcdir $(ROOT) \
+	--reportdir build/report_alt \
+	--result build/reports/cbmc.xml \
+	--property build/reports/property.xml \
+	--coverage build/reports/coverage.xml

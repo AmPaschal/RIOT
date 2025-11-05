@@ -5,6 +5,16 @@
 #include "sys/include/net/gnrc/pkt.h"
 #include "sys/include/net/gnrc/netif/hdr.h"
 #include "sys/include/net/gnrc/netif.h"
+#include "sys/include/net/gnrc/sixlowpan/ctx.h"
+
+// Stub implementation
+
+gnrc_sixlowpan_ctx_t *gnrc_sixlowpan_ctx_lookup_addr(const ipv6_addr_t *addr) {
+    size_t ctx_len;
+    __CPROVER_assume(ctx_len >= sizeof(gnrc_sixlowpan_ctx_t));
+    gnrc_sixlowpan_ctx_t *ctx = malloc(ctx_len);
+    return ctx;
+}
 
 extern size_t _iphc_ipv6_encode(gnrc_pktsnip_t *pkt,
                                 const gnrc_netif_hdr_t *netif_hdr,

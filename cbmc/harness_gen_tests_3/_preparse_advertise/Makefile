@@ -13,7 +13,8 @@ LINK = $(ROOT)/sys/net/application_layer/dhcpv6/client.c
 H_ENTRY = _preparse_advertise
 
 # Extra CBMC flags to be passed during CBMC analysis
-H_CBMCFLAGS = --nondet-static --unwind 2 # Rest to be filled in by LLM
+# Increase unwind of the options loop to allow finding both CID and SID
+H_CBMCFLAGS = --nondet-static --unwind 6 --unwindset _preparse_advertise.3:4
 
 # Env vars, filled in by LLM
 # Enable IPv6 support so sock endpoint union contains the .ipv6 member
@@ -32,3 +33,13 @@ H_INC = -I$(ROOT) \
 # Include our special build file
 MAKE_INCLUDE_PATH ?= ..
 include $(MAKE_INCLUDE_PATH)/Makefile.include
+
+# Override the report rule to avoid permission issues by writing to a new directory
+report: cbmc.xml property.xml coverage.xml
+	$(VIEWER) \
+	--goto build/$(H_ENTRY).goto \
+	--srcdir $(ROOT) \
+	--reportdir build/report_new \
+	--result build/reports/cbmc.xml \
+	--property build/reports/property.xml \
+	--coverage build/reports/coverage.xml
