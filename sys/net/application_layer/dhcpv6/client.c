@@ -641,7 +641,7 @@ static int _preparse_advertise(uint8_t *adv, size_t len, uint8_t **buf)
     uint8_t pref_val = 0;
 
     DEBUG("DHCPv6 client: received ADVERTISE\n");
-    if ((len < sizeof(dhcpv6_msg_t)) || !_is_tid((dhcpv6_msg_t *)adv)) {
+    if (!_is_tid((dhcpv6_msg_t *)adv) {
         DEBUG("DHCPv6 client: packet too small or transaction ID wrong\n");
         return -1;
     }

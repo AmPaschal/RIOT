@@ -236,9 +236,6 @@ static size_t _6lo_frag_size(gnrc_pktsnip_t *pkt, size_t offset, uint8_t *data)
     size_t frag_size;
 
     if (offset == 0) {
-        if (pkt->size < sizeof(sixlowpan_frag_t)) {
-            return 0;
-        }
         frag_size = pkt->size - sizeof(sixlowpan_frag_t);
         if (data[0] == SIXLOWPAN_UNCOMP) {
             /* subtract SIXLOWPAN_UNCOMP byte from fragment size,
@@ -247,9 +244,6 @@ static size_t _6lo_frag_size(gnrc_pktsnip_t *pkt, size_t offset, uint8_t *data)
         }
     }
     else {
-        if (pkt->size < sizeof(sixlowpan_frag_n_t)) {
-            return 0;
-        }
         frag_size = pkt->size - sizeof(sixlowpan_frag_n_t);
     }
     return frag_size;
