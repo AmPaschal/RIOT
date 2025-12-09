@@ -577,12 +577,12 @@ static void _cep_set_req_etag(client_ep_t *cep, const void *etag,
     (void)etag;
     (void)etag_len;
 #if MODULE_NANOCOAP_CACHE
-    if (1) {
-        cep->flags &= ~CLIENT_EP_FLAGS_ETAG_LEN_MASK;
-        cep->flags |= (etag_len << CLIENT_EP_FLAGS_ETAG_LEN_POS)
-                      & CLIENT_EP_FLAGS_ETAG_LEN_MASK;
-        memcpy(cep->req_etag, etag, etag_len);
-    }
+
+    cep->flags &= ~CLIENT_EP_FLAGS_ETAG_LEN_MASK;
+    cep->flags |= (etag_len << CLIENT_EP_FLAGS_ETAG_LEN_POS)
+                    & CLIENT_EP_FLAGS_ETAG_LEN_MASK;
+    memcpy(cep->req_etag, etag, etag_len);
+    
 #endif
 }
 

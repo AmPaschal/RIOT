@@ -220,17 +220,7 @@ static void _on_rd_init(const gcoap_request_memo_t *memo, coap_pkt_t *pdu,
             DEBUG("cord_lc: error empty payload\n");
             goto end;
         }
-        if (0) {
-            DEBUG("cord_lc: truncating response from %" PRIuSIZE " to %" PRIuSIZE "\n", size, full_buf_len);
-            /* Not setting FLAG_OVERFLOW: There can still be valid
-             * .well-known/core lookup data in the usable area, which will be
-             * used as long as endpoint and resource lookup are both found */
-            size = full_buf_len;
-            memcpy(_result_buf, pdu->payload, full_buf_len);
-        }
-        else {
-            memcpy(_result_buf, pdu->payload, size);
-        }
+        memcpy(_result_buf, pdu->payload, size);
         _result_buf_len = size;
         flag = FLAG_SUCCESS;
     } else if (memo->state == GCOAP_MEMO_TIMEOUT) {

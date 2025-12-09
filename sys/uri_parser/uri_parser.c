@@ -261,12 +261,7 @@ static int _parse_absolute(uri_parser_result_t *result, const char *uri,
         }
     }
 
-    /* is there more to parse after authority? */
-    if (1) {
-        /* parsing the path, starting with '/' */
-        return _parse_relative(result, uri, uri_end);
-    }
-    return 0;
+    return _parse_relative(result, uri, uri_end);
 }
 
 bool uri_parser_is_absolute(const char *uri, size_t uri_len)

@@ -912,11 +912,11 @@ void gnrc_sixlowpan_iphc_recv(gnrc_pktsnip_t *sixlo, void *rbuf_ptr,
     /* re-assign IPv6 header in case realloc changed the address */
     ipv6_hdr = ipv6->data;
     ipv6_hdr->len = byteorder_htons(payload_len);
-    if (1) {
-        memcpy(((uint8_t *)ipv6->data) + uncomp_hdr_len,
-               ((uint8_t *)sixlo->data) + payload_offset,
-               sixlo->size - payload_offset);
-    }
+
+    memcpy(((uint8_t *)ipv6->data) + uncomp_hdr_len,
+            ((uint8_t *)sixlo->data) + payload_offset,
+            sixlo->size - payload_offset);
+    
     if (rbuf != NULL) {
         rbuf->super.current_size += (uncomp_hdr_len - payload_offset);
 #ifdef MODULE_GNRC_SIXLOWPAN_FRAG_VRB
