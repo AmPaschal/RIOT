@@ -317,9 +317,13 @@ ssize_t gcoap_dns_server_proxy_get(char *proxy, size_t proxy_len)
     ssize_t res = 0;
     mutex_lock(&_client_mutex);
     if (_dns_server_uri_isset()) {
-        res = strscpy(proxy, _proxy, proxy_len);
-        if (res == -E2BIG) {
+        res = strlen(_uri);
+        if (((size_t)res + 1) > proxy_len) {
+            /* account for trailing \0 */
             res = -ENOBUFS;
+        }
+        else {
+            strcpy(proxy, _proxy);
         }
     }
     mutex_unlock(&_client_mutex);
