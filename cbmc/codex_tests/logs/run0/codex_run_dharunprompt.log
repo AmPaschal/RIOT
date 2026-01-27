@@ -1,0 +1,444 @@
+OpenAI Codex v0.87.0 (research preview)
+--------
+workdir: /home/dananday/Research/RIOT
+model: gpt-5.2-codex
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR]
+reasoning effort: medium
+reasoning summaries: auto
+session id: 019be304-2fb7-7a83-8293-90337dfc4347
+--------
+user
+You are generating a CBMC unit proof for RIOT.
+
+Target:
+- Function: _receive
+- Target file: /home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp/gnrc_tcp_eventloop.c
+- Output directory:
+  /home/dananday/Research/RIOT/cbmc/codex_tests/_receive
+
+Goal:
+1) Create a CBMC harness C file and a Makefile that verify _receive.
+2) Maximize feasible-path coverage.
+3) Minimize CBMC failures using justified preconditions and minimal stubbing.
+4) Iterate until CBMC no longer reports errors or unreachable issues are explained.
+
+Constraints:
+- Do not modify RIOT source files outside the output directory.
+- Place all generated files in the output directory.
+- Avoid trivial assumptions.
+- Prefer nondet inputs + targeted __CPROVER_assume constraints.
+
+Process:
+- Inspect the function signature and dependencies.
+- Create harness.c calling _receive.
+- Create stubs only when CBMC reports missing symbols.
+- Re-run CBMC after every fix.
+- Record coverage after each iteration.
+
+Deliverables:
+- harness.c
+- stubs.c / stubs.h (if required)
+- Makefile
+- README.md documenting assumptions, CBMC commands, and coverage.
+mcp startup: no servers
+exec
+/bin/bash -lc 'rg -n "static.*_receive|_receive" /home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp/gnrc_tcp_eventloop.c' in /home/dananday/Research/RIOT succeeded in 25ms:
+118:static int _receive(gnrc_pktsnip_t *pkt)
+299:        msg_receive(&msg);
+304:                _receive((gnrc_pktsnip_t *)msg.content.ptr);
+exec
+/bin/bash -lc "sed -n '1,220p' /home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp/gnrc_tcp_eventloop.c" in /home/dananday/Research/RIOT succeeded in 20ms:
+/*
+ * Copyright (C) 2015-2017 Simon Brummer
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+/**
+ * @ingroup     net_gnrc
+ * @{
+ *
+ * @file
+ * @brief       Implementation of internal/eventloop.h
+ *
+ * @author      Simon Brummer <simon.brummer@posteo.de>
+ * @}
+ */
+
+#include <assert.h>
+exec
+/bin/bash -lc "sed -n '220,520p' /home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp/gnrc_tcp_eventloop.c" in /home/dananday/Research/RIOT succeeded in 19ms:
+            _gnrc_tcp_fsm_state_t state = _gnrc_tcp_fsm_get_state(tcb);
+            if (syn && tcb->local_port == dst && state == FSM_STATE_LISTEN) {
+                /* ... and local addr is unspec or pre configured */
+                tmp_addr = &((ipv6_hdr_t *)ip->data)->dst;
+                if (ipv6_addr_equal((ipv6_addr_t *) tcb->local_addr, (ipv6_addr_t *) tmp_addr) ||
+                    ipv6_addr_is_unspecified((ipv6_addr_t *) tcb->local_addr)) {
+                    break;
+                }
+            }
+
+            /* If SYN is not set and the ports match ... */
+            if (!syn && tcb->local_port == dst && tcb->peer_port == src) {
+                /* .. and the IPv6 addresses match */
+                tmp_addr = &((ipv6_hdr_t * )ip->data)->src;
+                if (ipv6_addr_equal((ipv6_addr_t *) tcb->peer_addr, (ipv6_addr_t *) tmp_addr)) {
+                    break;
+                }
+            }
+        }
+#else
+Plan update
+Create CBMC harness + stubs, iterate with cbmc to resolve missing symbols, then document assumptions/coverage.
+  → Inspect target function dependencies and identify required types/macros for harness and stubs
+  • Draft harness.c, stubs.c/stubs.h, and Makefile, then run CBMC to find missing symbols
+  • Iterate on stubs/assumptions, rerun CBMC, and record coverage and findings in README
+exec
+/bin/bash -lc 'rg -n "typedef struct.*tcb|gnrc_tcp_tcb_t" /home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp -g "*.h"' in /home/dananday/Research/RIOT succeeded in 34ms:
+/home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp/include/gnrc_tcp_common.h:152:    gnrc_tcp_tcb_t *head; /**< Head of TCB list */
+/home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp/include/gnrc_tcp_fsm.h:78:int _gnrc_tcp_fsm(gnrc_tcp_tcb_t *tcb, _gnrc_tcp_fsm_event_t event,
+/home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp/include/gnrc_tcp_fsm.h:88:void _gnrc_tcp_fsm_set_mbox(gnrc_tcp_tcb_t *tcb, mbox_t *mbox);
+/home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp/include/gnrc_tcp_fsm.h:97:_gnrc_tcp_fsm_state_t _gnrc_tcp_fsm_get_state(gnrc_tcp_tcb_t *tcb);
+/home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp/include/gnrc_tcp_rcvbuf.h:41:int _gnrc_tcp_rcvbuf_get_buffer(gnrc_tcp_tcb_t *tcb);
+/home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp/include/gnrc_tcp_rcvbuf.h:48:void _gnrc_tcp_rcvbuf_release_buffer(gnrc_tcp_tcb_t *tcb);
+/home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp/include/gnrc_tcp_option.h:67:int _gnrc_tcp_option_parse(gnrc_tcp_tcb_t *tcb, tcp_hdr_t *hdr);
+/home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp/include/gnrc_tcp_pkt.h:60:int _gnrc_tcp_pkt_build(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t **out_pkt,
+/home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp/include/gnrc_tcp_pkt.h:76:int _gnrc_tcp_pkt_send(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *out_pkt,
+/home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp/include/gnrc_tcp_pkt.h:89:int _gnrc_tcp_pkt_chk_seq_num(const gnrc_tcp_tcb_t *tcb, const uint32_t seq_num,
+/home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp/include/gnrc_tcp_pkt.h:121:int _gnrc_tcp_pkt_setup_retransmit(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *pkt,
+/home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp/include/gnrc_tcp_pkt.h:133:int _gnrc_tcp_pkt_acknowledge(gnrc_tcp_tcb_t *tcb, const uint32_t ack);
+exec
+/bin/bash -lc "sed -n '1,220p' /home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp/include/gnrc_tcp_common.h" in /home/dananday/Research/RIOT succeeded in 20ms:
+/*
+ * Copyright (C) 2015-2017 Simon Brummer
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+#pragma once
+
+/**
+ * @ingroup     net_gnrc_tcp
+ *
+ * @{
+ *
+ * @file
+ * @brief       Internally used defines, macros and variable declarations.
+ *
+ * @author      Simon Brummer <simon.brummer@posteo.de>
+ */
+exec
+/bin/bash -lc "sed -n '1,200p' /home/dananday/Research/RIOT/sys/include/net/gnrc/ipv6.h" in /home/dananday/Research/RIOT succeeded in 20ms:
+/*
+ * Copyright (C) 2015 Martine Lenders <mlenders@inf.fu-berlin.de>
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser General
+ * Public License v2.1. See the file LICENSE in the top level directory for
+ * more details.
+ */
+
+#pragma once
+
+/**
+ * @defgroup    net_gnrc_ipv6 IPv6
+ * @ingroup     net_gnrc
+ * @brief       GNRC's IPv6 implementation
+ *
+ * This module is for usage with the @ref net_gnrc_netapi
+ *
+ * # Supported NETAPI commands
+ *
+ * This module handles the following @ref net_gnrc_netapi message types:
+exec
+/bin/bash -lc 'cbmc --version' in /home/dananday/Research/RIOT succeeded in 23ms:
+6.3.1 (cbmc-6.3.1)
+exec
+/bin/bash -lc 'rg -n "typedef struct.*tcp_hdr_t|struct.*tcp_hdr" /home/dananday/Research/RIOT/sys/include/net/tcp.h' in /home/dananday/Research/RIOT exited 1 in 28ms:
+
+exec
+/bin/bash -lc 'rg -n "tcp_hdr_t" /home/dananday/Research/RIOT/sys/include/net/tcp.h' in /home/dananday/Research/RIOT succeeded in 23ms:
+67:} tcp_hdr_t;
+83:void tcp_hdr_print(tcp_hdr_t *hdr);
+exec
+/bin/bash -lc "sed -n '1,140p' /home/dananday/Research/RIOT/sys/include/net/tcp.h" in /home/dananday/Research/RIOT succeeded in 20ms:
+/*
+ * Copyright (C) 2015-2017 Simon Brummer
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+#pragma once
+
+/**
+ * @defgroup    net_tcp TCP
+ * @ingroup     net
+ * @brief       Provides TCP header and helper functions
+ *
+ * @{
+ *
+ * @file
+ * @brief       TCP header and helper functions
+ *
+exec
+/bin/bash -lc 'rg -n "typedef struct gnrc_pktsnip_t" /home/dananday/Research/RIOT/sys/include/net/gnrc/pkt.h' in /home/dananday/Research/RIOT exited 1 in 22ms:
+
+exec
+/bin/bash -lc 'rg -n "gnrc_pktsnip_t" /home/dananday/Research/RIOT/sys/include/net/gnrc/pkt.h' in /home/dananday/Research/RIOT succeeded in 23ms:
+125:} gnrc_pktsnip_t;
+136:static inline gnrc_pktsnip_t *gnrc_pkt_prev_snip(gnrc_pktsnip_t *pkt,
+137:                                                 gnrc_pktsnip_t *snip)
+152:static inline size_t gnrc_pkt_len(const gnrc_pktsnip_t *pkt)
+172:static inline gnrc_pktsnip_t *gnrc_pkt_append(gnrc_pktsnip_t *pkt,
+173:                                              gnrc_pktsnip_t *snip)
+176:    gnrc_pktsnip_t *last = gnrc_pkt_prev_snip(pkt, NULL);
+196:static inline gnrc_pktsnip_t *gnrc_pkt_prepend(gnrc_pktsnip_t *pkt,
+197:                                               gnrc_pktsnip_t *snip)
+211:static inline gnrc_pktsnip_t *gnrc_pkt_delete(gnrc_pktsnip_t *pkt,
+212:                                              gnrc_pktsnip_t *snip)
+226:    for (gnrc_pktsnip_t *i = pkt; i != NULL; i = i->next) {
+244:static inline size_t gnrc_pkt_len_upto(const gnrc_pktsnip_t *pkt, gnrc_nettype_t type)
+268:static inline size_t gnrc_pkt_count(const gnrc_pktsnip_t *pkt)
+289:gnrc_pktsnip_t *gnrc_pktsnip_search_type(gnrc_pktsnip_t *pkt,
+exec
+/bin/bash -lc "sed -n '90,170p' /home/dananday/Research/RIOT/sys/include/net/gnrc/pkt.h" in /home/dananday/Research/RIOT succeeded in 20ms:
+ *      ^                                * L3 header 2
+ *      |                                ^
+ *      |\                               |
+ *      | * L3 header 2                  |\
+ *      | * L2 header 2                  | * L4 header 2
+ *      * L2 header 3                    | * Payload 2
+ *      |\                               * Payload 3
+ *      | * L2 header 3
+ *      * L2 header 4
+ *
+ * The first three fields (next, data, size) match iolist_t (named iol_next,
+ * iol_base and iol_len there).  That means that any pktsnip can be casted to
+ * iolist_t for direct passing to e.g., netdev send() functions.
+ *
+ * @note    This type has no initializer on purpose. Please use @ref net_gnrc_pktbuf
+ *          as factory.
+ */
+/* packed to be aligned correctly in the static packet buffer */
+typedef struct gnrc_pktsnip {
+    /* the first three fields *MUST* match iolist_t! */
+exec
+/bin/bash -lc 'rg -n "gnrc_pktbuf_mark|gnrc_pktbuf_start_write|gnrc_pktbuf_release" /home/dananday/Research/RIOT/sys/include -g "*.h"' in /home/dananday/Research/RIOT succeeded in 35ms:
+/home/dananday/Research/RIOT/sys/include/net/gnrc.h:180: *      gnrc_pktbuf_release(pkt);
+/home/dananday/Research/RIOT/sys/include/net/gnrc/pktbuf.h:147:gnrc_pktsnip_t *gnrc_pktbuf_mark(gnrc_pktsnip_t *pkt, size_t size, gnrc_nettype_t type);
+/home/dananday/Research/RIOT/sys/include/net/gnrc/pktbuf.h:188:void gnrc_pktbuf_release_error(gnrc_pktsnip_t *pkt, uint32_t err);
+/home/dananday/Research/RIOT/sys/include/net/gnrc/pktbuf.h:196:static inline void gnrc_pktbuf_release(gnrc_pktsnip_t *pkt)
+/home/dananday/Research/RIOT/sys/include/net/gnrc/pktbuf.h:198:    gnrc_pktbuf_release_error(pkt, GNRC_NETERR_SUCCESS);
+/home/dananday/Research/RIOT/sys/include/net/gnrc/pktbuf.h:215:gnrc_pktsnip_t *gnrc_pktbuf_start_write(gnrc_pktsnip_t *pkt);
+/home/dananday/Research/RIOT/sys/include/net/gnrc/ipv6/ext/frag.h:187:    gnrc_pktbuf_release(rbuf->pkt);
+exec
+/bin/bash -lc 'rg -n "byteorder_ntohs" /home/dananday/Research/RIOT/sys/include/byteorder.h' in /home/dananday/Research/RIOT succeeded in 23ms:
+229:static inline uint16_t byteorder_ntohs(network_uint16_t v);
+367: * @see            byteorder_ntohs()
+505:static inline uint16_t byteorder_ntohs(network_uint16_t v)
+exec
+/bin/bash -lc "sed -n '480,520p' /home/dananday/Research/RIOT/sys/include/byteorder.h" in /home/dananday/Research/RIOT succeeded in 20ms:
+
+    return result;
+}
+
+static inline network_uint16_t byteorder_htons(uint16_t v)
+{
+    network_uint16_t result = { .u16 = htobe16(v) };
+
+    return result;
+}
+
+static inline network_uint32_t byteorder_htonl(uint32_t v)
+{
+    network_uint32_t result = { .u32 = htobe32(v) };
+
+    return result;
+}
+
+static inline network_uint64_t byteorder_htonll(uint64_t v)
+{
+exec
+/bin/bash -lc 'rg -n "htobe16|be16toh" /home/dananday/Research/RIOT/sys/include/byteorder.h' in /home/dananday/Research/RIOT succeeded in 23ms:
+486:    network_uint16_t result = { .u16 = htobe16(v) };
+507:    return be16toh(v.u16);
+522:    return htobe16(v);
+537:    return be16toh(v);
+552:    return be16toh(unaligned_get_u16(buf));
+567:    val = htobe16(val);
+exec
+/bin/bash -lc 'rg -n "#define htobe16|be16toh" /home/dananday/Research/RIOT/sys/include/byteorder.h' in /home/dananday/Research/RIOT succeeded in 23ms:
+507:    return be16toh(v.u16);
+537:    return be16toh(v);
+552:    return be16toh(unaligned_get_u16(buf));
+exec
+/bin/bash -lc 'rg -n "htobe16|be16toh" /home/dananday/Research/RIOT/sys/include -g "*.h"' in /home/dananday/Research/RIOT succeeded in 35ms:
+/home/dananday/Research/RIOT/sys/include/byteorder.h:486:    network_uint16_t result = { .u16 = htobe16(v) };
+/home/dananday/Research/RIOT/sys/include/byteorder.h:507:    return be16toh(v.u16);
+/home/dananday/Research/RIOT/sys/include/byteorder.h:522:    return htobe16(v);
+/home/dananday/Research/RIOT/sys/include/byteorder.h:537:    return be16toh(v);
+/home/dananday/Research/RIOT/sys/include/byteorder.h:552:    return be16toh(unaligned_get_u16(buf));
+/home/dananday/Research/RIOT/sys/include/byteorder.h:567:    val = htobe16(val);
+/home/dananday/Research/RIOT/sys/include/endian.h:57:uint16_t htobe16(uint16_t host_16bits);         /**< host to big endian, 16 bit */
+/home/dananday/Research/RIOT/sys/include/endian.h:59:uint16_t be16toh(uint16_t big_endian_16bits);   /**< big endian to host, 16 bit */
+/home/dananday/Research/RIOT/sys/include/endian.h:96:#  ifndef htobe16
+/home/dananday/Research/RIOT/sys/include/endian.h:97:#  define htobe16(_x) __builtin_bswap16(_x)
+/home/dananday/Research/RIOT/sys/include/endian.h:102:#  ifndef be16toh
+/home/dananday/Research/RIOT/sys/include/endian.h:103:#  define be16toh(_x) __builtin_bswap16(_x)
+/home/dananday/Research/RIOT/sys/include/endian.h:136:#  ifndef htobe16
+/home/dananday/Research/RIOT/sys/include/endian.h:137:#  define htobe16(_x) ((uint16_t)(_x))
+/home/dananday/Research/RIOT/sys/include/endian.h:142:#  ifndef be16toh
+/home/dananday/Research/RIOT/sys/include/endian.h:143:#  define be16toh(_x) ((uint16_t)(_x))
+exec
+/bin/bash -lc 'rg -n "typedef struct.*gnrc_tcp_tcb" /home/dananday/Research/RIOT/sys/include/net/gnrc/tcp/tcb.h' in /home/dananday/Research/RIOT exited 1 in 24ms:
+
+exec
+/bin/bash -lc 'rg -n "gnrc_tcp_tcb_t" /home/dananday/Research/RIOT/sys/include/net/gnrc/tcp/tcb.h' in /home/dananday/Research/RIOT succeeded in 22ms:
+79:} gnrc_tcp_tcb_t;
+86:    gnrc_tcp_tcb_t *tcbs; /**< Pointer to TCB sequence */
+exec
+/bin/bash -lc "sed -n '1,120p' /home/dananday/Research/RIOT/sys/include/net/gnrc/tcp/tcb.h" in /home/dananday/Research/RIOT succeeded in 20ms:
+/*
+ * Copyright (C) 2015-2017 Simon Brummer
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+#pragma once
+
+/**
+ * @ingroup     net_gnrc_tcp
+ *
+ * @{
+ *
+ * @file
+ * @brief       GNRC TCP transmission control block (TCB)
+ *
+ * @author      Simon Brummer <simon.brummer@posteo.de>
+ */
+exec
+/bin/bash -lc "sed -n '1,140p' /home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp/include/gnrc_tcp_fsm.h" in /home/dananday/Research/RIOT succeeded in 21ms:
+/*
+ * Copyright (C) 2015-2017 Simon Brummer
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+#pragma once
+
+/**
+ * @ingroup     net_gnrc_tcp
+ *
+ * @{
+ *
+ * @file
+ * @brief       TCP finite state machine declarations.
+ *
+ * @author      Simon Brummer <simon.brummer@posteo.de>
+ */
+exec
+/bin/bash -lc "sed -n '1,120p' /home/dananday/Research/RIOT/sys/include/mutex.h" in /home/dananday/Research/RIOT exited 2 in 20ms:
+sed: can't read /home/dananday/Research/RIOT/sys/include/mutex.h: No such file or directory
+exec
+/bin/bash -lc 'rg -n "typedef struct mutex" /home/dananday/Research/RIOT -g "mutex.h"' in /home/dananday/Research/RIOT exited 1 in 49ms:
+
+exec
+/bin/bash -lc 'rg -n "mutex_t" /home/dananday/Research/RIOT/sys/include -g "*.h"' in /home/dananday/Research/RIOT succeeded in 33ms:
+/home/dananday/Research/RIOT/sys/include/ztimer64.h:427:int ztimer64_mutex_lock_until(ztimer64_clock_t *clock, mutex_t *mutex,
+/home/dananday/Research/RIOT/sys/include/ztimer64.h:441:                                              mutex_t *mutex,
+/home/dananday/Research/RIOT/sys/include/ztimer64.h:458:int ztimer64_rmutex_lock_until(ztimer64_clock_t *clock, rmutex_t *rmutex,
+/home/dananday/Research/RIOT/sys/include/ztimer64.h:472:                                               rmutex_t *rmutex,
+/home/dananday/Research/RIOT/sys/include/fs/xipfs_fs.h:52:    static mutex_t execution_mutex_##id = MUTEX_INIT; \
+/home/dananday/Research/RIOT/sys/include/fs/xipfs_fs.h:53:    static mutex_t mutex_##id = MUTEX_INIT;           \
+/home/dananday/Research/RIOT/sys/include/fs/xipfs_fs.h:83:    mutex_t *execution_mutex;/**< For execution and deletion operations */
+/home/dananday/Research/RIOT/sys/include/fs/xipfs_fs.h:84:    mutex_t *mutex;          /**< For regular and deletion operations */
+/home/dananday/Research/RIOT/sys/include/fs/xipfs_fs.h:108:                                   mutex_t *execution_mutex, mutex_t *mutex,
+/home/dananday/Research/RIOT/sys/include/fs/spiffs_fs.h:114:    mutex_t lock;                               /**< A lock for SPIFFS internal use */
+/home/dananday/Research/RIOT/sys/include/fs/littlefs2_fs.h:94:    mutex_t lock;               /**< mutex */
+/home/dananday/Research/RIOT/sys/include/fs/lwext4_fs.h:44:    mutex_t lock;               /**< mutex */
+/home/dananday/Research/RIOT/sys/include/fs/littlefs_fs.h:78:    mutex_t lock;               /**< mutex */
+/home/dananday/Research/RIOT/sys/include/suit/transport/worker.h:82: * mutex_trylock, not like @ref mutex_lock). This allows a simpler
+/home/dananday/Research/RIOT/sys/include/sema.h:70:    mutex_t mutex;                  /**< mutex of the semaphore */
+/home/dananday/Research/RIOT/sys/include/ztimer64/xtimer_compat.h:200:static inline int xtimer_mutex_lock_timeout(mutex_t *mutex, uint64_t us)
+/home/dananday/Research/RIOT/sys/include/ztimer64/xtimer_compat.h:209:static inline int xtimer_rmutex_lock_timeout(rmutex_t *rmutex, uint64_t timeout)
+/home/dananday/Research/RIOT/sys/include/ztimer.h:650: *     the ISR), @ref mutex_trylock is used to test for whether the interrupt
+/home/dananday/Research/RIOT/sys/include/ztimer.h:791:                         uint32_t timeout, mutex_t *mutex);
+/home/dananday/Research/RIOT/sys/include/ztimer.h:803:int ztimer_mutex_lock_timeout(ztimer_clock_t *clock, mutex_t *mutex,
+exec
+/bin/bash -lc 'rg -n "typedef struct .*mutex" /home/dananday/Research/RIOT -g "*.h" | head' in /home/dananday/Research/RIOT succeeded in 68ms:
+/home/dananday/Research/RIOT/core/lib/include/rmutex.h:34:typedef struct rmutex_t {
+exec
+/bin/bash -lc 'rg -n "typedef struct .*mutex_t" /home/dananday/Research/RIOT -g "*.h"' in /home/dananday/Research/RIOT succeeded in 69ms:
+/home/dananday/Research/RIOT/core/lib/include/rmutex.h:34:typedef struct rmutex_t {
+exec
+/bin/bash -lc 'rg -n "mutex_t" /home/dananday/Research/RIOT/core -g "*.h" | head -n 20' in /home/dananday/Research/RIOT succeeded in 32ms:
+/home/dananday/Research/RIOT/core/include/cond.h:75: *     mutex_t lock;
+/home/dananday/Research/RIOT/core/include/cond.h:183:void cond_wait(cond_t *cond, mutex_t *mutex);
+/home/dananday/Research/RIOT/core/include/mutex.h:74:} mutex_t;
+/home/dananday/Research/RIOT/core/include/mutex.h:78: *          @ref mutex_trylock
+/home/dananday/Research/RIOT/core/include/mutex.h:80: * @details Do not call this function, use @ref mutex_lock or @ref mutex_trylock
+/home/dananday/Research/RIOT/core/include/mutex.h:95:bool mutex_lock_internal(mutex_t *mutex, bool block);
+/home/dananday/Research/RIOT/core/include/mutex.h:104:    mutex_t *mutex;     /**< The mutex to lock */
+/home/dananday/Research/RIOT/core/include/mutex.h:111: * @brief Static initializer for mutex_t.
+/home/dananday/Research/RIOT/core/include/mutex.h:117: * @brief Static initializer for mutex_t with a locked mutex
+/home/dananday/Research/RIOT/core/include/mutex.h:141:static inline void mutex_init(mutex_t *mutex)
+/home/dananday/Research/RIOT/core/include/mutex.h:152:static inline void mutex_init_locked(mutex_t *mutex)
+/home/dananday/Research/RIOT/core/include/mutex.h:154:    *mutex = (mutex_t)MUTEX_INIT_LOCKED;
+/home/dananday/Research/RIOT/core/include/mutex.h:167:static inline mutex_cancel_t mutex_cancel_init(mutex_t *mutex)
+/home/dananday/Research/RIOT/core/include/mutex.h:186:static inline int mutex_trylock(mutex_t *mutex)
+/home/dananday/Research/RIOT/core/include/mutex.h:202:static inline void mutex_lock(mutex_t *mutex)
+/home/dananday/Research/RIOT/core/include/mutex.h:260:void mutex_unlock(mutex_t *mutex);
+/home/dananday/Research/RIOT/core/include/mutex.h:265:static inline void mutex_unlock(mutex_t *mutex)
+/home/dananday/Research/RIOT/core/include/mutex.h:279:void mutex_unlock_and_sleep(mutex_t *mutex);
+/home/dananday/Research/RIOT/core/include/mutex.h:314: * int ztimer_mutex_lock_timeout(ztimer_clock_t *clock, mutex_t *mutex,
+/home/dananday/Research/RIOT/core/lib/include/rmutex.h:34:typedef struct rmutex_t {
+exec
+/bin/bash -lc 'mkdir -p /home/dananday/Research/RIOT/cbmc/codex_tests/_receive' in /home/dananday/Research/RIOT succeeded in 20ms:
+
+exec
+/bin/bash -lc "sed -n '1,120p' /home/dananday/Research/RIOT/sys/include/config.h" in /home/dananday/Research/RIOT exited 2 in 20ms:
+sed: can't read /home/dananday/Research/RIOT/sys/include/config.h: No such file or directory
+exec
+/bin/bash -lc 'rg -n "#pragma once" /home/dananday/Research/RIOT -g "config.h"' in /home/dananday/Research/RIOT succeeded in 50ms:
+/home/dananday/Research/RIOT/sys/include/ztimer/config.h:9:#pragma once
+/home/dananday/Research/RIOT/sys/include/congure/config.h:9:#pragma once
+/home/dananday/Research/RIOT/sys/include/net/gnrc/sixlowpan/config.h:9:#pragma once
+/home/dananday/Research/RIOT/sys/include/net/gnrc/tcp/config.h:9:#pragma once
+/home/dananday/Research/RIOT/sys/include/net/sock/config.h:10:#pragma once
+/home/dananday/Research/RIOT/sys/include/net/cord/config.h:9:#pragma once
+/home/dananday/Research/RIOT/sys/include/net/unicoap/config.h:10:#pragma once
+/home/dananday/Research/RIOT/pkg/nanocbor/include/nanocbor/config.h:9:#pragma once
+/home/dananday/Research/RIOT/pkg/libschc/include/libschc/config.h:9:#pragma once
+exec
+/bin/bash -lc "sed -n '1,120p' /home/dananday/Research/RIOT/sys/include/net/gnrc/tcp/config.h" in /home/dananday/Research/RIOT succeeded in 19ms:
+/*
+ * Copyright (C) 2015-2017 Simon Brummer
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+#pragma once
+
+/**
+ * @ingroup     net_gnrc_tcp
+ *
+ * @{
+ *
+ * @file
+ * @brief       GNRC TCP configuration
+ *
+ * @author      Simon Brummer <simon.brummer@posteo.de>
+ */

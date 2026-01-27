@@ -1,0 +1,30 @@
+You are generating a CBMC unit proof for RIOT.
+
+Target:
+- Function: _receive
+- Target file: /home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp/gnrc_tcp_eventloop.c
+- Output directory:
+  /home/dananday/Research/RIOT/cbmc/codex_tests/_receive
+
+Goal:
+1) Create a CBMC harness C file and a Makefile that verify _receive.
+2) Maximize feasible-path coverage.
+3) Minimize CBMC failures using justified preconditions and minimal stubbing.
+4) Iterate until CBMC no longer reports errors or unreachable issues are explained.
+
+Constraints:
+- Do not modify RIOT source files outside the output directory.
+- Place all generated files in the output directory.
+
+Process:
+- Inspect the function signature and dependencies.
+- Create harness.c calling _receive.
+- Create stubs only when CBMC reports missing symbols.
+- Re-run CBMC after every fix.
+- Record coverage after each iteration.
+
+Deliverables:
+- harness.c
+- stubs.c / stubs.h (if required)
+- Makefile
+- README.md documenting assumptions, CBMC commands, and coverage.

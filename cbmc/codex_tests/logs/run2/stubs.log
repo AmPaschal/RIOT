@@ -1,0 +1,13 @@
+Stubs added after CBMC reported missing/undefined bodies in build/reports/cbmc.xml:
+- gnrc_pktbuf_start_write: no-body.gnrc_pktbuf_start_write
+- gnrc_pktbuf_release: no-body.gnrc_pktbuf_release
+- gnrc_pktsnip_search_type: no-body.gnrc_pktsnip_search_type
+- gnrc_pktbuf_mark: no-body.gnrc_pktbuf_mark
+- _gnrc_tcp_pkt_calc_csum: no-body._gnrc_tcp_pkt_calc_csum
+- _gnrc_tcp_common_get_tcb_list: no-body._gnrc_tcp_common_get_tcb_list
+- _gnrc_tcp_fsm_get_state: no-body._gnrc_tcp_fsm_get_state
+- _gnrc_tcp_fsm: no-body._gnrc_tcp_fsm
+- _gnrc_tcp_pkt_build_reset_from_pkt: no-body._gnrc_tcp_pkt_build_reset_from_pkt
+- _gnrc_netapi_send_recv: no-body._gnrc_netapi_send_recv
+- ipv6_addr_equal: no-body.ipv6_addr_equal
+- ipv6_addr_is_unspecified: no-body.ipv6_addr_is_unspecified

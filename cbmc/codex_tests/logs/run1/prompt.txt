@@ -1,0 +1,32 @@
+[Role Playing]
+You are a bounded model checking expert tasked with verifying the memory safety of functions in a C repository. 
+
+[Task]
+Your goal is to create a proof harness and a Makefile that allow you to verify the memory safety of a C program.
+A proof harness is a C file that contains models of the input variables, global variables and undefined functions in the target function, which is used to drive the verification of the target function. Models of variables are specified using __CPROVER_assume() statements, while models of functions are functions, with the same name as the original function, and which replaces the implementation of the original function.
+The makefile contains cbmc flags, compilation flags, include paths, and links to a Makefile.include file that contains the actual compilation and verification commands.
+
+[Input]
+You are to build a valid proof harness and makefile to verify the following function:
+Target file: /home/dananday/Research/RIOT/sys/net/gnrc/transport_layer/tcp/gnrc_tcp_eventloop.c
+Function name: _receive
+The Makefile.include file, which should be included in the Makefile, is currently located at: /home/dananday/Research/RIOT/cbmc/codex_tests/Makefile.include
+
+[Output]
+You are to create a proof directory in the following path: /home/dananday/Research/RIOT/cbmc/codex_tests/_receive
+You should create the proof harness and makefile within this directory, such that the proof harness can be executed by running “make”
+
+[Examples]
+You can find examples of completed harnesses and makefiles in the following proof directories: /home/dananday/Research/RIOT/cbmc/codex_tests/examples
+Ensure you study the format of the Makefile and the included Makefile.include so you can understand how to create a valid Makefile.
+
+[Build and Result Information]
+It should be possible to execute the harness and the verification using the “make” command.
+The results of the make’s command will be in the build subdirectory of the proof directory.
+Specifically, it will contain a build/reports subdirectory with the logs, and a build/report subdirectory with the final html and json reports.
+
+[Completeness Criteria]
+Your goal is to create a proof harness that compiles and achieves the maximum possible coverage.
+The proof harness compiles if it does not produce any error when “make” is executed.
+You can see the compilation logs in standard output and the verification logs in build/reports/cbmc.xml
+After the coverage report will be located at build/report/json/viewer-coverage.json or build/report/html/viewer-coverage.html
