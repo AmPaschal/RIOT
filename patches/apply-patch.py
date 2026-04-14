@@ -1,16 +1,13 @@
+import argparse
 import subprocess
 import sys
 from pathlib import Path
 
 # ===================== CONFIGURATION =====================
-
-# Directory containing .diff files
-PATCH_DIR = Path("patches")  # <-- change if needed
-
 # Ordered patch groups:
 # Each inner list is applied in order.
 # Groups themselves are applied in order.
-ORDERED_PATCH_GROUPS = [
+RIOT_ORDER = [
     [
         "CVE-2021-31660.diff",
         "CVE-2021-31661.diff",
@@ -22,6 +19,38 @@ ORDERED_PATCH_GROUPS = [
         "CVE-2023-24820.diff",
     ],
 ]
+
+CONTIKI_ORDER = [
+    [ "CVE-2023-48229.diff", ],
+    [ "CVE-2022-36054.diff", 
+     "CVE-2022-36052.diff", 
+     "CVE-2021-21410.diff", 
+     "CVE-2023-37281.diff", ],
+    [ "CVE-2023-37459.diff", ],
+    [ "CVE-2023-31129.diff",
+      "CVE-2022-35926.diff", ],
+    [ "CVE-2022-36053.diff", ],
+    [ "CVE-2023-28116.diff",
+     "CVE-2023-23609.diff", 
+     "CVE-2022-41972.diff",  
+     "CVE-2022-41873.diff", ],
+    [ "CVE-2021-21282.diff", ],
+    [ "CVE-2021-32771.diff", 
+     "CVE-2023-34101.diff", 
+     "CVE-2022-35927.diff", ],
+    [ "CVE-2023-50926.diff", 
+     "CVE-2023-50927.diff", ],
+    [ "CVE-2023-30546.diff", ],
+]
+
+ZEPHYR_ORDER = [
+    ["CVE-2021-3454.diff",
+     "CVE-2021-3435.diff"],
+     ["CVE-2022-1041.diff",
+      "CVE-2022-1042.diff"]
+]
+
+ORDERED_PATCH_GROUPS = ZEPHYR_ORDER 
 
 # ========================================================
 
@@ -55,12 +84,24 @@ def run_patch(patch_path: Path) -> bool:
         return False
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Process/apply patches from a directory.")
+    parser.add_argument(
+        "patch_dir",
+        type=Path,
+        help="Directory containing .diff patch files",
+    )
+    return parser.parse_args()
+
 def main():
-    if not PATCH_DIR.is_dir():
-        print(f"Patch directory not found: {PATCH_DIR}")
+
+    args = parse_args()
+
+    if not args.patch_dir.is_dir():
+        print(f"Patch directory not found: {args.patch_dir}")
         sys.exit(1)
 
-    all_patches = {p.name: p for p in PATCH_DIR.glob("*.diff")}
+    all_patches = {p.name: p for p in args.patch_dir.glob("*.diff")}
 
     applied = set()
 
