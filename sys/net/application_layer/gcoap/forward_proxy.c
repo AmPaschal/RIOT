@@ -55,14 +55,7 @@ static uint8_t _cep_get_response_type(client_ep_t *cep);
 static void _cep_set_response_type(client_ep_t *cep, uint8_t resp_type);
 static uint8_t _cep_get_req_etag_len(client_ep_t *cep);
 
-/**
- * @brief   Store the given ETag in the given client endpoint
- * @param[out]  cep         client endpoint to store the ETag in
- * @param[in]   etag        ETag to store
- * @param[in]   etag_len    length of @p etag in bytes
- */
-static void _cep_set_req_etag(client_ep_t *cep, const void *etag,
-                              uint8_t etag_len);
+static void _cep_set_req_etag_len(client_ep_t *cep, uint8_t req_etag_len);
 
 const coap_resource_t forward_proxy_resources[] = {
     { "/", COAP_IGNORE, _forward_proxy_handler, NULL },
@@ -103,7 +96,7 @@ static client_ep_t *_allocate_client_ep(const sock_udp_ep_t *ep)
          cep++) {
         if (!_cep_in_use(cep)) {
             _cep_set_in_use(cep);
-            _cep_set_req_etag(cep, NULL, 0);
+            _cep_set_req_etag_len(cep, 0);
             memcpy(&cep->ep, ep, sizeof(*ep));
             DEBUG("Client_ep is allocated %p\n", (void *)cep);
             return cep;
@@ -377,7 +370,12 @@ static int _gcoap_forward_proxy_copy_options(coap_pkt_t *pkt,
             if (IS_USED(MODULE_NANOCOAP_CACHE) && opt.opt_num == COAP_OPT_ETAG) {
                 if (_cep_get_req_etag_len(cep) == 0) {
                     /* TODO: what to do on multiple ETags? */
-                    _cep_set_req_etag(cep, value, optlen);
+
+                    _cep_set_req_etag_len(cep, (uint8_t)optlen);
+#if IS_USED(MODULE_NANOCOAP_CACHE)
+                    /* req_tag in cep is pre-processor guarded so we need to as well */
+                    memcpy(cep->req_etag, value, optlen);
+#endif
                 }
                 /* skip original ETag of request, otherwise we might accidentally fill the cache
                  * with 2.03 Valid responses which would require additional handling.
@@ -570,20 +568,13 @@ static uint8_t _cep_get_req_etag_len(client_ep_t *cep)
     return 0;
 }
 
-static void _cep_set_req_etag(client_ep_t *cep, const void *etag,
-                              uint8_t etag_len)
+static void _cep_set_req_etag_len(client_ep_t *cep, uint8_t req_etag_len)
 {
-    (void)cep;
-    (void)etag;
-    (void)etag_len;
-#if MODULE_NANOCOAP_CACHE
-    if (etag_len <= COAP_ETAG_LENGTH_MAX) {
+    if (IS_USED(MODULE_NANOCOAP_CACHE)) {
         cep->flags &= ~CLIENT_EP_FLAGS_ETAG_LEN_MASK;
-        cep->flags |= (etag_len << CLIENT_EP_FLAGS_ETAG_LEN_POS)
-                      & CLIENT_EP_FLAGS_ETAG_LEN_MASK;
-        memcpy(cep->req_etag, etag, etag_len);
+        cep->flags |= (req_etag_len << CLIENT_EP_FLAGS_ETAG_LEN_POS)
+                        & CLIENT_EP_FLAGS_ETAG_LEN_MASK;
     }
-#endif
 }
 
 /** @} */
